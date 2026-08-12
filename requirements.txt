@@ -1,14 +1,3 @@
-# Faixas compatíveis com a pilha histórica do projeto (Python 3.8 recomendado)
-tensorflow>=2.6,<2.11
-pandas>=1.3,<2.0
-numpy>=1.19,<1.24
-scikit-learn>=0.24,<1.2
-matplotlib>=3.4,<3.7
-nltk>=3.6,<4
-spacy>=2.3,<3.5
-emoji>=1.6,<2
-joblib>=1.0,<2
-wordcloud>=1.8,<2
-openpyxl>=3.0,<4
-xlrd>=2.0,<3
-jupyterlab>=3,<4
+tensorflow==2.20.0
+nbconvert==7.16.6
+ipykernel==6.30.1

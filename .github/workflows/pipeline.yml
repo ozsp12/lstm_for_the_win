@@ -1,0 +1,54 @@
+name: Executar pipeline LSTM
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Baixar repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+
+      - name: Validar módulos Python
+        run: python -m compileall -q src
+
+      - name: Executar notebook
+        env:
+          TF_CPP_MIN_LOG_LEVEL: "2"
+          PIPELINE_EPOCHS: "10"
+        run: |
+          mkdir -p artifacts
+          python -m jupyter nbconvert \
+            --execute \
+            --to notebook \
+            --ExecutePreprocessor.timeout=600 \
+            --output topic_classification_pipeline.executed.ipynb \
+            --output-dir artifacts \
+            notebooks/topic_classification_pipeline.ipynb
+
+      - name: Publicar notebook executado
+        uses: actions/upload-artifact@v4
+        with:
+          name: notebook-executado
+          path: artifacts/topic_classification_pipeline.executed.ipynb

@@ -2,7 +2,7 @@
 
 Pipeline mínimo e reproduzível para classificar avaliações de produtos em quatro tópicos: `smartphone`, `televisao`, `refrigerador` e `maquina_de_lavar`.
 
-## Design da solução
+# Design da solução
 
 ```mermaid
 flowchart LR
@@ -22,7 +22,7 @@ flowchart LR
     H -. exploração .-> L["K-Means"]
 ```
 
-## Como funciona
+# Como funciona
 
 1. Carrega e valida avaliações rotuladas em CSV.
 2. Normaliza os textos e cria uma divisão estratificada de treino e teste.
@@ -32,7 +32,7 @@ flowchart LR
 
 Toda a lógica está em arquivos `.py`; o notebook apenas configura, executa e apresenta o resultado.
 
-## Estrutura
+# Estrutura
 
 ```text
 .github/workflows/pipeline.yml     execução automática no GitHub Actions
@@ -41,7 +41,7 @@ notebooks/topic_classification_pipeline.ipynb
 src/topic_classifier/              funções do pipeline
 ```
 
-## Executar localmente
+# Executar localmente
 
 Requer Python 3.12.
 

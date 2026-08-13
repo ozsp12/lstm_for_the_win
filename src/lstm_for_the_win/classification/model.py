@@ -1,4 +1,4 @@
-"""LSTM model construction, training, and evaluation."""
+"""LSTM model construction, training, evaluation, and inference."""
 
 from __future__ import annotations
 
@@ -83,7 +83,10 @@ def train_model(
         verbose=verbose,
         shuffle=True,
     )
-    return {key: [float(value) for value in values] for key, values in history.history.items()}
+    return {
+        key: [float(value) for value in values]
+        for key, values in history.history.items()
+    }
 
 
 def evaluate_model(
@@ -108,12 +111,6 @@ def predict_probabilities(model: tf.keras.Model, texts: Sequence[str]) -> np.nda
         tf.constant(list(texts), dtype=tf.string),
         verbose=0,
     )
-
-
-def predict_classes(model: tf.keras.Model, texts: Sequence[str]) -> np.ndarray:
-    """Return the most likely class index for each text."""
-
-    return np.argmax(predict_probabilities(model, texts), axis=1)
 
 
 def build_confusion_matrix(

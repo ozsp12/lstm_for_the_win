@@ -1,0 +1,28 @@
+[build-system]
+requires = ["setuptools>=75"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lstm-for-the-win"
+version = "0.3.0"
+description = "Sentiment and product-topic classification with LSTM models and a Streamlit dashboard."
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "tensorflow==2.20.0",
+    "streamlit==1.60.0",
+    "plotly>=5.24,<7",
+    "wordcloud>=1.9.4,<2",
+]
+
+[project.optional-dependencies]
+test = ["pytest>=8.3,<10"]
+
+[project.scripts]
+lstm-pipeline = "lstm_for_the_win.handler:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

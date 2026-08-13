@@ -6,11 +6,11 @@
   <text x="65" y="70" font-family="Segoe UI,Arial" font-size="28" font-weight="700" fill="#ffffff">Product Review Intelligence</text>
   <text x="65" y="99" font-family="Segoe UI,Arial" font-size="16" fill="#dbeafe">One review → sentiment + product topic → business routing</text>
   <rect x="30" y="145" width="270" height="130" rx="16" fill="#f8fafc" stroke="#d8e0ea"/>
-  <text x="55" y="180" font-family="Segoe UI,Arial" font-size="14" fill="#64748b">SENTIMENT ACCURACY</text>
-  <text x="55" y="235" font-family="Segoe UI,Arial" font-size="42" font-weight="700" fill="#1e3a8a">100.0%</text>
+  <text x="55" y="180" font-family="Segoe UI,Arial" font-size="14" fill="#64748b">CONTROLLED EXECUTION</text>
+  <text x="55" y="235" font-family="Segoe UI,Arial" font-size="36" font-weight="700" fill="#1e3a8a">Handler</text>
   <rect x="320" y="145" width="270" height="130" rx="16" fill="#f8fafc" stroke="#d8e0ea"/>
-  <text x="345" y="180" font-family="Segoe UI,Arial" font-size="14" fill="#64748b">TOPIC ACCURACY</text>
-  <text x="345" y="235" font-family="Segoe UI,Arial" font-size="42" font-weight="700" fill="#1e3a8a">68.8%</text>
+  <text x="345" y="180" font-family="Segoe UI,Arial" font-size="14" fill="#64748b">STAKEHOLDER APPLICATION</text>
+  <text x="345" y="235" font-family="Segoe UI,Arial" font-size="36" font-weight="700" fill="#1e3a8a">Streamlit</text>
   <rect x="610" y="145" width="270" height="130" rx="16" fill="#f8fafc" stroke="#d8e0ea"/>
   <text x="635" y="180" font-family="Segoe UI,Arial" font-size="14" fill="#64748b">SUPPORTED OUTPUTS</text>
   <text x="635" y="224" font-family="Segoe UI,Arial" font-size="34" font-weight="700" fill="#1e3a8a">7 classes</text>

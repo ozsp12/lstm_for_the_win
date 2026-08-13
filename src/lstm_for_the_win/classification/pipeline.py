@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from .data import load_dataset, stratified_split
+from .data import clean_text, load_dataset, stratified_split
 from .model import (
     build_confusion_matrix,
     build_lstm_model,
@@ -37,7 +37,7 @@ class PipelineConfig:
 
 @dataclass(frozen=True)
 class PipelineResult:
-    """Results required for human review and automated validation."""
+    """Serializable evaluation and inference results."""
 
     dataset_size: int
     train_size: int
@@ -56,8 +56,16 @@ class PipelineResult:
         return asdict(self)
 
 
-def run_pipeline(config: PipelineConfig) -> PipelineResult:
-    """Run data loading, splitting, training, evaluation, and prediction."""
+@dataclass(frozen=True)
+class PipelineExecution:
+    """A trained model paired with its serializable result."""
+
+    model: Any
+    result: PipelineResult
+
+
+def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
+    """Train, evaluate, and return both the model and serializable results."""
 
     set_global_seed(config.seed)
     records = load_dataset(config.dataset_path)
@@ -112,8 +120,9 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
 
     demo_predictions: list[dict[str, Any]] = []
     if config.demo_texts:
-        demo_probabilities = predict_probabilities(model, config.demo_texts)
-        for text, probabilities in zip(
+        cleaned_demo_texts = tuple(clean_text(text) for text in config.demo_texts)
+        demo_probabilities = predict_probabilities(model, cleaned_demo_texts)
+        for original_text, probabilities in zip(
             config.demo_texts,
             demo_probabilities,
             strict=True,
@@ -121,7 +130,7 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
             predicted_index = int(probabilities.argmax())
             demo_predictions.append(
                 {
-                    "text": text,
+                    "text": original_text,
                     "predicted": labels[predicted_index],
                     "confidence": float(probabilities[predicted_index]),
                     "probabilities": {
@@ -131,7 +140,7 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
                 }
             )
 
-    return PipelineResult(
+    result = PipelineResult(
         dataset_size=len(records),
         train_size=len(train_records),
         test_size=len(test_records),
@@ -147,3 +156,10 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
         predictions=predictions,
         demo_predictions=demo_predictions,
     )
+    return PipelineExecution(model=model, result=result)
+
+
+def run_pipeline(config: PipelineConfig) -> PipelineResult:
+    """Run the pipeline when only serializable results are required."""
+
+    return execute_pipeline(config).result

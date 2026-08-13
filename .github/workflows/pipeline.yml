@@ -69,16 +69,25 @@ jobs:
           cat data/output/streamlit.log
           exit 1
 
-      - name: Commit the versioned input batch
+      - name: Commit versioned inputs and CSV outputs
         run: |
+          RUN_PATH="data/output/github-${{ github.run_id }}"
+          test -f "$RUN_PATH/predictions.csv"
+          test -f "$RUN_PATH/evaluation_predictions.csv"
+          test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/input
+          git add \
+            data/output/latest.json \
+            "$RUN_PATH/predictions.csv" \
+            "$RUN_PATH/evaluation_predictions.csv" \
+            "$RUN_PATH/run_manifest.json"
           if git diff --cached --quiet; then
-            echo "The agent did not append a versioned batch."
+            echo "The agent did not append versioned inputs and outputs."
             exit 1
           fi
-          git commit -m "data: append synthetic batch from run ${{ github.run_id }} [skip ci]"
+          git commit -m "data: append synthetic batch and results from run ${{ github.run_id }} [skip ci]"
           git push origin HEAD:main
 
       - name: Upload versioned experiment artifacts

@@ -7,10 +7,11 @@ __pycache__/
 # Jupyter
 .ipynb_checkpoints/
 
-# Generated pipeline artifacts
+# Generated pipeline artifacts kept outside Git
 artifacts/
-data/output/*
-!data/output/.gitkeep
+data/output/**/models/
+data/output/**/results.json
+data/output/*.log
 *.keras
 
 # Test and tool caches

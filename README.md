@@ -88,7 +88,7 @@ ID, text, expected_sentiment, expected_topic, predicted_sentiment,
 predicted_topic, type, input_timestamp, model_timestamp
 ```
 
-`data/input` is versioned in Git. `data/output` is generated, ignored by Git, and uploaded by GitHub Actions. Every completed run records input hashes, execution parameters, runtime versions, timestamps, metrics, predictions, and trained models.
+`data/input` is versioned in Git. For workflow runs, Git also versions `predictions.csv`, `evaluation_predictions.csv`, `run_manifest.json`, and `latest.json` under `data/output`. Larger files such as trained models and `results.json` remain available in the downloadable GitHub Actions artifact instead of being committed. Every completed run records input hashes, execution parameters, runtime versions, timestamps, metrics, predictions, and trained models.
 
 ## Synthetic Data Agent
 
@@ -102,7 +102,7 @@ Use `lstm-pipeline train` when replacing the synthetic files with reviewed real-
 .github/workflows/pipeline.yml        validation and versioned experiment workflow
 config/synthetic_data.json            synthetic-data agent configuration
 data/input/                           versioned train/test inputs
-data/output/                          ignored, versioned run directories
+data/output/                          versioned CSV results and run manifests
 src/lstm_for_the_win/agents/          incremental synthetic-data generation
 src/lstm_for_the_win/classification/  reusable LSTM implementation
 src/lstm_for_the_win/dashboard/       dashboard data, charts, and inference
@@ -119,7 +119,7 @@ The manually dispatched pipeline is the controlled data-producing experiment. Ev
 2. assigns contiguous IDs and the workflow timestamp;
 3. trains and evaluates both classifiers;
 4. verifies the datasets and final CSV schema;
-5. commits the new input batch to `main`;
+5. commits the new input batch, CSV results, and run manifest to `main`;
 6. uploads the complete run as a downloadable artifact.
 
 A separate read-only validation workflow runs on pushes and pull requests without generating data. This avoids an endless workflow/commit loop while keeping every execution of the data pipeline incremental.

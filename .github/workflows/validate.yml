@@ -1,0 +1,47 @@
+name: Validate LSTM software
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: validation-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install dependencies
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
+
+      - name: Validate Python modules
+        run: python -m compileall -q src streamlit_app.py
+
+      - name: Train both classifiers without changing versioned input
+        env:
+          TF_CPP_MIN_LOG_LEVEL: "2"
+          PIPELINE_EPOCHS: "20"
+        run: >-
+          python -m lstm_for_the_win.handler train
+          --run-id validation-${{ github.run_id }}
+          --epochs 20
+
+      - name: Run automated tests
+        env:
+          PIPELINE_TEST_RUN_PATH: data/output/validation-${{ github.run_id }}
+        run: python -m pytest -q

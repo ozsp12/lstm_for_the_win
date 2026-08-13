@@ -1,25 +1,35 @@
 {
-  "agent_version": "1.0.0",
+  "agent_version": "2.0.0",
   "config": {
     "agent_name": "synthetic-review-generator",
-    "agent_version": "1.0.0",
+    "agent_version": "2.0.0",
     "allow_personal_data": false,
+    "append_test_rows": 100,
+    "append_train_rows": 100,
+    "initial_test_rows": 500,
+    "initial_train_rows": 500,
     "language": "en",
-    "reviews_per_sentiment_topic_pair": 4,
     "seed": 42,
-    "sentiment_samples_per_label": 64,
-    "synthetic_only": true,
-    "topic_samples_per_label": 32
+    "synthetic_only": true
   },
   "generated_by": "synthetic-review-generator",
+  "id_range": {
+    "first": 1,
+    "last": 1000
+  },
+  "latest_input_timestamp": "2026-08-13T15:30:24Z",
   "record_counts": {
-    "reviews.csv": 48,
-    "sentiment_samples.csv": 192,
-    "topic_samples.csv": 128
+    "reviews.csv": 1000,
+    "sentiment_samples.csv": 1000,
+    "topic_samples.csv": 1000
+  },
+  "review_type_counts": {
+    "test": 500,
+    "train": 500
   },
   "sha256": {
-    "reviews.csv": "050465419d41f16758a4e91fc6b1ebb5362fe3f68e22c0e87a8675c58fb520ea",
-    "sentiment_samples.csv": "bacc5b9ca94dc2d03bda2cfbce7efda7ae5ba8310ade1623b97acc354fefa0c9",
-    "topic_samples.csv": "482a6167e7763a16addb979113b5263969fc01af4af3015dd1f1b0cf58c7f674"
+    "reviews.csv": "798c80fa6bbafe546f84b3c58128a022d5b522f308ff3fb9e6756564ca1dae61",
+    "sentiment_samples.csv": "3c8bae4c5a9246004dcadab8d9ac9dc1b307fc596b554c72c0fd8f9d164aa615",
+    "topic_samples.csv": "5e72cdedf216ef89cfe40cb23f1d93ddd8b1e2159c4906768097ebc26fa6c13a"
   }
 }

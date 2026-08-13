@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lstm-for-the-win"
-version = "0.3.0"
+version = "0.4.0"
 description = "Sentiment and product-topic classification with LSTM models and a Streamlit dashboard."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
@@ -26,3 +26,4 @@ where = ["src"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = ["src"]

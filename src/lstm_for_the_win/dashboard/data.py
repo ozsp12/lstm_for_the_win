@@ -28,15 +28,9 @@ def _as_bool(value: str) -> bool:
     return value.strip().lower() == "true"
 
 
-def _read_inference_predictions(path: Path) -> list[dict[str, Any]]:
+def _read_predictions(path: Path) -> list[dict[str, Any]]:
     with path.open("r", encoding="utf-8", newline="") as file:
-        rows = list(csv.DictReader(file))
-    for row in rows:
-        row["sentiment_confidence"] = float(row["sentiment_confidence"])
-        row["topic_confidence"] = float(row["topic_confidence"])
-        row["sentiment_correct"] = _as_bool(row["sentiment_correct"])
-        row["topic_correct"] = _as_bool(row["topic_correct"])
-    return rows
+        return list(csv.DictReader(file))
 
 
 def _read_evaluation_predictions(path: Path) -> list[dict[str, Any]]:
@@ -46,6 +40,44 @@ def _read_evaluation_predictions(path: Path) -> list[dict[str, Any]]:
         row["confidence"] = float(row["confidence"])
         row["correct"] = _as_bool(row["correct"])
     return rows
+
+
+def _suggested_action(sentiment: str, topic: str) -> str:
+    team = topic.replace("_", " ").title()
+    if sentiment == "negative":
+        return f"Prioritize and route to the {team} support team."
+    if sentiment == "positive":
+        return f"Route to the {team} insights queue for advocacy analysis."
+    return f"Add to the {team} monitoring queue."
+
+
+def _enrich_predictions(
+    predictions: list[dict[str, Any]],
+    evaluation: list[dict[str, Any]],
+) -> list[dict[str, Any]]:
+    """Join detailed model probabilities without expanding predictions.csv."""
+
+    details = {(row["ID"], row["task"]): row for row in evaluation}
+    enriched: list[dict[str, Any]] = []
+    for prediction in predictions:
+        sentiment = details[(prediction["ID"], "sentiment")]
+        topic = details[(prediction["ID"], "topic")]
+        enriched.append(
+            {
+                **prediction,
+                "sentiment": prediction["predicted_sentiment"],
+                "topic": prediction["predicted_topic"],
+                "sentiment_confidence": sentiment["confidence"],
+                "topic_confidence": topic["confidence"],
+                "sentiment_correct": sentiment["correct"],
+                "topic_correct": topic["correct"],
+                "suggested_action": _suggested_action(
+                    prediction["predicted_sentiment"],
+                    prediction["predicted_topic"],
+                ),
+            }
+        )
+    return enriched
 
 
 def discover_runs(output_root: str | Path) -> list[Path]:
@@ -72,22 +104,20 @@ def load_run(path: str | Path) -> RunBundle:
     required = {
         "run_manifest.json",
         "results.json",
-        "inference_predictions.csv",
+        "predictions.csv",
         "evaluation_predictions.csv",
     }
     missing = sorted(name for name in required if not (run_path / name).is_file())
     if missing:
         raise FileNotFoundError(f"Run {run_path} is missing: {', '.join(missing)}")
+    evaluation = _read_evaluation_predictions(run_path / "evaluation_predictions.csv")
+    predictions = _read_predictions(run_path / "predictions.csv")
     return RunBundle(
         path=run_path,
         manifest=_read_json(run_path / "run_manifest.json"),
         results=_read_json(run_path / "results.json"),
-        inference_predictions=_read_inference_predictions(
-            run_path / "inference_predictions.csv"
-        ),
-        evaluation_predictions=_read_evaluation_predictions(
-            run_path / "evaluation_predictions.csv"
-        ),
+        inference_predictions=_enrich_predictions(predictions, evaluation),
+        evaluation_predictions=evaluation,
     )
 
 

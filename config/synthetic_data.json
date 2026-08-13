@@ -1,11 +1,12 @@
 {
   "agent_name": "synthetic-review-generator",
-  "agent_version": "1.0.0",
+  "agent_version": "2.0.0",
   "language": "en",
   "seed": 42,
-  "sentiment_samples_per_label": 64,
-  "topic_samples_per_label": 32,
-  "reviews_per_sentiment_topic_pair": 4,
+  "initial_train_rows": 500,
+  "initial_test_rows": 500,
+  "append_train_rows": 100,
+  "append_test_rows": 100,
   "synthetic_only": true,
   "allow_personal_data": false
 }

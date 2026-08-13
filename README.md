@@ -2,7 +2,25 @@
 
 Pipeline mínimo e reproduzível para classificar avaliações de produtos em quatro tópicos: `smartphone`, `televisao`, `refrigerador` e `maquina_de_lavar`.
 
-![Arquitetura da solução](docs/assets/solution_architecture.svg)
+## Design da solução
+
+```mermaid
+flowchart LR
+    A["Avaliações de produtos"] --> B["Limpeza e tokenização"]
+    B --> C{"Objetivo"}
+
+    C --> D["Análise de sentimentos"]
+    D --> E["Vetorização e padding"]
+    E --> F["Embedding + LSTM"]
+    F --> G["Positivo, neutro ou negativo"]
+
+    C --> H["Classificação de tópicos"]
+    H --> I["Vetores linguísticos spaCy"]
+    I --> J["KNN por categoria de produto"]
+    J --> K["Tópico previsto"]
+
+    H -. exploração .-> L["K-Means"]
+```
 
 ## Como funciona
 
@@ -19,7 +37,6 @@ Toda a lógica está em arquivos `.py`; o notebook apenas configura, executa e a
 ```text
 .github/workflows/pipeline.yml     execução automática no GitHub Actions
 data/topic_samples.csv             dados sintéticos, balanceados e sem PII
-docs/assets/solution_architecture.svg
 notebooks/topic_classification_pipeline.ipynb
 src/topic_classifier/              funções do pipeline
 ```

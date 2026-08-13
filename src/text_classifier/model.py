@@ -42,7 +42,7 @@ def build_lstm_model(
     embedding_dim: int,
     lstm_units: int,
 ) -> tf.keras.Model:
-    """Build and compile the network used to classify topics."""
+    """Build and compile a multiclass LSTM network."""
 
     inputs = tf.keras.Input(shape=(), dtype=tf.string, name="text")
     tokens = vectorizer(inputs)
@@ -54,9 +54,9 @@ def build_lstm_model(
     )(tokens)
     encoded = tf.keras.layers.LSTM(lstm_units, name="lstm")(embedding)
     hidden = tf.keras.layers.Dense(32, activation="relu", name="dense")(encoded)
-    outputs = tf.keras.layers.Dense(class_count, activation="softmax", name="topic")(hidden)
+    outputs = tf.keras.layers.Dense(class_count, activation="softmax", name="class")(hidden)
 
-    model = tf.keras.Model(inputs=inputs, outputs=outputs, name="topic_classifier")
+    model = tf.keras.Model(inputs=inputs, outputs=outputs, name="text_classifier")
     model.compile(
         optimizer="adam",
         loss="sparse_categorical_crossentropy",

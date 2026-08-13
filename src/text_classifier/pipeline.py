@@ -1,4 +1,4 @@
-"""End-to-end topic-classification pipeline orchestration."""
+"""End-to-end LSTM text-classification pipeline orchestration."""
 
 from __future__ import annotations
 
@@ -63,13 +63,13 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
         seed=config.seed,
     )
 
-    labels = sorted({topic for _, topic in records})
+    labels = sorted({label for _, label in records})
     label_to_index = {label: index for index, label in enumerate(labels)}
 
     train_texts = [text for text, _ in train_records]
-    train_labels = [label_to_index[topic] for _, topic in train_records]
+    train_labels = [label_to_index[label] for _, label in train_records]
     test_texts = [text for text, _ in test_records]
-    test_labels = [label_to_index[topic] for _, topic in test_records]
+    test_labels = [label_to_index[label] for _, label in test_records]
 
     vectorizer = build_vectorizer(
         train_texts,

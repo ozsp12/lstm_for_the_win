@@ -43,12 +43,12 @@ jobs:
             --execute \
             --to notebook \
             --ExecutePreprocessor.timeout=600 \
-            --output topic_classification_pipeline.executed.ipynb \
+            --output text_classification_pipeline.executed.ipynb \
             --output-dir artifacts \
-            notebooks/topic_classification_pipeline.ipynb
+            notebooks/text_classification_pipeline.ipynb
 
       - name: Upload executed notebook
         uses: actions/upload-artifact@v4
         with:
           name: executed-notebook
-          path: artifacts/topic_classification_pipeline.executed.ipynb
+          path: artifacts/text_classification_pipeline.executed.ipynb

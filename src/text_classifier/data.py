@@ -28,7 +28,7 @@ def clean_text(text: str) -> str:
 
 
 def load_dataset(path: str | Path) -> list[Record]:
-    """Load a CSV file with the required ``text`` and ``topic`` columns."""
+    """Load a CSV file with the required ``text`` and ``label`` columns."""
 
     dataset_path = Path(path)
     if not dataset_path.is_file():
@@ -37,15 +37,15 @@ def load_dataset(path: str | Path) -> list[Record]:
     records: list[Record] = []
     with dataset_path.open("r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
-        if reader.fieldnames is None or not {"text", "topic"}.issubset(reader.fieldnames):
-            raise ValueError("The dataset must contain the 'text' and 'topic' columns.")
+        if reader.fieldnames is None or not {"text", "label"}.issubset(reader.fieldnames):
+            raise ValueError("The dataset must contain the 'text' and 'label' columns.")
 
         for row_number, row in enumerate(reader, start=2):
             text = clean_text(row["text"])
-            topic = row["topic"].strip()
-            if not text or not topic:
-                raise ValueError(f"Row {row_number} contains an empty text or topic value.")
-            records.append((text, topic))
+            label = row["label"].strip()
+            if not text or not label:
+                raise ValueError(f"Row {row_number} contains an empty text or label value.")
+            records.append((text, label))
 
     validate_records(records)
     return records
@@ -56,16 +56,16 @@ def validate_records(records: Iterable[Record]) -> None:
 
     counts: dict[str, int] = defaultdict(int)
     total = 0
-    for _, topic in records:
-        counts[topic] += 1
+    for _, label in records:
+        counts[label] += 1
         total += 1
 
     if total == 0:
         raise ValueError("The dataset is empty.")
     if len(counts) < 2:
-        raise ValueError("At least two topics are required.")
+        raise ValueError("At least two labels are required.")
     if min(counts.values()) < 5:
-        raise ValueError("Each topic requires at least five examples.")
+        raise ValueError("Each label requires at least five examples.")
 
 
 def stratified_split(
@@ -73,7 +73,7 @@ def stratified_split(
     test_fraction: float = 0.20,
     seed: int = 42,
 ) -> tuple[list[Record], list[Record]]:
-    """Split records while preserving every topic in train and test sets."""
+    """Split records while preserving every label in train and test sets."""
 
     if not 0.0 < test_fraction < 1.0:
         raise ValueError("test_fraction must be between zero and one.")
@@ -86,12 +86,12 @@ def stratified_split(
     train_records: list[Record] = []
     test_records: list[Record] = []
 
-    for topic in sorted(grouped):
-        topic_records = grouped[topic][:]
-        random_generator.shuffle(topic_records)
-        test_size = max(1, round(len(topic_records) * test_fraction))
-        test_records.extend(topic_records[:test_size])
-        train_records.extend(topic_records[test_size:])
+    for label in sorted(grouped):
+        label_records = grouped[label][:]
+        random_generator.shuffle(label_records)
+        test_size = max(1, round(len(label_records) * test_fraction))
+        test_records.extend(label_records[:test_size])
+        train_records.extend(label_records[test_size:])
 
     random_generator.shuffle(train_records)
     random_generator.shuffle(test_records)

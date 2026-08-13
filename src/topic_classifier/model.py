@@ -1,4 +1,4 @@
-"""Construção, treino e avaliação do modelo LSTM."""
+"""LSTM model construction, training, and evaluation."""
 
 from __future__ import annotations
 
@@ -13,7 +13,7 @@ import tensorflow as tf
 
 
 def set_global_seed(seed: int) -> None:
-    """Configura as fontes de aleatoriedade usadas pelo pipeline."""
+    """Configure every random source used by the pipeline."""
 
     random.seed(seed)
     np.random.seed(seed)
@@ -25,7 +25,7 @@ def build_vectorizer(
     max_tokens: int,
     sequence_length: int,
 ) -> tf.keras.layers.TextVectorization:
-    """Cria e adapta a camada de vetorização somente nos dados de treino."""
+    """Create and adapt the vectorization layer using training data only."""
 
     vectorizer = tf.keras.layers.TextVectorization(
         max_tokens=max_tokens,
@@ -42,7 +42,7 @@ def build_lstm_model(
     embedding_dim: int,
     lstm_units: int,
 ) -> tf.keras.Model:
-    """Monta e compila a rede usada para classificar os tópicos."""
+    """Build and compile the network used to classify topics."""
 
     inputs = tf.keras.Input(shape=(), dtype=tf.string, name="text")
     tokens = vectorizer(inputs)
@@ -73,7 +73,7 @@ def train_model(
     batch_size: int,
     verbose: int = 0,
 ) -> dict[str, list[float]]:
-    """Treina o modelo e devolve um histórico serializável."""
+    """Train the model and return a serializable history."""
 
     history = model.fit(
         tf.constant(list(train_texts), dtype=tf.string),
@@ -91,7 +91,7 @@ def evaluate_model(
     test_texts: Sequence[str],
     test_labels: Sequence[int],
 ) -> dict[str, float]:
-    """Calcula perda e acurácia no conjunto de teste."""
+    """Calculate loss and accuracy on the test set."""
 
     loss, accuracy = model.evaluate(
         tf.constant(list(test_texts), dtype=tf.string),
@@ -102,7 +102,7 @@ def evaluate_model(
 
 
 def predict_classes(model: tf.keras.Model, texts: Sequence[str]) -> np.ndarray:
-    """Retorna o índice da classe mais provável para cada texto."""
+    """Return the most likely class index for each text."""
 
     probabilities = model.predict(
         tf.constant(list(texts), dtype=tf.string),
@@ -116,7 +116,7 @@ def build_confusion_matrix(
     predicted: Sequence[int],
     class_count: int,
 ) -> list[list[int]]:
-    """Constrói uma matriz de confusão sem dependência do scikit-learn."""
+    """Build a confusion matrix without a scikit-learn dependency."""
 
     matrix = [[0 for _ in range(class_count)] for _ in range(class_count)]
     for expected_class, predicted_class in zip(expected, predicted, strict=True):

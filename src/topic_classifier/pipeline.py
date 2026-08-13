@@ -1,4 +1,4 @@
-"""Orquestração do pipeline completo de classificação de tópicos."""
+"""End-to-end topic-classification pipeline orchestration."""
 
 from __future__ import annotations
 
@@ -20,7 +20,7 @@ from .model import (
 
 @dataclass(frozen=True)
 class PipelineConfig:
-    """Parâmetros reproduzíveis do pipeline."""
+    """Reproducible pipeline parameters."""
 
     dataset_path: str | Path
     test_fraction: float = 0.20
@@ -28,14 +28,14 @@ class PipelineConfig:
     sequence_length: int = 24
     embedding_dim: int = 24
     lstm_units: int = 24
-    epochs: int = 10
+    epochs: int = 20
     batch_size: int = 16
     seed: int = 42
 
 
 @dataclass(frozen=True)
 class PipelineResult:
-    """Resultados necessários para leitura humana e validação automática."""
+    """Results required for human review and automated validation."""
 
     dataset_size: int
     train_size: int
@@ -47,13 +47,13 @@ class PipelineResult:
     predictions: list[dict[str, str]]
 
     def to_dict(self) -> dict[str, Any]:
-        """Converte o resultado em um dicionário serializável."""
+        """Convert the result to a serializable dictionary."""
 
         return asdict(self)
 
 
 def run_pipeline(config: PipelineConfig) -> PipelineResult:
-    """Executa leitura, divisão, treino, avaliação e predição."""
+    """Run data loading, splitting, training, evaluation, and prediction."""
 
     set_global_seed(config.seed)
     records = load_dataset(config.dataset_path)

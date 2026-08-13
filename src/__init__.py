@@ -1,1 +1,1 @@
-"""Código-fonte do projeto."""
+"""Project source code."""

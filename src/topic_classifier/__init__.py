@@ -1,4 +1,4 @@
-"""Pipeline LSTM para classificação de tópicos."""
+"""LSTM pipeline for topic classification."""
 
 from .pipeline import PipelineConfig, PipelineResult, run_pipeline
 

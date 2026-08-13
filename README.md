@@ -1,49 +1,49 @@
-# LSTM para classificação de tópicos
+# LSTM for Topic Classification
 
-Pipeline mínimo e reproduzível para classificar avaliações de produtos em quatro tópicos: `smartphone`, `televisao`, `refrigerador` e `maquina_de_lavar`.
+A minimal, reproducible pipeline for classifying product reviews into four topics: `smartphone`, `television`, `refrigerator`, and `washing_machine`.
 
-## Design da solução
+## Solution design
 
 ```mermaid
 flowchart LR
-    A["Avaliações de produtos"] --> B["Limpeza e tokenização"]
-    B --> C{"Objetivo"}
+    A["Product reviews"] --> B["Cleaning and tokenization"]
+    B --> C{"Objective"}
 
-    C --> D["Análise de sentimentos"]
-    D --> E["Vetorização e padding"]
+    C --> D["Sentiment analysis"]
+    D --> E["Vectorization and padding"]
     E --> F["Embedding + LSTM"]
-    F --> G["Positivo, neutro ou negativo"]
+    F --> G["Positive, neutral, or negative"]
 
-    C --> H["Classificação de tópicos"]
-    H --> I["Vetores linguísticos spaCy"]
-    I --> J["KNN por categoria de produto"]
-    J --> K["Tópico previsto"]
+    C --> H["Topic classification"]
+    H --> I["spaCy language vectors"]
+    I --> J["KNN by product category"]
+    J --> K["Predicted topic"]
 
-    H -. exploração .-> L["K-Means"]
+    H -. exploration .-> L["K-Means"]
 ```
 
-## Como funciona
+## How it works
 
-1. Carrega e valida avaliações rotuladas em CSV.
-2. Normaliza os textos e cria uma divisão estratificada de treino e teste.
-3. Aprende o vocabulário com `TextVectorization`.
-4. Treina uma rede `Embedding -> LSTM -> Dense -> Softmax`.
-5. Avalia a acurácia e produz previsões de exemplo.
+1. Loads and validates labeled reviews from a CSV file.
+2. Normalizes the text and creates a stratified train/test split.
+3. Learns the vocabulary with `TextVectorization`.
+4. Trains an `Embedding -> LSTM -> Dense -> Softmax` network.
+5. Evaluates accuracy and produces sample predictions.
 
-Toda a lógica está em arquivos `.py`; o notebook apenas configura, executa e apresenta o resultado.
+All reusable logic lives in `.py` files; the notebook only configures, runs, and presents the result.
 
-## Estrutura
+## Project structure
 
 ```text
-.github/workflows/pipeline.yml     execução automática no GitHub Actions
-data/topic_samples.csv             dados sintéticos, balanceados e sem PII
+.github/workflows/pipeline.yml     automated GitHub Actions execution
+data/topic_samples.csv             synthetic, balanced, PII-free data
 notebooks/topic_classification_pipeline.ipynb
-src/topic_classifier/              funções do pipeline
+src/topic_classifier/              pipeline functions
 ```
 
-## Executar localmente
+## Run locally
 
-Requer Python 3.12.
+Requires Python 3.12.
 
 ```bash
 python -m venv .venv
@@ -52,15 +52,15 @@ python -m pip install -r requirements.txt
 python -m jupyter nbconvert --execute --to notebook --inplace notebooks/topic_classification_pipeline.ipynb
 ```
 
-O notebook executado mantém as métricas e previsões em suas células de saída.
+The executed notebook retains metrics and predictions in its output cells.
 
 ## GitHub Actions
 
-O workflow `pipeline.yml` executa em cada `push`, pull request ou acionamento manual. Ele:
+The `pipeline.yml` workflow runs on every push, pull request, or manual dispatch. It:
 
-- instala o ambiente;
-- valida a sintaxe dos módulos;
-- executa o notebook do início ao fim;
-- publica o notebook executado como artefato da execução.
+- installs the environment;
+- validates Python module syntax;
+- executes the notebook from start to finish;
+- uploads the executed notebook as a workflow artifact.
 
-O conjunto incluído é demonstrativo e sintético. Para uso real, substitua `data/topic_samples.csv` por dados rotulados e sem informações pessoais, mantendo as colunas `text` e `topic`.
+The included dataset is synthetic and intended for demonstration. For real use, replace `data/topic_samples.csv` with labeled, PII-free data while preserving the `text` and `topic` columns.

@@ -1,81 +1,81 @@
 text,topic
-o celular trava ao abrir aplicativos,smartphone
-a bateria do telefone descarrega rapido,smartphone
-a tela do smartphone quebrou com facilidade,smartphone
-o aparelho nao reconhece o chip,smartphone
-a camera do celular tira fotos desfocadas,smartphone
-o telefone aquece durante o carregamento,smartphone
-nao consigo instalar aplicativos no celular,smartphone
-o smartphone perde o sinal da operadora,smartphone
-o touch da tela parou de responder,smartphone
-o carregador do celular nao funciona,smartphone
-o aparelho reinicia sozinho,smartphone
-ha pouco espaco de armazenamento no telefone,smartphone
-o audio das chamadas fica baixo,smartphone
-a camera frontal apresenta manchas,smartphone
-o celular nao conecta ao wifi,smartphone
-a bateria estufou depois de alguns meses,smartphone
-o telefone demora para ligar,smartphone
-o gps do smartphone perde a localizacao,smartphone
-o microfone do celular falha nas chamadas,smartphone
-a tela do telefone apaga durante o uso,smartphone
-a televisao esta sem imagem mas tem som,televisao
-a tv nao conecta aos aplicativos de streaming,televisao
-o controle remoto parou de funcionar,televisao
-a imagem da televisao fica piscando,televisao
-o som da tv apresenta chiado,televisao
-o televisor nao encontra canais digitais,televisao
-a tela da tv possui linhas verticais,televisao
-a tv desliga sozinha depois de alguns minutos,televisao
-a entrada hdmi nao reconhece o console,televisao
-o aplicativo da smart tv fecha sozinho,televisao
-o controle da televisao responde com atraso,televisao
-a imagem fica escura mesmo com brilho maximo,televisao
-o televisor nao conecta ao wifi,televisao
-o som fica atrasado em relacao a imagem,televisao
-a tv travou na tela inicial,televisao
-nao consigo atualizar o sistema da televisao,televisao
-a tela do televisor possui manchas,televisao
-a tv perde a configuracao dos canais,televisao
-o alto falante da televisao esta distorcendo,televisao
-a imagem corta nas bordas da tela,televisao
-a geladeira nao esta refrigerando os alimentos,refrigerador
-o freezer esta acumulando muito gelo,refrigerador
-a porta da geladeira nao fecha corretamente,refrigerador
-o refrigerador faz barulho durante a noite,refrigerador
-ha agua vazando embaixo da geladeira,refrigerador
-o motor do refrigerador liga sem parar,refrigerador
-o freezer deixou de congelar,refrigerador
-a borracha da porta esta soltando,refrigerador
-a geladeira forma gelo na parede interna,refrigerador
-o painel do refrigerador nao responde,refrigerador
-a temperatura da geladeira varia muito,refrigerador
-a prateleira do refrigerador quebrou,refrigerador
-a luz interna da geladeira nao acende,refrigerador
-o refrigerador esquenta nas laterais,refrigerador
-o dispenser de agua parou de funcionar,refrigerador
-a porta do freezer ficou desalinhada,refrigerador
-a geladeira apresenta cheiro forte,refrigerador
-o compressor do refrigerador apresenta ruido,refrigerador
-os alimentos congelam na parte inferior,refrigerador
-o refrigerador demora para atingir a temperatura,refrigerador
-a maquina de lavar nao completa a centrifugacao,maquina_de_lavar
-a lavadora nao enche de agua,maquina_de_lavar
-as roupas saem sujas depois da lavagem,maquina_de_lavar
-a maquina faz barulho ao centrifugar,maquina_de_lavar
-a agua vaza pela porta da lavadora,maquina_de_lavar
-o tambor da maquina nao gira,maquina_de_lavar
-a lavadora nao libera o amaciante,maquina_de_lavar
-o painel da maquina de lavar nao liga,maquina_de_lavar
-o ciclo de lavagem demora muito,maquina_de_lavar
-a maquina nao drena a agua,maquina_de_lavar
-a lavadora treme durante a centrifugacao,maquina_de_lavar
-a porta da maquina ficou travada,maquina_de_lavar
-as roupas saem com manchas de sabao,maquina_de_lavar
-a maquina de lavar para no meio do ciclo,maquina_de_lavar
-o filtro da lavadora entope com facilidade,maquina_de_lavar
-a lavadora apresenta erro no painel,maquina_de_lavar
-o motor da maquina perde forca,maquina_de_lavar
-a maquina nao mistura o sabao,maquina_de_lavar
-o cesto da lavadora ficou solto,maquina_de_lavar
-a lavadora nao reconhece o nivel de agua,maquina_de_lavar
+the smartphone freezes when opening apps,smartphone
+the phone battery drains very quickly,smartphone
+the smartphone screen turns off during use,smartphone
+the touchscreen does not respond to commands,smartphone
+the phone camera takes blurry pictures,smartphone
+the smartphone gets very hot while charging,smartphone
+i cannot install apps on the phone,smartphone
+the smartphone speaker sounds distorted,smartphone
+the phone loses the mobile network signal,smartphone
+the phone charger does not work,smartphone
+the smartphone restarts without warning,smartphone
+the fingerprint reader stopped recognizing me,smartphone
+the phone has no sound during calls,smartphone
+the smartphone storage fills up too quickly,smartphone
+the phone does not connect to wifi,smartphone
+the smartphone screen cracked too easily,smartphone
+the phone buttons are stuck,smartphone
+the smartphone operating system is very slow,smartphone
+the phone microphone fails during calls,smartphone
+the smartphone does not recognize the sim card,smartphone
+the television has sound but no picture,television
+the tv does not connect to streaming apps,television
+the television remote control stopped working,television
+the television picture keeps flickering,television
+the tv speakers produce static noise,television
+the television cannot find digital channels,television
+the tv screen has vertical lines,television
+the television turns off after a few minutes,television
+the hdmi input does not recognize the console,television
+the smart tv app closes by itself,television
+the television remote responds slowly,television
+the picture stays dark at maximum brightness,television
+the television does not connect to wifi,television
+the tv sound is delayed behind the picture,television
+the television freezes on the home screen,television
+i cannot update the television software,television
+the tv screen has dark spots,television
+the television loses its channel settings,television
+the tv speaker produces distorted sound,television
+the television picture is cropped at the edges,television
+the refrigerator is not keeping food cold,refrigerator
+the freezer is accumulating too much ice,refrigerator
+the refrigerator door does not close properly,refrigerator
+the refrigerator makes noise during the night,refrigerator
+water is leaking underneath the refrigerator,refrigerator
+the refrigerator motor runs without stopping,refrigerator
+the freezer no longer freezes food,refrigerator
+the refrigerator door seal is coming loose,refrigerator
+ice forms on the refrigerator interior wall,refrigerator
+the refrigerator control panel does not respond,refrigerator
+the refrigerator temperature changes too much,refrigerator
+the refrigerator shelf is broken,refrigerator
+the refrigerator interior light does not turn on,refrigerator
+the refrigerator sides become very hot,refrigerator
+the refrigerator water dispenser stopped working,refrigerator
+the freezer door is misaligned,refrigerator
+the refrigerator has a strong odor,refrigerator
+the refrigerator compressor makes a loud noise,refrigerator
+food freezes in the lower refrigerator compartment,refrigerator
+the refrigerator takes too long to reach temperature,refrigerator
+the washing machine does not complete the spin cycle,washing_machine
+the washer does not fill with water,washing_machine
+clothes remain dirty after the wash cycle,washing_machine
+the washing machine makes noise while spinning,washing_machine
+water leaks through the washer door,washing_machine
+the washing machine drum does not rotate,washing_machine
+the washer does not release fabric softener,washing_machine
+the washing machine control panel does not turn on,washing_machine
+the wash cycle takes too long,washing_machine
+the washing machine does not drain the water,washing_machine
+the washer shakes during the spin cycle,washing_machine
+the washing machine door is locked,washing_machine
+clothes have detergent stains after washing,washing_machine
+the washing machine stops in the middle of the cycle,washing_machine
+the washer filter clogs too easily,washing_machine
+the washing machine shows an error on the panel,washing_machine
+the washer motor loses power,washing_machine
+the washing machine does not mix the detergent,washing_machine
+the washer drum has become loose,washing_machine
+the washing machine does not detect the water level,washing_machine

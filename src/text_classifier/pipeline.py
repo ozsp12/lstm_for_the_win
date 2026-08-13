@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections import Counter
 from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
@@ -12,7 +13,7 @@ from .model import (
     build_lstm_model,
     build_vectorizer,
     evaluate_model,
-    predict_classes,
+    predict_probabilities,
     set_global_seed,
     train_model,
 )
@@ -31,6 +32,7 @@ class PipelineConfig:
     epochs: int = 20
     batch_size: int = 16
     seed: int = 42
+    demo_texts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -41,10 +43,12 @@ class PipelineResult:
     train_size: int
     test_size: int
     labels: list[str]
+    label_counts: dict[str, int]
     metrics: dict[str, float]
     history: dict[str, list[float]]
     confusion_matrix: list[list[int]]
-    predictions: list[dict[str, str]]
+    predictions: list[dict[str, Any]]
+    demo_predictions: list[dict[str, Any]]
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the result to a serializable dictionary."""
@@ -90,27 +94,49 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
         batch_size=config.batch_size,
     )
     metrics = evaluate_model(model, test_texts, test_labels)
-    predicted_indices = predict_classes(model, test_texts)
+    test_probabilities = predict_probabilities(model, test_texts)
+    predicted_indices = test_probabilities.argmax(axis=1)
 
     predictions = [
         {
             "text": text,
             "expected": labels[expected],
             "predicted": labels[int(predicted)],
+            "confidence": float(test_probabilities[index][int(predicted)]),
+            "correct": bool(expected == int(predicted)),
         }
-        for text, expected, predicted in zip(
-            test_texts,
-            test_labels,
-            predicted_indices,
-            strict=True,
+        for index, (text, expected, predicted) in enumerate(
+            zip(test_texts, test_labels, predicted_indices, strict=True)
         )
     ]
+
+    demo_predictions: list[dict[str, Any]] = []
+    if config.demo_texts:
+        demo_probabilities = predict_probabilities(model, config.demo_texts)
+        for text, probabilities in zip(
+            config.demo_texts,
+            demo_probabilities,
+            strict=True,
+        ):
+            predicted_index = int(probabilities.argmax())
+            demo_predictions.append(
+                {
+                    "text": text,
+                    "predicted": labels[predicted_index],
+                    "confidence": float(probabilities[predicted_index]),
+                    "probabilities": {
+                        label: float(probabilities[index])
+                        for index, label in enumerate(labels)
+                    },
+                }
+            )
 
     return PipelineResult(
         dataset_size=len(records),
         train_size=len(train_records),
         test_size=len(test_records),
         labels=labels,
+        label_counts=dict(sorted(Counter(label for _, label in records).items())),
         metrics=metrics,
         history=history,
         confusion_matrix=build_confusion_matrix(
@@ -119,4 +145,5 @@ def run_pipeline(config: PipelineConfig) -> PipelineResult:
             class_count=len(labels),
         ),
         predictions=predictions,
+        demo_predictions=demo_predictions,
     )

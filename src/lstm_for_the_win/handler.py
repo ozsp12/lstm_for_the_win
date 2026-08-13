@@ -22,6 +22,15 @@ from .classification import PipelineConfig, PipelineExecution, execute_pipeline
 
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
+REVIEW_COLUMNS = {
+    "ID",
+    "text",
+    "expected_sentiment",
+    "expected_topic",
+    "type",
+    "input_timestamp",
+}
+SAMPLE_COLUMNS = {"ID", "text", "label", "type", "input_timestamp"}
 
 
 def _utc_now() -> datetime:
@@ -30,6 +39,10 @@ def _utc_now() -> datetime:
 
 def _default_run_id() -> str:
     return _utc_now().strftime("%Y%m%dT%H%M%SZ")
+
+
+def _default_timestamp() -> str:
+    return _utc_now().isoformat()
 
 
 def _sha256(path: Path) -> str:
@@ -59,6 +72,45 @@ def _suggested_action(sentiment: str, topic: str) -> str:
     return f"Add to the {team} monitoring queue."
 
 
+def _validate_input_alignment(
+    review_rows: list[dict[str, str]],
+    sentiment_rows: list[dict[str, str]],
+    topic_rows: list[dict[str, str]],
+) -> None:
+    """Guarantee that all three inputs are projections of the same review IDs."""
+
+    if not review_rows or not REVIEW_COLUMNS.issubset(review_rows[0]):
+        raise ValueError(f"reviews.csv must contain: {', '.join(sorted(REVIEW_COLUMNS))}.")
+    for name, rows in (
+        ("sentiment_samples.csv", sentiment_rows),
+        ("topic_samples.csv", topic_rows),
+    ):
+        if not rows or not SAMPLE_COLUMNS.issubset(rows[0]):
+            raise ValueError(f"{name} must contain: {', '.join(sorted(SAMPLE_COLUMNS))}.")
+        if len(rows) != len(review_rows):
+            raise ValueError(f"{name} must contain the same IDs as reviews.csv.")
+
+    ids = [int(row["ID"]) for row in review_rows]
+    if ids != sorted(ids) or len(ids) != len(set(ids)):
+        raise ValueError("Review IDs must be unique and monotonically increasing.")
+
+    for review, sentiment, topic in zip(
+        review_rows,
+        sentiment_rows,
+        topic_rows,
+        strict=True,
+    ):
+        shared = ("ID", "text", "type", "input_timestamp")
+        if any(review[field] != sentiment[field] for field in shared):
+            raise ValueError("Sentiment input is not aligned with reviews.csv.")
+        if any(review[field] != topic[field] for field in shared):
+            raise ValueError("Topic input is not aligned with reviews.csv.")
+        if review["expected_sentiment"] != sentiment["label"]:
+            raise ValueError("Sentiment labels are not aligned with reviews.csv.")
+        if review["expected_topic"] != topic["label"]:
+            raise ValueError("Topic labels are not aligned with reviews.csv.")
+
+
 class PipelineHandler:
     """Single application boundary for all controlled pipeline operations."""
 
@@ -67,12 +119,22 @@ class PipelineHandler:
         config_path: str | Path,
         input_dir: str | Path,
         *,
+        mode: str = "append",
+        input_timestamp: str | None = None,
         overwrite: bool = False,
     ) -> Path:
-        """Run the configured synthetic-data agent."""
+        """Initialize or append versioned synthetic input through the local agent."""
 
         config = SyntheticDataConfig.from_json(config_path)
-        return SyntheticDataAgent(config).write(input_dir, overwrite=overwrite)
+        agent = SyntheticDataAgent(config)
+        timestamp = input_timestamp or _default_timestamp()
+        if mode == "initialize":
+            return agent.initialize(input_dir, timestamp, overwrite=overwrite)
+        if mode == "append":
+            if overwrite:
+                raise ValueError("overwrite is valid only when mode=initialize.")
+            return agent.append(input_dir, timestamp)
+        raise ValueError("mode must be initialize or append.")
 
     def train_and_publish(
         self,
@@ -102,16 +164,14 @@ class PipelineHandler:
         topic_path = input_path / "topic_samples.csv"
         reviews_path = input_path / "reviews.csv"
         review_rows = _read_csv(reviews_path)
-        required_review_columns = {"text", "expected_sentiment", "expected_topic"}
-        if not review_rows or not required_review_columns.issubset(review_rows[0]):
-            raise ValueError(
-                "reviews.csv must contain text, expected_sentiment, and expected_topic."
-            )
-        demo_texts = tuple(row["text"] for row in review_rows)
+        sentiment_rows = _read_csv(sentiment_path)
+        topic_rows = _read_csv(topic_path)
+        _validate_input_alignment(review_rows, sentiment_rows, topic_rows)
 
         temporary_path = Path(
             tempfile.mkdtemp(prefix=f".{resolved_run_id}-", dir=output_path)
         )
+        model_timestamp = _default_timestamp()
         try:
             models_path = temporary_path / "models"
             models_path.mkdir()
@@ -120,7 +180,6 @@ class PipelineHandler:
                     dataset_path=sentiment_path,
                     epochs=epochs,
                     seed=seed,
-                    demo_texts=demo_texts,
                 )
             )
             topic = execute_pipeline(
@@ -128,7 +187,6 @@ class PipelineHandler:
                     dataset_path=topic_path,
                     epochs=epochs,
                     seed=seed,
-                    demo_texts=demo_texts,
                 )
             )
 
@@ -143,21 +201,30 @@ class PipelineHandler:
                 json.dumps(results, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
-            self._write_evaluation_predictions(temporary_path, sentiment, topic)
-            self._write_inference_predictions(
+            self._write_evaluation_predictions(
+                temporary_path,
+                sentiment,
+                topic,
+                model_timestamp,
+            )
+            self._write_predictions(
                 temporary_path,
                 review_rows,
                 sentiment,
                 topic,
+                model_timestamp,
             )
 
-            created_at = _utc_now().isoformat()
+            created_at = _default_timestamp()
             input_files = (sentiment_path, topic_path, reviews_path)
+            input_timestamps = sorted({row["input_timestamp"] for row in review_rows})
             manifest = {
                 "run_id": resolved_run_id,
                 "created_at": created_at,
+                "model_timestamp": model_timestamp,
+                "input_timestamps": input_timestamps,
                 "status": "complete",
-                "pipeline_version": "0.3.0",
+                "pipeline_version": "0.4.0",
                 "git_sha": os.getenv("GITHUB_SHA", "local"),
                 "python_version": platform.python_version(),
                 "tensorflow_version": tf.__version__,
@@ -168,8 +235,8 @@ class PipelineHandler:
                 },
                 "outputs": {
                     "results": "results.json",
+                    "predictions": "predictions.csv",
                     "evaluation_predictions": "evaluation_predictions.csv",
-                    "inference_predictions": "inference_predictions.csv",
                     "sentiment_model": "models/sentiment.keras",
                     "topic_model": "models/topic.keras",
                 },
@@ -194,66 +261,79 @@ class PipelineHandler:
         destination: Path,
         sentiment: PipelineExecution,
         topic: PipelineExecution,
+        model_timestamp: str,
     ) -> None:
         rows: list[dict[str, Any]] = []
         for task, execution in (("sentiment", sentiment), ("topic", topic)):
             rows.extend(
-                {"task": task, **prediction}
+                {"task": task, **prediction, "model_timestamp": model_timestamp}
                 for prediction in execution.result.predictions
             )
         _write_csv(
             destination / "evaluation_predictions.csv",
             rows,
-            ("task", "text", "expected", "predicted", "confidence", "correct"),
+            (
+                "ID",
+                "task",
+                "text",
+                "expected",
+                "predicted",
+                "confidence",
+                "correct",
+                "type",
+                "input_timestamp",
+                "model_timestamp",
+            ),
         )
 
     @staticmethod
-    def _write_inference_predictions(
+    def _write_predictions(
         destination: Path,
         review_rows: list[dict[str, str]],
         sentiment: PipelineExecution,
         topic: PipelineExecution,
+        model_timestamp: str,
     ) -> None:
-        rows: list[dict[str, Any]] = []
-        for source, sentiment_prediction, topic_prediction in zip(
-            review_rows,
-            sentiment.result.demo_predictions,
-            topic.result.demo_predictions,
-            strict=True,
-        ):
-            predicted_sentiment = str(sentiment_prediction["predicted"])
-            predicted_topic = str(topic_prediction["predicted"])
-            rows.append(
-                {
-                    "text": source["text"],
-                    "expected_sentiment": source["expected_sentiment"],
-                    "sentiment": predicted_sentiment,
-                    "sentiment_confidence": sentiment_prediction["confidence"],
-                    "sentiment_correct": predicted_sentiment == source["expected_sentiment"],
-                    "expected_topic": source["expected_topic"],
-                    "topic": predicted_topic,
-                    "topic_confidence": topic_prediction["confidence"],
-                    "topic_correct": predicted_topic == source["expected_topic"],
-                    "suggested_action": _suggested_action(
-                        predicted_sentiment,
-                        predicted_topic,
-                    ),
-                }
-            )
+        sentiment_by_id = {
+            str(prediction["ID"]): prediction
+            for prediction in sentiment.result.predictions
+        }
+        topic_by_id = {
+            str(prediction["ID"]): prediction
+            for prediction in topic.result.predictions
+        }
+        test_rows = [row for row in review_rows if row["type"] == "test"]
+        expected_ids = {row["ID"] for row in test_rows}
+        if set(sentiment_by_id) != expected_ids or set(topic_by_id) != expected_ids:
+            raise ValueError("Model predictions do not cover every versioned test ID.")
+
+        rows = [
+            {
+                "ID": source["ID"],
+                "text": source["text"],
+                "expected_sentiment": source["expected_sentiment"],
+                "expected_topic": source["expected_topic"],
+                "predicted_sentiment": sentiment_by_id[source["ID"]]["predicted"],
+                "predicted_topic": topic_by_id[source["ID"]]["predicted"],
+                "type": "test",
+                "input_timestamp": source["input_timestamp"],
+                "model_timestamp": model_timestamp,
+            }
+            for source in test_rows
+        ]
         _write_csv(
-            destination / "inference_predictions.csv",
+            destination / "predictions.csv",
             rows,
             (
+                "ID",
                 "text",
                 "expected_sentiment",
-                "sentiment",
-                "sentiment_confidence",
-                "sentiment_correct",
                 "expected_topic",
-                "topic",
-                "topic_confidence",
-                "topic_correct",
-                "suggested_action",
+                "predicted_sentiment",
+                "predicted_topic",
+                "type",
+                "input_timestamp",
+                "model_timestamp",
             ),
         )
 
@@ -271,23 +351,27 @@ def build_parser() -> argparse.ArgumentParser:
 
     parser = argparse.ArgumentParser(
         prog="lstm-pipeline",
-        description="Generate data, train both LSTM models, and publish run artifacts.",
+        description="Version synthetic data, train both LSTM models, and publish artifacts.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    generate = commands.add_parser("generate-data", help="Generate synthetic input data.")
+    generate = commands.add_parser("generate-data", help="Initialize or append input data.")
     generate.add_argument("--config", default="config/synthetic_data.json")
     generate.add_argument("--input-dir", default="data/input")
+    generate.add_argument("--mode", choices=("initialize", "append"), default="append")
+    generate.add_argument("--data-timestamp", default=os.getenv("DATA_TIMESTAMP"))
     generate.add_argument("--overwrite", action="store_true")
 
-    train = commands.add_parser("train", help="Train using existing input data.")
+    train = commands.add_parser("train", help="Train using existing versioned input data.")
     _add_training_arguments(train)
 
     run = commands.add_parser(
         "run",
-        help="Regenerate synthetic inputs, train both models, and publish artifacts.",
+        help="Optionally append one batch, train both models, and publish artifacts.",
     )
     run.add_argument("--config", default="config/synthetic_data.json")
+    run.add_argument("--append-data", action="store_true")
+    run.add_argument("--data-timestamp", default=os.getenv("DATA_TIMESTAMP"))
     _add_training_arguments(run)
     return parser
 
@@ -302,16 +386,19 @@ def main(argv: Sequence[str] | None = None) -> int:
         manifest = handler.generate_inputs(
             arguments.config,
             arguments.input_dir,
+            mode=arguments.mode,
+            input_timestamp=arguments.data_timestamp,
             overwrite=arguments.overwrite,
         )
         print(json.dumps({"status": "ok", "input_manifest": str(manifest.resolve())}))
         return 0
 
-    if arguments.command == "run":
+    if arguments.command == "run" and arguments.append_data:
         handler.generate_inputs(
             arguments.config,
             arguments.input_dir,
-            overwrite=True,
+            mode="append",
+            input_timestamp=arguments.data_timestamp,
         )
 
     run_path = handler.train_and_publish(

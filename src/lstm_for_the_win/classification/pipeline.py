@@ -7,7 +7,7 @@ from dataclasses import asdict, dataclass
 from pathlib import Path
 from typing import Any
 
-from .data import clean_text, load_dataset, stratified_split
+from .data import load_dataset, split_by_type
 from .model import (
     build_confusion_matrix,
     build_lstm_model,
@@ -24,7 +24,6 @@ class PipelineConfig:
     """Reproducible pipeline parameters."""
 
     dataset_path: str | Path
-    test_fraction: float = 0.20
     max_tokens: int = 2_000
     sequence_length: int = 24
     embedding_dim: int = 24
@@ -32,7 +31,6 @@ class PipelineConfig:
     epochs: int = 20
     batch_size: int = 16
     seed: int = 42
-    demo_texts: tuple[str, ...] = ()
 
 
 @dataclass(frozen=True)
@@ -48,7 +46,6 @@ class PipelineResult:
     history: dict[str, list[float]]
     confusion_matrix: list[list[int]]
     predictions: list[dict[str, Any]]
-    demo_predictions: list[dict[str, Any]]
 
     def to_dict(self) -> dict[str, Any]:
         """Convert the result to a serializable dictionary."""
@@ -69,19 +66,15 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
 
     set_global_seed(config.seed)
     records = load_dataset(config.dataset_path)
-    train_records, test_records = stratified_split(
-        records,
-        test_fraction=config.test_fraction,
-        seed=config.seed,
-    )
+    train_records, test_records = split_by_type(records)
 
-    labels = sorted({label for _, label in records})
+    labels = sorted({record.label for record in records})
     label_to_index = {label: index for index, label in enumerate(labels)}
 
-    train_texts = [text for text, _ in train_records]
-    train_labels = [label_to_index[label] for _, label in train_records]
-    test_texts = [text for text, _ in test_records]
-    test_labels = [label_to_index[label] for _, label in test_records]
+    train_texts = [record.text for record in train_records]
+    train_labels = [label_to_index[record.label] for record in train_records]
+    test_texts = [record.text for record in test_records]
+    test_labels = [label_to_index[record.label] for record in test_records]
 
     vectorizer = build_vectorizer(
         train_texts,
@@ -107,45 +100,26 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
 
     predictions = [
         {
-            "text": text,
+            "ID": record.ID,
+            "text": record.text,
             "expected": labels[expected],
             "predicted": labels[int(predicted)],
             "confidence": float(test_probabilities[index][int(predicted)]),
             "correct": bool(expected == int(predicted)),
+            "type": record.type,
+            "input_timestamp": record.input_timestamp,
         }
-        for index, (text, expected, predicted) in enumerate(
-            zip(test_texts, test_labels, predicted_indices, strict=True)
+        for index, (record, expected, predicted) in enumerate(
+            zip(test_records, test_labels, predicted_indices, strict=True)
         )
     ]
-
-    demo_predictions: list[dict[str, Any]] = []
-    if config.demo_texts:
-        cleaned_demo_texts = tuple(clean_text(text) for text in config.demo_texts)
-        demo_probabilities = predict_probabilities(model, cleaned_demo_texts)
-        for original_text, probabilities in zip(
-            config.demo_texts,
-            demo_probabilities,
-            strict=True,
-        ):
-            predicted_index = int(probabilities.argmax())
-            demo_predictions.append(
-                {
-                    "text": original_text,
-                    "predicted": labels[predicted_index],
-                    "confidence": float(probabilities[predicted_index]),
-                    "probabilities": {
-                        label: float(probabilities[index])
-                        for index, label in enumerate(labels)
-                    },
-                }
-            )
 
     result = PipelineResult(
         dataset_size=len(records),
         train_size=len(train_records),
         test_size=len(test_records),
         labels=labels,
-        label_counts=dict(sorted(Counter(label for _, label in records).items())),
+        label_counts=dict(sorted(Counter(record.label for record in records).items())),
         metrics=metrics,
         history=history,
         confusion_matrix=build_confusion_matrix(
@@ -154,7 +128,6 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
             class_count=len(labels),
         ),
         predictions=predictions,
-        demo_predictions=demo_predictions,
     )
     return PipelineExecution(model=model, result=result)
 

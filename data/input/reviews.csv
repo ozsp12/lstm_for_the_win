@@ -1,49 +1,1001 @@
-text,expected_sentiment,expected_topic
-the ice maker on this refrigerator stopped working and needs support,negative,refrigerator
-the app storage on this smartphone performs far below expectations,negative,smartphone
-the touchscreen on this smartphone arrived in ordinary packaging,neutral,smartphone
-the ice maker on this refrigerator is unreliable and fails during use,negative,refrigerator
-the picture panel on this display has delivered consistently good results,positive,television
-the battery on this phone performs better than expected,positive,smartphone
-the remote control on this television stopped working and needs support,negative,television
-the screen on this tv has delivered consistently good results,positive,television
-the water inlet on this washer is unreliable and fails during use,negative,washing_machine
-the channel tuner on this television is typical for this product category,neutral,television
-the interior light on this cooling unit is typical for this product category,neutral,refrigerator
-the water dispenser on this cooling unit is disappointing and causes repeated problems,negative,refrigerator
-the water inlet on this laundry appliance is disappointing and causes repeated problems,negative,washing_machine
-the spin cycle on this laundry machine is typical for this product category,neutral,washing_machine
-the screen on this display performs better than expected,positive,television
-the drum on this laundry appliance has delivered consistently good results,positive,washing_machine
-the wifi connection on this display performs far below expectations,negative,television
-the door lock on this laundry appliance matches the standard specification,neutral,washing_machine
-the touchscreen on this handset is reliable and easy to use,positive,smartphone
-the storage drawer on this refrigerator performs the expected basic function,neutral,refrigerator
-the door seal on this refrigerator performs better than expected,positive,refrigerator
-the door seal on this freezer appliance has delivered consistently good results,positive,refrigerator
-the picture panel on this display stopped working and needs support,negative,television
-the water inlet on this washing machine is reliable and easy to use,positive,washing_machine
-the sound output on this display matches the standard specification,neutral,television
-the water inlet on this laundry appliance performs far below expectations,negative,washing_machine
-the mobile signal on this smartphone arrived in ordinary packaging,neutral,smartphone
-the fingerprint reader on this smartphone matches the standard specification,neutral,smartphone
-the speaker on this smartphone is excellent and works perfectly,positive,smartphone
-the control panel on this washing machine is typical for this product category,neutral,washing_machine
-the detergent drawer on this washer matches the standard specification,neutral,washing_machine
-the fingerprint reader on this phone stopped working and needs support,negative,smartphone
-the sound output on this television is unreliable and fails during use,negative,television
-the temperature control on this fridge is disappointing and causes repeated problems,negative,refrigerator
-the mobile signal on this smartphone matches the standard specification,neutral,smartphone
-the remote control on this display performs the expected basic function,neutral,television
-the cooling fan on this cooling unit has delivered consistently good results,positive,refrigerator
-the touchscreen on this handset is excellent and works perfectly,positive,smartphone
-the detergent drawer on this washing machine is reliable and easy to use,positive,washing_machine
-the picture panel on this television arrived in ordinary packaging,neutral,television
-the water dispenser on this fridge performs the expected basic function,neutral,refrigerator
-the picture panel on this display performs better than expected,positive,television
-the door seal on this freezer appliance arrived in ordinary packaging,neutral,refrigerator
-the battery on this handset performs far below expectations,negative,smartphone
-the water inlet on this washer is excellent and works perfectly,positive,washing_machine
-the water inlet on this laundry appliance is unreliable and fails during use,negative,washing_machine
-the temperature control on this fridge performs better than expected,positive,refrigerator
-the mobile signal on this mobile device performs far below expectations,negative,smartphone
+ID,text,expected_sentiment,expected_topic,type,input_timestamp
+1,"during the initial setup, the battery on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+2,"during the initial setup, the battery on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+3,"during the initial setup, the battery on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+4,"during the initial setup, the screen on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+5,"during the initial setup, the screen on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+6,"during the initial setup, the screen on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+7,"during the initial setup, the temperature control on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+8,"during the initial setup, the temperature control on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+9,"during the initial setup, the temperature control on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+10,"during the initial setup, the spin cycle on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+11,"during the initial setup, the spin cycle on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+12,"during the initial setup, the spin cycle on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+13,"during the initial setup, the battery on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+14,"during the initial setup, the battery on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+15,"during the initial setup, the battery on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+16,"during the initial setup, the screen on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+17,"during the initial setup, the screen on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+18,"during the initial setup, the screen on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+19,"during the initial setup, the temperature control on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+20,"during the initial setup, the temperature control on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+21,"during the initial setup, the temperature control on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+22,"during the initial setup, the spin cycle on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+23,"during the initial setup, the spin cycle on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+24,"during the initial setup, the spin cycle on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+25,"during the initial setup, the battery on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+26,"during the initial setup, the battery on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+27,"during the initial setup, the battery on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+28,"during the initial setup, the screen on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+29,"during the initial setup, the screen on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+30,"during the initial setup, the screen on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+31,"during the initial setup, the temperature control on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+32,"during the initial setup, the temperature control on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+33,"during the initial setup, the temperature control on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+34,"during the initial setup, the spin cycle on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+35,"during the initial setup, the spin cycle on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+36,"during the initial setup, the spin cycle on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+37,"during the initial setup, the battery on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+38,"during the initial setup, the battery on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+39,"during the initial setup, the battery on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+40,"during the initial setup, the screen on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+41,"during the initial setup, the screen on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+42,"during the initial setup, the screen on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+43,"during the initial setup, the temperature control on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+44,"during the initial setup, the temperature control on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+45,"during the initial setup, the temperature control on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+46,"during the initial setup, the spin cycle on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+47,"during the initial setup, the spin cycle on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+48,"during the initial setup, the spin cycle on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+49,"during the initial setup, the touchscreen on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+50,"during the initial setup, the touchscreen on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+51,"during the initial setup, the touchscreen on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+52,"during the initial setup, the remote control on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+53,"during the initial setup, the remote control on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+54,"during the initial setup, the remote control on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+55,"during the initial setup, the freezer compartment on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+56,"during the initial setup, the freezer compartment on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+57,"during the initial setup, the freezer compartment on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+58,"during the initial setup, the water inlet on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+59,"during the initial setup, the water inlet on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+60,"during the initial setup, the water inlet on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+61,"during the initial setup, the touchscreen on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+62,"during the initial setup, the touchscreen on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+63,"during the initial setup, the touchscreen on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+64,"during the initial setup, the remote control on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+65,"during the initial setup, the remote control on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+66,"during the initial setup, the remote control on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+67,"during the initial setup, the freezer compartment on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+68,"during the initial setup, the freezer compartment on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+69,"during the initial setup, the freezer compartment on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+70,"during the initial setup, the water inlet on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+71,"during the initial setup, the water inlet on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+72,"during the initial setup, the water inlet on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+73,"during the initial setup, the touchscreen on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+74,"during the initial setup, the touchscreen on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+75,"during the initial setup, the touchscreen on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+76,"during the initial setup, the remote control on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+77,"during the initial setup, the remote control on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+78,"during the initial setup, the remote control on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+79,"during the initial setup, the freezer compartment on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+80,"during the initial setup, the freezer compartment on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+81,"during the initial setup, the freezer compartment on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+82,"during the initial setup, the water inlet on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+83,"during the initial setup, the water inlet on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+84,"during the initial setup, the water inlet on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+85,"during the initial setup, the touchscreen on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+86,"during the initial setup, the touchscreen on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+87,"during the initial setup, the touchscreen on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+88,"during the initial setup, the remote control on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+89,"during the initial setup, the remote control on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+90,"during the initial setup, the remote control on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+91,"during the initial setup, the freezer compartment on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+92,"during the initial setup, the freezer compartment on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+93,"during the initial setup, the freezer compartment on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+94,"during the initial setup, the water inlet on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+95,"during the initial setup, the water inlet on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+96,"during the initial setup, the water inlet on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+97,"during the initial setup, the camera on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+98,"during the initial setup, the camera on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+99,"during the initial setup, the camera on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+100,"during the initial setup, the hdmi input on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+101,"during the initial setup, the hdmi input on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+102,"during the initial setup, the hdmi input on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+103,"during the initial setup, the door seal on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+104,"during the initial setup, the door seal on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+105,"during the initial setup, the door seal on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+106,"during the initial setup, the detergent drawer on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+107,"during the initial setup, the detergent drawer on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+108,"during the initial setup, the detergent drawer on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+109,"during the initial setup, the camera on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+110,"during the initial setup, the camera on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+111,"during the initial setup, the camera on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+112,"during the initial setup, the hdmi input on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+113,"during the initial setup, the hdmi input on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+114,"during the initial setup, the hdmi input on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+115,"during the initial setup, the door seal on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+116,"during the initial setup, the door seal on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+117,"during the initial setup, the door seal on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+118,"during the initial setup, the detergent drawer on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+119,"during the initial setup, the detergent drawer on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+120,"during the initial setup, the detergent drawer on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+121,"during the initial setup, the camera on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+122,"during the initial setup, the camera on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+123,"during the initial setup, the camera on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+124,"during the initial setup, the hdmi input on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+125,"during the initial setup, the hdmi input on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+126,"during the initial setup, the hdmi input on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+127,"during the initial setup, the door seal on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+128,"during the initial setup, the door seal on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+129,"during the initial setup, the door seal on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+130,"during the initial setup, the detergent drawer on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+131,"during the initial setup, the detergent drawer on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+132,"during the initial setup, the detergent drawer on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+133,"during the initial setup, the camera on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+134,"during the initial setup, the camera on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+135,"during the initial setup, the camera on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+136,"during the initial setup, the hdmi input on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+137,"during the initial setup, the hdmi input on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+138,"during the initial setup, the hdmi input on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+139,"during the initial setup, the door seal on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+140,"during the initial setup, the door seal on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+141,"during the initial setup, the door seal on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+142,"during the initial setup, the detergent drawer on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+143,"during the initial setup, the detergent drawer on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+144,"during the initial setup, the detergent drawer on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+145,"during the initial setup, the mobile signal on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+146,"during the initial setup, the mobile signal on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+147,"during the initial setup, the mobile signal on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+148,"during the initial setup, the sound output on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+149,"during the initial setup, the sound output on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+150,"during the initial setup, the sound output on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+151,"during the initial setup, the ice maker on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+152,"during the initial setup, the ice maker on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+153,"during the initial setup, the ice maker on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+154,"during the initial setup, the drain pump on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+155,"during the initial setup, the drain pump on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+156,"during the initial setup, the drain pump on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+157,"during the initial setup, the mobile signal on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+158,"during the initial setup, the mobile signal on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+159,"during the initial setup, the mobile signal on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+160,"during the initial setup, the sound output on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+161,"during the initial setup, the sound output on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+162,"during the initial setup, the sound output on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+163,"during the initial setup, the ice maker on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+164,"during the initial setup, the ice maker on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+165,"during the initial setup, the ice maker on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+166,"during the initial setup, the drain pump on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+167,"during the initial setup, the drain pump on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+168,"during the initial setup, the drain pump on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+169,"during the initial setup, the mobile signal on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+170,"during the initial setup, the mobile signal on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+171,"during the initial setup, the mobile signal on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+172,"during the initial setup, the sound output on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+173,"during the initial setup, the sound output on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+174,"during the initial setup, the sound output on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+175,"during the initial setup, the ice maker on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+176,"during the initial setup, the ice maker on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+177,"during the initial setup, the ice maker on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+178,"during the initial setup, the drain pump on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+179,"during the initial setup, the drain pump on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+180,"during the initial setup, the drain pump on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+181,"during the initial setup, the mobile signal on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+182,"during the initial setup, the mobile signal on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+183,"during the initial setup, the mobile signal on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+184,"during the initial setup, the sound output on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+185,"during the initial setup, the sound output on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+186,"during the initial setup, the sound output on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+187,"during the initial setup, the ice maker on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+188,"during the initial setup, the ice maker on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+189,"during the initial setup, the ice maker on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+190,"during the initial setup, the drain pump on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+191,"during the initial setup, the drain pump on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+192,"during the initial setup, the drain pump on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+193,"during the initial setup, the charging port on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+194,"during the initial setup, the charging port on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+195,"during the initial setup, the charging port on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+196,"during the initial setup, the streaming menu on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+197,"during the initial setup, the streaming menu on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+198,"during the initial setup, the streaming menu on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+199,"during the initial setup, the cooling fan on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+200,"during the initial setup, the cooling fan on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+201,"during the initial setup, the cooling fan on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+202,"during the initial setup, the control panel on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+203,"during the initial setup, the control panel on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+204,"during the initial setup, the control panel on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+205,"during the initial setup, the charging port on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+206,"during the initial setup, the charging port on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+207,"during the initial setup, the charging port on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+208,"during the initial setup, the streaming menu on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+209,"during the initial setup, the streaming menu on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+210,"during the initial setup, the streaming menu on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+211,"during the initial setup, the cooling fan on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+212,"during the initial setup, the cooling fan on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+213,"during the initial setup, the cooling fan on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+214,"during the initial setup, the control panel on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+215,"during the initial setup, the control panel on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+216,"during the initial setup, the control panel on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+217,"during the initial setup, the charging port on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+218,"during the initial setup, the charging port on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+219,"during the initial setup, the charging port on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+220,"during the initial setup, the streaming menu on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+221,"during the initial setup, the streaming menu on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+222,"during the initial setup, the streaming menu on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+223,"during the initial setup, the cooling fan on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+224,"during the initial setup, the cooling fan on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+225,"during the initial setup, the cooling fan on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+226,"during the initial setup, the control panel on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+227,"during the initial setup, the control panel on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+228,"during the initial setup, the control panel on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+229,"during the initial setup, the charging port on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+230,"during the initial setup, the charging port on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+231,"during the initial setup, the charging port on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+232,"during the initial setup, the streaming menu on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+233,"during the initial setup, the streaming menu on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+234,"during the initial setup, the streaming menu on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+235,"during the initial setup, the cooling fan on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+236,"during the initial setup, the cooling fan on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+237,"during the initial setup, the cooling fan on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+238,"during the initial setup, the control panel on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+239,"during the initial setup, the control panel on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+240,"during the initial setup, the control panel on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+241,"during the initial setup, the speaker on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+242,"during the initial setup, the speaker on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+243,"during the initial setup, the speaker on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+244,"during the initial setup, the wifi connection on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+245,"during the initial setup, the wifi connection on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+246,"during the initial setup, the wifi connection on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+247,"during the initial setup, the interior light on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+248,"during the initial setup, the interior light on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+249,"during the initial setup, the interior light on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+250,"during the initial setup, the drum on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+251,"during the initial setup, the drum on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+252,"during the initial setup, the drum on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+253,"during the initial setup, the speaker on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+254,"during the initial setup, the speaker on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+255,"during the initial setup, the speaker on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+256,"during the initial setup, the wifi connection on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+257,"during the initial setup, the wifi connection on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+258,"during the initial setup, the wifi connection on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+259,"during the initial setup, the interior light on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+260,"during the initial setup, the interior light on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+261,"during the initial setup, the interior light on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+262,"during the initial setup, the drum on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+263,"during the initial setup, the drum on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+264,"during the initial setup, the drum on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+265,"during the initial setup, the speaker on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+266,"during the initial setup, the speaker on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+267,"during the initial setup, the speaker on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+268,"during the initial setup, the wifi connection on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+269,"during the initial setup, the wifi connection on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+270,"during the initial setup, the wifi connection on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+271,"during the initial setup, the interior light on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+272,"during the initial setup, the interior light on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+273,"during the initial setup, the interior light on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+274,"during the initial setup, the drum on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+275,"during the initial setup, the drum on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+276,"during the initial setup, the drum on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+277,"during the initial setup, the speaker on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+278,"during the initial setup, the speaker on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+279,"during the initial setup, the speaker on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+280,"during the initial setup, the wifi connection on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+281,"during the initial setup, the wifi connection on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+282,"during the initial setup, the wifi connection on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+283,"during the initial setup, the interior light on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+284,"during the initial setup, the interior light on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+285,"during the initial setup, the interior light on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+286,"during the initial setup, the drum on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+287,"during the initial setup, the drum on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+288,"during the initial setup, the drum on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+289,"during the initial setup, the app storage on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+290,"during the initial setup, the app storage on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+291,"during the initial setup, the app storage on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+292,"during the initial setup, the picture panel on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+293,"during the initial setup, the picture panel on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+294,"during the initial setup, the picture panel on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+295,"during the initial setup, the water dispenser on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+296,"during the initial setup, the water dispenser on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+297,"during the initial setup, the water dispenser on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+298,"during the initial setup, the door lock on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+299,"during the initial setup, the door lock on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+300,"during the initial setup, the door lock on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+301,"during the initial setup, the app storage on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+302,"during the initial setup, the app storage on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+303,"during the initial setup, the app storage on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+304,"during the initial setup, the picture panel on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+305,"during the initial setup, the picture panel on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+306,"during the initial setup, the picture panel on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+307,"during the initial setup, the water dispenser on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+308,"during the initial setup, the water dispenser on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+309,"during the initial setup, the water dispenser on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+310,"during the initial setup, the door lock on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+311,"during the initial setup, the door lock on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+312,"during the initial setup, the door lock on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+313,"during the initial setup, the app storage on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+314,"during the initial setup, the app storage on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+315,"during the initial setup, the app storage on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+316,"during the initial setup, the picture panel on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+317,"during the initial setup, the picture panel on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+318,"during the initial setup, the picture panel on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+319,"during the initial setup, the water dispenser on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+320,"during the initial setup, the water dispenser on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+321,"during the initial setup, the water dispenser on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+322,"during the initial setup, the door lock on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+323,"during the initial setup, the door lock on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+324,"during the initial setup, the door lock on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+325,"during the initial setup, the app storage on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+326,"during the initial setup, the app storage on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+327,"during the initial setup, the app storage on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+328,"during the initial setup, the picture panel on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+329,"during the initial setup, the picture panel on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+330,"during the initial setup, the picture panel on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+331,"during the initial setup, the water dispenser on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+332,"during the initial setup, the water dispenser on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+333,"during the initial setup, the water dispenser on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+334,"during the initial setup, the door lock on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+335,"during the initial setup, the door lock on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+336,"during the initial setup, the door lock on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+337,"during the initial setup, the fingerprint reader on this smartphone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+338,"during the initial setup, the fingerprint reader on this smartphone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+339,"during the initial setup, the fingerprint reader on this smartphone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+340,"during the initial setup, the channel tuner on this television is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+341,"during the initial setup, the channel tuner on this television matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+342,"during the initial setup, the channel tuner on this television is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+343,"during the initial setup, the storage drawer on this refrigerator is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+344,"during the initial setup, the storage drawer on this refrigerator matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+345,"during the initial setup, the storage drawer on this refrigerator is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+346,"during the initial setup, the rinse program on this washing machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+347,"during the initial setup, the rinse program on this washing machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+348,"during the initial setup, the rinse program on this washing machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+349,"during the initial setup, the fingerprint reader on this phone is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+350,"during the initial setup, the fingerprint reader on this phone matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+351,"during the initial setup, the fingerprint reader on this phone is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+352,"during the initial setup, the channel tuner on this tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+353,"during the initial setup, the channel tuner on this tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+354,"during the initial setup, the channel tuner on this tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+355,"during the initial setup, the storage drawer on this fridge is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+356,"during the initial setup, the storage drawer on this fridge matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+357,"during the initial setup, the storage drawer on this fridge is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+358,"during the initial setup, the rinse program on this washer is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+359,"during the initial setup, the rinse program on this washer matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+360,"during the initial setup, the rinse program on this washer is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+361,"during the initial setup, the fingerprint reader on this mobile device is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+362,"during the initial setup, the fingerprint reader on this mobile device matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+363,"during the initial setup, the fingerprint reader on this mobile device is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+364,"during the initial setup, the channel tuner on this smart tv is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+365,"during the initial setup, the channel tuner on this smart tv matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+366,"during the initial setup, the channel tuner on this smart tv is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+367,"during the initial setup, the storage drawer on this freezer appliance is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+368,"during the initial setup, the storage drawer on this freezer appliance matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+369,"during the initial setup, the storage drawer on this freezer appliance is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+370,"during the initial setup, the rinse program on this laundry machine is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+371,"during the initial setup, the rinse program on this laundry machine matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+372,"during the initial setup, the rinse program on this laundry machine is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+373,"during the initial setup, the fingerprint reader on this handset is excellent and works perfectly; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+374,"during the initial setup, the fingerprint reader on this handset matches the standard specification; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+375,"during the initial setup, the fingerprint reader on this handset is unreliable and fails during use; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+376,"during the initial setup, the channel tuner on this display is excellent and works perfectly; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+377,"during the initial setup, the channel tuner on this display matches the standard specification; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+378,"during the initial setup, the channel tuner on this display is unreliable and fails during use; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+379,"during the initial setup, the storage drawer on this cooling unit is excellent and works perfectly; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+380,"during the initial setup, the storage drawer on this cooling unit matches the standard specification; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+381,"during the initial setup, the storage drawer on this cooling unit is unreliable and fails during use; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+382,"during the initial setup, the rinse program on this laundry appliance is excellent and works perfectly; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+383,"during the initial setup, the rinse program on this laundry appliance matches the standard specification; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+384,"during the initial setup, the rinse program on this laundry appliance is unreliable and fails during use; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+385,"during the initial setup, the battery on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+386,"during the initial setup, the battery on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+387,"during the initial setup, the battery on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+388,"during the initial setup, the screen on this television is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+389,"during the initial setup, the screen on this television performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+390,"during the initial setup, the screen on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+391,"during the initial setup, the temperature control on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+392,"during the initial setup, the temperature control on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+393,"during the initial setup, the temperature control on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+394,"during the initial setup, the spin cycle on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+395,"during the initial setup, the spin cycle on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+396,"during the initial setup, the spin cycle on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+397,"during the initial setup, the battery on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+398,"during the initial setup, the battery on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+399,"during the initial setup, the battery on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+400,"during the initial setup, the screen on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+401,"during the initial setup, the screen on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+402,"during the initial setup, the screen on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+403,"during the initial setup, the temperature control on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+404,"during the initial setup, the temperature control on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+405,"during the initial setup, the temperature control on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+406,"during the initial setup, the spin cycle on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+407,"during the initial setup, the spin cycle on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+408,"during the initial setup, the spin cycle on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+409,"during the initial setup, the battery on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+410,"during the initial setup, the battery on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+411,"during the initial setup, the battery on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+412,"during the initial setup, the screen on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+413,"during the initial setup, the screen on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+414,"during the initial setup, the screen on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+415,"during the initial setup, the temperature control on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+416,"during the initial setup, the temperature control on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+417,"during the initial setup, the temperature control on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+418,"during the initial setup, the spin cycle on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+419,"during the initial setup, the spin cycle on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+420,"during the initial setup, the spin cycle on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+421,"during the initial setup, the battery on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+422,"during the initial setup, the battery on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+423,"during the initial setup, the battery on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+424,"during the initial setup, the screen on this display is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+425,"during the initial setup, the screen on this display performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+426,"during the initial setup, the screen on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+427,"during the initial setup, the temperature control on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+428,"during the initial setup, the temperature control on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+429,"during the initial setup, the temperature control on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+430,"during the initial setup, the spin cycle on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+431,"during the initial setup, the spin cycle on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+432,"during the initial setup, the spin cycle on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+433,"during the initial setup, the touchscreen on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+434,"during the initial setup, the touchscreen on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+435,"during the initial setup, the touchscreen on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+436,"during the initial setup, the remote control on this television is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+437,"during the initial setup, the remote control on this television performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+438,"during the initial setup, the remote control on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+439,"during the initial setup, the freezer compartment on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+440,"during the initial setup, the freezer compartment on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+441,"during the initial setup, the freezer compartment on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+442,"during the initial setup, the water inlet on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+443,"during the initial setup, the water inlet on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+444,"during the initial setup, the water inlet on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+445,"during the initial setup, the touchscreen on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+446,"during the initial setup, the touchscreen on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+447,"during the initial setup, the touchscreen on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+448,"during the initial setup, the remote control on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+449,"during the initial setup, the remote control on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+450,"during the initial setup, the remote control on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+451,"during the initial setup, the freezer compartment on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+452,"during the initial setup, the freezer compartment on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+453,"during the initial setup, the freezer compartment on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+454,"during the initial setup, the water inlet on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+455,"during the initial setup, the water inlet on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+456,"during the initial setup, the water inlet on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+457,"during the initial setup, the touchscreen on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+458,"during the initial setup, the touchscreen on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+459,"during the initial setup, the touchscreen on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+460,"during the initial setup, the remote control on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+461,"during the initial setup, the remote control on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+462,"during the initial setup, the remote control on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+463,"during the initial setup, the freezer compartment on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+464,"during the initial setup, the freezer compartment on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+465,"during the initial setup, the freezer compartment on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+466,"during the initial setup, the water inlet on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+467,"during the initial setup, the water inlet on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+468,"during the initial setup, the water inlet on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+469,"during the initial setup, the touchscreen on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+470,"during the initial setup, the touchscreen on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+471,"during the initial setup, the touchscreen on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+472,"during the initial setup, the remote control on this display is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+473,"during the initial setup, the remote control on this display performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+474,"during the initial setup, the remote control on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+475,"during the initial setup, the freezer compartment on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+476,"during the initial setup, the freezer compartment on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+477,"during the initial setup, the freezer compartment on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+478,"during the initial setup, the water inlet on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+479,"during the initial setup, the water inlet on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+480,"during the initial setup, the water inlet on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+481,"during the initial setup, the camera on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+482,"during the initial setup, the camera on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+483,"during the initial setup, the camera on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+484,"during the initial setup, the hdmi input on this television is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+485,"during the initial setup, the hdmi input on this television performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+486,"during the initial setup, the hdmi input on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+487,"during the initial setup, the door seal on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+488,"during the initial setup, the door seal on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+489,"during the initial setup, the door seal on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,train,2026-08-13T15:30:24Z
+490,"during the initial setup, the detergent drawer on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,train,2026-08-13T15:30:24Z
+491,"during the initial setup, the detergent drawer on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,train,2026-08-13T15:30:24Z
+492,"during the initial setup, the detergent drawer on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,train,2026-08-13T15:30:24Z
+493,"during the initial setup, the camera on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,train,2026-08-13T15:30:24Z
+494,"during the initial setup, the camera on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,train,2026-08-13T15:30:24Z
+495,"during the initial setup, the camera on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,train,2026-08-13T15:30:24Z
+496,"during the initial setup, the hdmi input on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,train,2026-08-13T15:30:24Z
+497,"during the initial setup, the hdmi input on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,train,2026-08-13T15:30:24Z
+498,"during the initial setup, the hdmi input on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,train,2026-08-13T15:30:24Z
+499,"during the initial setup, the door seal on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,train,2026-08-13T15:30:24Z
+500,"during the initial setup, the door seal on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,train,2026-08-13T15:30:24Z
+501,"during the initial setup, the door seal on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+502,"during the initial setup, the detergent drawer on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+503,"during the initial setup, the detergent drawer on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+504,"during the initial setup, the detergent drawer on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+505,"during the initial setup, the camera on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+506,"during the initial setup, the camera on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+507,"during the initial setup, the camera on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+508,"during the initial setup, the hdmi input on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+509,"during the initial setup, the hdmi input on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+510,"during the initial setup, the hdmi input on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+511,"during the initial setup, the door seal on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+512,"during the initial setup, the door seal on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+513,"during the initial setup, the door seal on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+514,"during the initial setup, the detergent drawer on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+515,"during the initial setup, the detergent drawer on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+516,"during the initial setup, the detergent drawer on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+517,"during the initial setup, the camera on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+518,"during the initial setup, the camera on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+519,"during the initial setup, the camera on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+520,"during the initial setup, the hdmi input on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+521,"during the initial setup, the hdmi input on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+522,"during the initial setup, the hdmi input on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+523,"during the initial setup, the door seal on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+524,"during the initial setup, the door seal on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+525,"during the initial setup, the door seal on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+526,"during the initial setup, the detergent drawer on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+527,"during the initial setup, the detergent drawer on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+528,"during the initial setup, the detergent drawer on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+529,"during the initial setup, the mobile signal on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+530,"during the initial setup, the mobile signal on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+531,"during the initial setup, the mobile signal on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+532,"during the initial setup, the sound output on this television is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+533,"during the initial setup, the sound output on this television performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+534,"during the initial setup, the sound output on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+535,"during the initial setup, the ice maker on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+536,"during the initial setup, the ice maker on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+537,"during the initial setup, the ice maker on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+538,"during the initial setup, the drain pump on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+539,"during the initial setup, the drain pump on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+540,"during the initial setup, the drain pump on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+541,"during the initial setup, the mobile signal on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+542,"during the initial setup, the mobile signal on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+543,"during the initial setup, the mobile signal on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+544,"during the initial setup, the sound output on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+545,"during the initial setup, the sound output on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+546,"during the initial setup, the sound output on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+547,"during the initial setup, the ice maker on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+548,"during the initial setup, the ice maker on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+549,"during the initial setup, the ice maker on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+550,"during the initial setup, the drain pump on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+551,"during the initial setup, the drain pump on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+552,"during the initial setup, the drain pump on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+553,"during the initial setup, the mobile signal on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+554,"during the initial setup, the mobile signal on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+555,"during the initial setup, the mobile signal on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+556,"during the initial setup, the sound output on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+557,"during the initial setup, the sound output on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+558,"during the initial setup, the sound output on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+559,"during the initial setup, the ice maker on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+560,"during the initial setup, the ice maker on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+561,"during the initial setup, the ice maker on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+562,"during the initial setup, the drain pump on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+563,"during the initial setup, the drain pump on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+564,"during the initial setup, the drain pump on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+565,"during the initial setup, the mobile signal on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+566,"during the initial setup, the mobile signal on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+567,"during the initial setup, the mobile signal on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+568,"during the initial setup, the sound output on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+569,"during the initial setup, the sound output on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+570,"during the initial setup, the sound output on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+571,"during the initial setup, the ice maker on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+572,"during the initial setup, the ice maker on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+573,"during the initial setup, the ice maker on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+574,"during the initial setup, the drain pump on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+575,"during the initial setup, the drain pump on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+576,"during the initial setup, the drain pump on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+577,"during the initial setup, the charging port on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+578,"during the initial setup, the charging port on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+579,"during the initial setup, the charging port on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+580,"during the initial setup, the streaming menu on this television is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+581,"during the initial setup, the streaming menu on this television performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+582,"during the initial setup, the streaming menu on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+583,"during the initial setup, the cooling fan on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+584,"during the initial setup, the cooling fan on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+585,"during the initial setup, the cooling fan on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+586,"during the initial setup, the control panel on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+587,"during the initial setup, the control panel on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+588,"during the initial setup, the control panel on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+589,"during the initial setup, the charging port on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+590,"during the initial setup, the charging port on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+591,"during the initial setup, the charging port on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+592,"during the initial setup, the streaming menu on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+593,"during the initial setup, the streaming menu on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+594,"during the initial setup, the streaming menu on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+595,"during the initial setup, the cooling fan on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+596,"during the initial setup, the cooling fan on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+597,"during the initial setup, the cooling fan on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+598,"during the initial setup, the control panel on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+599,"during the initial setup, the control panel on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+600,"during the initial setup, the control panel on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+601,"during the initial setup, the charging port on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+602,"during the initial setup, the charging port on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+603,"during the initial setup, the charging port on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+604,"during the initial setup, the streaming menu on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+605,"during the initial setup, the streaming menu on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+606,"during the initial setup, the streaming menu on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+607,"during the initial setup, the cooling fan on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+608,"during the initial setup, the cooling fan on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+609,"during the initial setup, the cooling fan on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+610,"during the initial setup, the control panel on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+611,"during the initial setup, the control panel on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+612,"during the initial setup, the control panel on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+613,"during the initial setup, the charging port on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+614,"during the initial setup, the charging port on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+615,"during the initial setup, the charging port on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+616,"during the initial setup, the streaming menu on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+617,"during the initial setup, the streaming menu on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+618,"during the initial setup, the streaming menu on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+619,"during the initial setup, the cooling fan on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+620,"during the initial setup, the cooling fan on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+621,"during the initial setup, the cooling fan on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+622,"during the initial setup, the control panel on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+623,"during the initial setup, the control panel on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+624,"during the initial setup, the control panel on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+625,"during the initial setup, the speaker on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+626,"during the initial setup, the speaker on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+627,"during the initial setup, the speaker on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+628,"during the initial setup, the wifi connection on this television is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+629,"during the initial setup, the wifi connection on this television performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+630,"during the initial setup, the wifi connection on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+631,"during the initial setup, the interior light on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+632,"during the initial setup, the interior light on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+633,"during the initial setup, the interior light on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+634,"during the initial setup, the drum on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+635,"during the initial setup, the drum on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+636,"during the initial setup, the drum on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+637,"during the initial setup, the speaker on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+638,"during the initial setup, the speaker on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+639,"during the initial setup, the speaker on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+640,"during the initial setup, the wifi connection on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+641,"during the initial setup, the wifi connection on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+642,"during the initial setup, the wifi connection on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+643,"during the initial setup, the interior light on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+644,"during the initial setup, the interior light on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+645,"during the initial setup, the interior light on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+646,"during the initial setup, the drum on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+647,"during the initial setup, the drum on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+648,"during the initial setup, the drum on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+649,"during the initial setup, the speaker on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+650,"during the initial setup, the speaker on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+651,"during the initial setup, the speaker on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+652,"during the initial setup, the wifi connection on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+653,"during the initial setup, the wifi connection on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+654,"during the initial setup, the wifi connection on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+655,"during the initial setup, the interior light on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+656,"during the initial setup, the interior light on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+657,"during the initial setup, the interior light on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+658,"during the initial setup, the drum on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+659,"during the initial setup, the drum on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+660,"during the initial setup, the drum on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+661,"during the initial setup, the speaker on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+662,"during the initial setup, the speaker on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+663,"during the initial setup, the speaker on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+664,"during the initial setup, the wifi connection on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+665,"during the initial setup, the wifi connection on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+666,"during the initial setup, the wifi connection on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+667,"during the initial setup, the interior light on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+668,"during the initial setup, the interior light on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+669,"during the initial setup, the interior light on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+670,"during the initial setup, the drum on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+671,"during the initial setup, the drum on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+672,"during the initial setup, the drum on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+673,"during the initial setup, the app storage on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+674,"during the initial setup, the app storage on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+675,"during the initial setup, the app storage on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+676,"during the initial setup, the picture panel on this television is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+677,"during the initial setup, the picture panel on this television performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+678,"during the initial setup, the picture panel on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+679,"during the initial setup, the water dispenser on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+680,"during the initial setup, the water dispenser on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+681,"during the initial setup, the water dispenser on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+682,"during the initial setup, the door lock on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+683,"during the initial setup, the door lock on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+684,"during the initial setup, the door lock on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+685,"during the initial setup, the app storage on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+686,"during the initial setup, the app storage on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+687,"during the initial setup, the app storage on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+688,"during the initial setup, the picture panel on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+689,"during the initial setup, the picture panel on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+690,"during the initial setup, the picture panel on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+691,"during the initial setup, the water dispenser on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+692,"during the initial setup, the water dispenser on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+693,"during the initial setup, the water dispenser on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+694,"during the initial setup, the door lock on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+695,"during the initial setup, the door lock on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+696,"during the initial setup, the door lock on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+697,"during the initial setup, the app storage on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+698,"during the initial setup, the app storage on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+699,"during the initial setup, the app storage on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+700,"during the initial setup, the picture panel on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+701,"during the initial setup, the picture panel on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+702,"during the initial setup, the picture panel on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+703,"during the initial setup, the water dispenser on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+704,"during the initial setup, the water dispenser on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+705,"during the initial setup, the water dispenser on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+706,"during the initial setup, the door lock on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+707,"during the initial setup, the door lock on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+708,"during the initial setup, the door lock on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+709,"during the initial setup, the app storage on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+710,"during the initial setup, the app storage on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+711,"during the initial setup, the app storage on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+712,"during the initial setup, the picture panel on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+713,"during the initial setup, the picture panel on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+714,"during the initial setup, the picture panel on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+715,"during the initial setup, the water dispenser on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+716,"during the initial setup, the water dispenser on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+717,"during the initial setup, the water dispenser on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+718,"during the initial setup, the door lock on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+719,"during the initial setup, the door lock on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+720,"during the initial setup, the door lock on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+721,"during the initial setup, the fingerprint reader on this smartphone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+722,"during the initial setup, the fingerprint reader on this smartphone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+723,"during the initial setup, the fingerprint reader on this smartphone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+724,"during the initial setup, the channel tuner on this television is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+725,"during the initial setup, the channel tuner on this television performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+726,"during the initial setup, the channel tuner on this television is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+727,"during the initial setup, the storage drawer on this refrigerator is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+728,"during the initial setup, the storage drawer on this refrigerator performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+729,"during the initial setup, the storage drawer on this refrigerator is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+730,"during the initial setup, the rinse program on this washing machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+731,"during the initial setup, the rinse program on this washing machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+732,"during the initial setup, the rinse program on this washing machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+733,"during the initial setup, the fingerprint reader on this phone is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+734,"during the initial setup, the fingerprint reader on this phone performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+735,"during the initial setup, the fingerprint reader on this phone is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+736,"during the initial setup, the channel tuner on this tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+737,"during the initial setup, the channel tuner on this tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+738,"during the initial setup, the channel tuner on this tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+739,"during the initial setup, the storage drawer on this fridge is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+740,"during the initial setup, the storage drawer on this fridge performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+741,"during the initial setup, the storage drawer on this fridge is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+742,"during the initial setup, the rinse program on this washer is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+743,"during the initial setup, the rinse program on this washer performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+744,"during the initial setup, the rinse program on this washer is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+745,"during the initial setup, the fingerprint reader on this mobile device is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+746,"during the initial setup, the fingerprint reader on this mobile device performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+747,"during the initial setup, the fingerprint reader on this mobile device is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+748,"during the initial setup, the channel tuner on this smart tv is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+749,"during the initial setup, the channel tuner on this smart tv performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+750,"during the initial setup, the channel tuner on this smart tv is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+751,"during the initial setup, the storage drawer on this freezer appliance is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+752,"during the initial setup, the storage drawer on this freezer appliance performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+753,"during the initial setup, the storage drawer on this freezer appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+754,"during the initial setup, the rinse program on this laundry machine is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+755,"during the initial setup, the rinse program on this laundry machine performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+756,"during the initial setup, the rinse program on this laundry machine is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+757,"during the initial setup, the fingerprint reader on this handset is reliable and easy to use; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+758,"during the initial setup, the fingerprint reader on this handset performs the expected basic function; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+759,"during the initial setup, the fingerprint reader on this handset is disappointing and causes repeated problems; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+760,"during the initial setup, the channel tuner on this display is reliable and easy to use; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+761,"during the initial setup, the channel tuner on this display performs the expected basic function; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+762,"during the initial setup, the channel tuner on this display is disappointing and causes repeated problems; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+763,"during the initial setup, the storage drawer on this cooling unit is reliable and easy to use; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+764,"during the initial setup, the storage drawer on this cooling unit performs the expected basic function; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+765,"during the initial setup, the storage drawer on this cooling unit is disappointing and causes repeated problems; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+766,"during the initial setup, the rinse program on this laundry appliance is reliable and easy to use; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+767,"during the initial setup, the rinse program on this laundry appliance performs the expected basic function; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+768,"during the initial setup, the rinse program on this laundry appliance is disappointing and causes repeated problems; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+769,"during the initial setup, the battery on this smartphone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+770,"during the initial setup, the battery on this smartphone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+771,"during the initial setup, the battery on this smartphone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+772,"during the initial setup, the screen on this television performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+773,"during the initial setup, the screen on this television arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+774,"during the initial setup, the screen on this television stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+775,"during the initial setup, the temperature control on this refrigerator performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+776,"during the initial setup, the temperature control on this refrigerator arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+777,"during the initial setup, the temperature control on this refrigerator stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+778,"during the initial setup, the spin cycle on this washing machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+779,"during the initial setup, the spin cycle on this washing machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+780,"during the initial setup, the spin cycle on this washing machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+781,"during the initial setup, the battery on this phone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+782,"during the initial setup, the battery on this phone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+783,"during the initial setup, the battery on this phone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+784,"during the initial setup, the screen on this tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+785,"during the initial setup, the screen on this tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+786,"during the initial setup, the screen on this tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+787,"during the initial setup, the temperature control on this fridge performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+788,"during the initial setup, the temperature control on this fridge arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+789,"during the initial setup, the temperature control on this fridge stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+790,"during the initial setup, the spin cycle on this washer performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+791,"during the initial setup, the spin cycle on this washer arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+792,"during the initial setup, the spin cycle on this washer stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+793,"during the initial setup, the battery on this mobile device performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+794,"during the initial setup, the battery on this mobile device arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+795,"during the initial setup, the battery on this mobile device stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+796,"during the initial setup, the screen on this smart tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+797,"during the initial setup, the screen on this smart tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+798,"during the initial setup, the screen on this smart tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+799,"during the initial setup, the temperature control on this freezer appliance performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+800,"during the initial setup, the temperature control on this freezer appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+801,"during the initial setup, the temperature control on this freezer appliance stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+802,"during the initial setup, the spin cycle on this laundry machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+803,"during the initial setup, the spin cycle on this laundry machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+804,"during the initial setup, the spin cycle on this laundry machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+805,"during the initial setup, the battery on this handset performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+806,"during the initial setup, the battery on this handset arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+807,"during the initial setup, the battery on this handset stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+808,"during the initial setup, the screen on this display performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+809,"during the initial setup, the screen on this display arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+810,"during the initial setup, the screen on this display stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+811,"during the initial setup, the temperature control on this cooling unit performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+812,"during the initial setup, the temperature control on this cooling unit arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+813,"during the initial setup, the temperature control on this cooling unit stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+814,"during the initial setup, the spin cycle on this laundry appliance performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+815,"during the initial setup, the spin cycle on this laundry appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+816,"during the initial setup, the spin cycle on this laundry appliance stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+817,"during the initial setup, the touchscreen on this smartphone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+818,"during the initial setup, the touchscreen on this smartphone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+819,"during the initial setup, the touchscreen on this smartphone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+820,"during the initial setup, the remote control on this television performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+821,"during the initial setup, the remote control on this television arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+822,"during the initial setup, the remote control on this television stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+823,"during the initial setup, the freezer compartment on this refrigerator performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+824,"during the initial setup, the freezer compartment on this refrigerator arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+825,"during the initial setup, the freezer compartment on this refrigerator stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+826,"during the initial setup, the water inlet on this washing machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+827,"during the initial setup, the water inlet on this washing machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+828,"during the initial setup, the water inlet on this washing machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+829,"during the initial setup, the touchscreen on this phone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+830,"during the initial setup, the touchscreen on this phone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+831,"during the initial setup, the touchscreen on this phone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+832,"during the initial setup, the remote control on this tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+833,"during the initial setup, the remote control on this tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+834,"during the initial setup, the remote control on this tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+835,"during the initial setup, the freezer compartment on this fridge performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+836,"during the initial setup, the freezer compartment on this fridge arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+837,"during the initial setup, the freezer compartment on this fridge stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+838,"during the initial setup, the water inlet on this washer performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+839,"during the initial setup, the water inlet on this washer arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+840,"during the initial setup, the water inlet on this washer stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+841,"during the initial setup, the touchscreen on this mobile device performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+842,"during the initial setup, the touchscreen on this mobile device arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+843,"during the initial setup, the touchscreen on this mobile device stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+844,"during the initial setup, the remote control on this smart tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+845,"during the initial setup, the remote control on this smart tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+846,"during the initial setup, the remote control on this smart tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+847,"during the initial setup, the freezer compartment on this freezer appliance performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+848,"during the initial setup, the freezer compartment on this freezer appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+849,"during the initial setup, the freezer compartment on this freezer appliance stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+850,"during the initial setup, the water inlet on this laundry machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+851,"during the initial setup, the water inlet on this laundry machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+852,"during the initial setup, the water inlet on this laundry machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+853,"during the initial setup, the touchscreen on this handset performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+854,"during the initial setup, the touchscreen on this handset arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+855,"during the initial setup, the touchscreen on this handset stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+856,"during the initial setup, the remote control on this display performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+857,"during the initial setup, the remote control on this display arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+858,"during the initial setup, the remote control on this display stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+859,"during the initial setup, the freezer compartment on this cooling unit performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+860,"during the initial setup, the freezer compartment on this cooling unit arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+861,"during the initial setup, the freezer compartment on this cooling unit stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+862,"during the initial setup, the water inlet on this laundry appliance performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+863,"during the initial setup, the water inlet on this laundry appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+864,"during the initial setup, the water inlet on this laundry appliance stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+865,"during the initial setup, the camera on this smartphone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+866,"during the initial setup, the camera on this smartphone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+867,"during the initial setup, the camera on this smartphone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+868,"during the initial setup, the hdmi input on this television performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+869,"during the initial setup, the hdmi input on this television arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+870,"during the initial setup, the hdmi input on this television stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+871,"during the initial setup, the door seal on this refrigerator performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+872,"during the initial setup, the door seal on this refrigerator arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+873,"during the initial setup, the door seal on this refrigerator stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+874,"during the initial setup, the detergent drawer on this washing machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+875,"during the initial setup, the detergent drawer on this washing machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+876,"during the initial setup, the detergent drawer on this washing machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+877,"during the initial setup, the camera on this phone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+878,"during the initial setup, the camera on this phone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+879,"during the initial setup, the camera on this phone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+880,"during the initial setup, the hdmi input on this tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+881,"during the initial setup, the hdmi input on this tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+882,"during the initial setup, the hdmi input on this tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+883,"during the initial setup, the door seal on this fridge performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+884,"during the initial setup, the door seal on this fridge arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+885,"during the initial setup, the door seal on this fridge stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+886,"during the initial setup, the detergent drawer on this washer performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+887,"during the initial setup, the detergent drawer on this washer arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+888,"during the initial setup, the detergent drawer on this washer stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+889,"during the initial setup, the camera on this mobile device performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+890,"during the initial setup, the camera on this mobile device arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+891,"during the initial setup, the camera on this mobile device stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+892,"during the initial setup, the hdmi input on this smart tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+893,"during the initial setup, the hdmi input on this smart tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+894,"during the initial setup, the hdmi input on this smart tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+895,"during the initial setup, the door seal on this freezer appliance performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+896,"during the initial setup, the door seal on this freezer appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+897,"during the initial setup, the door seal on this freezer appliance stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+898,"during the initial setup, the detergent drawer on this laundry machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+899,"during the initial setup, the detergent drawer on this laundry machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+900,"during the initial setup, the detergent drawer on this laundry machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+901,"during the initial setup, the camera on this handset performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+902,"during the initial setup, the camera on this handset arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+903,"during the initial setup, the camera on this handset stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+904,"during the initial setup, the hdmi input on this display performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+905,"during the initial setup, the hdmi input on this display arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+906,"during the initial setup, the hdmi input on this display stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+907,"during the initial setup, the door seal on this cooling unit performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+908,"during the initial setup, the door seal on this cooling unit arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+909,"during the initial setup, the door seal on this cooling unit stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+910,"during the initial setup, the detergent drawer on this laundry appliance performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+911,"during the initial setup, the detergent drawer on this laundry appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+912,"during the initial setup, the detergent drawer on this laundry appliance stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+913,"during the initial setup, the mobile signal on this smartphone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+914,"during the initial setup, the mobile signal on this smartphone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+915,"during the initial setup, the mobile signal on this smartphone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+916,"during the initial setup, the sound output on this television performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+917,"during the initial setup, the sound output on this television arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+918,"during the initial setup, the sound output on this television stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+919,"during the initial setup, the ice maker on this refrigerator performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+920,"during the initial setup, the ice maker on this refrigerator arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+921,"during the initial setup, the ice maker on this refrigerator stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+922,"during the initial setup, the drain pump on this washing machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+923,"during the initial setup, the drain pump on this washing machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+924,"during the initial setup, the drain pump on this washing machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+925,"during the initial setup, the mobile signal on this phone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+926,"during the initial setup, the mobile signal on this phone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+927,"during the initial setup, the mobile signal on this phone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+928,"during the initial setup, the sound output on this tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+929,"during the initial setup, the sound output on this tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+930,"during the initial setup, the sound output on this tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+931,"during the initial setup, the ice maker on this fridge performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+932,"during the initial setup, the ice maker on this fridge arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+933,"during the initial setup, the ice maker on this fridge stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+934,"during the initial setup, the drain pump on this washer performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+935,"during the initial setup, the drain pump on this washer arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+936,"during the initial setup, the drain pump on this washer stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+937,"during the initial setup, the mobile signal on this mobile device performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+938,"during the initial setup, the mobile signal on this mobile device arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+939,"during the initial setup, the mobile signal on this mobile device stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+940,"during the initial setup, the sound output on this smart tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+941,"during the initial setup, the sound output on this smart tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+942,"during the initial setup, the sound output on this smart tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+943,"during the initial setup, the ice maker on this freezer appliance performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+944,"during the initial setup, the ice maker on this freezer appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+945,"during the initial setup, the ice maker on this freezer appliance stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+946,"during the initial setup, the drain pump on this laundry machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+947,"during the initial setup, the drain pump on this laundry machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+948,"during the initial setup, the drain pump on this laundry machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+949,"during the initial setup, the mobile signal on this handset performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+950,"during the initial setup, the mobile signal on this handset arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+951,"during the initial setup, the mobile signal on this handset stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+952,"during the initial setup, the sound output on this display performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+953,"during the initial setup, the sound output on this display arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+954,"during the initial setup, the sound output on this display stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+955,"during the initial setup, the ice maker on this cooling unit performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+956,"during the initial setup, the ice maker on this cooling unit arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+957,"during the initial setup, the ice maker on this cooling unit stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+958,"during the initial setup, the drain pump on this laundry appliance performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+959,"during the initial setup, the drain pump on this laundry appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+960,"during the initial setup, the drain pump on this laundry appliance stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+961,"during the initial setup, the charging port on this smartphone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+962,"during the initial setup, the charging port on this smartphone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+963,"during the initial setup, the charging port on this smartphone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+964,"during the initial setup, the streaming menu on this television performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+965,"during the initial setup, the streaming menu on this television arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+966,"during the initial setup, the streaming menu on this television stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+967,"during the initial setup, the cooling fan on this refrigerator performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+968,"during the initial setup, the cooling fan on this refrigerator arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+969,"during the initial setup, the cooling fan on this refrigerator stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+970,"during the initial setup, the control panel on this washing machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+971,"during the initial setup, the control panel on this washing machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+972,"during the initial setup, the control panel on this washing machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+973,"during the initial setup, the charging port on this phone performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+974,"during the initial setup, the charging port on this phone arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+975,"during the initial setup, the charging port on this phone stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+976,"during the initial setup, the streaming menu on this tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+977,"during the initial setup, the streaming menu on this tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+978,"during the initial setup, the streaming menu on this tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+979,"during the initial setup, the cooling fan on this fridge performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+980,"during the initial setup, the cooling fan on this fridge arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+981,"during the initial setup, the cooling fan on this fridge stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+982,"during the initial setup, the control panel on this washer performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+983,"during the initial setup, the control panel on this washer arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+984,"during the initial setup, the control panel on this washer stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+985,"during the initial setup, the charging port on this mobile device performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+986,"during the initial setup, the charging port on this mobile device arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+987,"during the initial setup, the charging port on this mobile device stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+988,"during the initial setup, the streaming menu on this smart tv performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z
+989,"during the initial setup, the streaming menu on this smart tv arrived in ordinary packaging; the experience has remained consistent.",neutral,television,test,2026-08-13T15:30:24Z
+990,"during the initial setup, the streaming menu on this smart tv stopped working and needs support; the experience has remained consistent.",negative,television,test,2026-08-13T15:30:24Z
+991,"during the initial setup, the cooling fan on this freezer appliance performs better than expected; the experience has remained consistent.",positive,refrigerator,test,2026-08-13T15:30:24Z
+992,"during the initial setup, the cooling fan on this freezer appliance arrived in ordinary packaging; the experience has remained consistent.",neutral,refrigerator,test,2026-08-13T15:30:24Z
+993,"during the initial setup, the cooling fan on this freezer appliance stopped working and needs support; the experience has remained consistent.",negative,refrigerator,test,2026-08-13T15:30:24Z
+994,"during the initial setup, the control panel on this laundry machine performs better than expected; the experience has remained consistent.",positive,washing_machine,test,2026-08-13T15:30:24Z
+995,"during the initial setup, the control panel on this laundry machine arrived in ordinary packaging; the experience has remained consistent.",neutral,washing_machine,test,2026-08-13T15:30:24Z
+996,"during the initial setup, the control panel on this laundry machine stopped working and needs support; the experience has remained consistent.",negative,washing_machine,test,2026-08-13T15:30:24Z
+997,"during the initial setup, the charging port on this handset performs better than expected; the experience has remained consistent.",positive,smartphone,test,2026-08-13T15:30:24Z
+998,"during the initial setup, the charging port on this handset arrived in ordinary packaging; the experience has remained consistent.",neutral,smartphone,test,2026-08-13T15:30:24Z
+999,"during the initial setup, the charging port on this handset stopped working and needs support; the experience has remained consistent.",negative,smartphone,test,2026-08-13T15:30:24Z
+1000,"during the initial setup, the streaming menu on this display performs better than expected; the experience has remained consistent.",positive,television,test,2026-08-13T15:30:24Z

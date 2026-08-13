@@ -1,25 +1,26 @@
-name: Validate LSTM software pipeline
+name: Version data and validate LSTM pipeline
 
 on:
-  push:
-  pull_request:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
-  group: pipeline-${{ github.ref }}
-  cancel-in-progress: true
+  group: versioned-data-writer
+  cancel-in-progress: false
 
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -33,17 +34,19 @@ jobs:
       - name: Validate Python modules
         run: python -m compileall -q src streamlit_app.py
 
-      - name: Generate data and execute both classifiers
+      - name: Timestamp the manual experiment
+        run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+
+      - name: Append 100 train and 100 test reviews and execute both classifiers
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
           PIPELINE_EPOCHS: "20"
         run: >-
           python -m lstm_for_the_win.handler run
+          --append-data
+          --data-timestamp "$DATA_TIMESTAMP"
           --run-id github-${{ github.run_id }}
           --epochs 20
-
-      - name: Verify reproducible synthetic input
-        run: git diff --exit-code -- data/input
 
       - name: Run automated tests
         env:
@@ -66,10 +69,22 @@ jobs:
           cat data/output/streamlit.log
           exit 1
 
-      - name: Upload software demonstration
+      - name: Commit the versioned input batch
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/input
+          if git diff --cached --quiet; then
+            echo "The agent did not append a versioned batch."
+            exit 1
+          fi
+          git commit -m "data: append synthetic batch from run ${{ github.run_id }} [skip ci]"
+          git push origin HEAD:main
+
+      - name: Upload versioned experiment artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: software-demonstration
+          name: software-demonstration-${{ github.run_id }}
           path: |
             data/output/github-${{ github.run_id }}
             data/output/streamlit.log

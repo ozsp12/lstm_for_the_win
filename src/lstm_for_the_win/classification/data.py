@@ -1,17 +1,26 @@
-"""Text data loading, cleaning, validation, and splitting."""
+"""Text data loading, cleaning, validation, and explicit splitting."""
 
 from __future__ import annotations
 
 import csv
-import random
 import re
 import unicodedata
 from collections import defaultdict
+from dataclasses import dataclass
+from datetime import datetime
 from pathlib import Path
 from typing import Iterable
 
 
-Record = tuple[str, str]
+@dataclass(frozen=True)
+class Record:
+    """One traceable input row used by a classifier."""
+
+    ID: int
+    text: str
+    label: str
+    type: str
+    input_timestamp: str
 
 
 def clean_text(text: str) -> str:
@@ -27,72 +36,91 @@ def clean_text(text: str) -> str:
     return re.sub(r"\s+", " ", normalized).strip()
 
 
+def _validate_timestamp(value: str, row_number: int) -> None:
+    try:
+        parsed = datetime.fromisoformat(value.replace("Z", "+00:00"))
+    except ValueError as error:
+        raise ValueError(f"Row {row_number} contains an invalid input_timestamp.") from error
+    if parsed.tzinfo is None:
+        raise ValueError(f"Row {row_number} input_timestamp must include a timezone.")
+
+
 def load_dataset(path: str | Path) -> list[Record]:
-    """Load a CSV file with the required ``text`` and ``label`` columns."""
+    """Load a versioned CSV with explicit train/test membership."""
 
     dataset_path = Path(path)
     if not dataset_path.is_file():
         raise FileNotFoundError(f"Dataset not found: {dataset_path}")
 
     records: list[Record] = []
+    required = {"ID", "text", "label", "type", "input_timestamp"}
     with dataset_path.open("r", encoding="utf-8", newline="") as file:
         reader = csv.DictReader(file)
-        if reader.fieldnames is None or not {"text", "label"}.issubset(reader.fieldnames):
-            raise ValueError("The dataset must contain the 'text' and 'label' columns.")
+        if reader.fieldnames is None or not required.issubset(reader.fieldnames):
+            raise ValueError(
+                "The dataset must contain ID, text, label, type, and input_timestamp."
+            )
 
         for row_number, row in enumerate(reader, start=2):
+            try:
+                record_id = int(row["ID"])
+            except (TypeError, ValueError) as error:
+                raise ValueError(f"Row {row_number} contains an invalid ID.") from error
             text = clean_text(row["text"])
             label = row["label"].strip()
-            if not text or not label:
-                raise ValueError(f"Row {row_number} contains an empty text or label value.")
-            records.append((text, label))
+            row_type = row["type"].strip()
+            input_timestamp = row["input_timestamp"].strip()
+            if record_id < 1 or not text or not label:
+                raise ValueError(f"Row {row_number} contains an invalid ID, text, or label.")
+            if row_type not in {"train", "test"}:
+                raise ValueError(f"Row {row_number} type must be train or test.")
+            _validate_timestamp(input_timestamp, row_number)
+            records.append(
+                Record(
+                    ID=record_id,
+                    text=text,
+                    label=label,
+                    type=row_type,
+                    input_timestamp=input_timestamp,
+                )
+            )
 
     validate_records(records)
     return records
 
 
 def validate_records(records: Iterable[Record]) -> None:
-    """Check minimum dataset size and class balance for training and testing."""
+    """Check IDs, label coverage, and explicit train/test class balance."""
 
-    counts: dict[str, int] = defaultdict(int)
-    total = 0
-    for _, label in records:
-        counts[label] += 1
-        total += 1
-
-    if total == 0:
+    rows = list(records)
+    if not rows:
         raise ValueError("The dataset is empty.")
-    if len(counts) < 2:
+
+    ids = [record.ID for record in rows]
+    if ids != sorted(ids) or len(ids) != len(set(ids)):
+        raise ValueError("IDs must be unique and monotonically increasing.")
+
+    counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+    for record in rows:
+        counts[record.type][record.label] += 1
+    if set(counts) != {"train", "test"}:
+        raise ValueError("The dataset must contain both train and test rows.")
+    labels = set(counts["train"]) | set(counts["test"])
+    if len(labels) < 2:
         raise ValueError("At least two labels are required.")
-    if min(counts.values()) < 5:
-        raise ValueError("Each label requires at least five examples.")
+    for row_type in ("train", "test"):
+        if set(counts[row_type]) != labels:
+            raise ValueError(f"Every label must be represented in {row_type} rows.")
+        if min(counts[row_type].values()) < 5:
+            raise ValueError(f"Each label requires at least five {row_type} examples.")
 
 
-def stratified_split(
-    records: Iterable[Record],
-    test_fraction: float = 0.20,
-    seed: int = 42,
-) -> tuple[list[Record], list[Record]]:
-    """Split records while preserving every label in train and test sets."""
+def split_by_type(records: Iterable[Record]) -> tuple[list[Record], list[Record]]:
+    """Use the versioned type column instead of creating a random holdout split."""
 
-    if not 0.0 < test_fraction < 1.0:
-        raise ValueError("test_fraction must be between zero and one.")
-
-    grouped: dict[str, list[Record]] = defaultdict(list)
-    for record in records:
-        grouped[record[1]].append(record)
-
-    random_generator = random.Random(seed)
-    train_records: list[Record] = []
-    test_records: list[Record] = []
-
-    for label in sorted(grouped):
-        label_records = grouped[label][:]
-        random_generator.shuffle(label_records)
-        test_size = max(1, round(len(label_records) * test_fraction))
-        test_records.extend(label_records[:test_size])
-        train_records.extend(label_records[test_size:])
-
-    random_generator.shuffle(train_records)
-    random_generator.shuffle(test_records)
+    rows = list(records)
+    train_records = [record for record in rows if record.type == "train"]
+    test_records = [record for record in rows if record.type == "test"]
+    if not train_records or not test_records:
+        raise ValueError("Both train and test records are required.")
     return train_records, test_records

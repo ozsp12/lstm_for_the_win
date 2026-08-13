@@ -101,14 +101,19 @@ def evaluate_model(
     return {"loss": float(loss), "accuracy": float(accuracy)}
 
 
-def predict_classes(model: tf.keras.Model, texts: Sequence[str]) -> np.ndarray:
-    """Return the most likely class index for each text."""
+def predict_probabilities(model: tf.keras.Model, texts: Sequence[str]) -> np.ndarray:
+    """Return class probabilities for each text."""
 
-    probabilities = model.predict(
+    return model.predict(
         tf.constant(list(texts), dtype=tf.string),
         verbose=0,
     )
-    return np.argmax(probabilities, axis=1)
+
+
+def predict_classes(model: tf.keras.Model, texts: Sequence[str]) -> np.ndarray:
+    """Return the most likely class index for each text."""
+
+    return np.argmax(predict_probabilities(model, texts), axis=1)
 
 
 def build_confusion_matrix(

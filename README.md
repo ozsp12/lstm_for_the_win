@@ -1,6 +1,9 @@
-# LSTM for Topic Classification
+# LSTM for Sentiment and Topic Classification
 
-A minimal, reproducible pipeline for classifying product reviews into four topics: `smartphone`, `television`, `refrigerator`, and `washing_machine`.
+A minimal, reproducible project with two product-review classifiers:
+
+- sentiment: `positive`, `neutral`, or `negative`;
+- topic: `smartphone`, `television`, `refrigerator`, or `washing_machine`.
 
 ## Solution design
 
@@ -22,13 +25,15 @@ flowchart LR
     H -. exploration .-> L["K-Means"]
 ```
 
+The diagram also records the original spaCy/KNN topic-design and K-Means exploration path. The automated notebook currently runs both supervised tasks through the shared LSTM implementation.
+
 ## How it works
 
-1. Loads and validates labeled reviews from a CSV file.
-2. Normalizes the text and creates a stratified train/test split.
-3. Learns the vocabulary with `TextVectorization`.
-4. Trains an `Embedding -> LSTM -> Dense -> Softmax` network.
-5. Evaluates accuracy and produces sample predictions.
+1. Loads and validates the sentiment and topic datasets.
+2. Normalizes text and creates stratified train/test splits.
+3. Learns an independent vocabulary for each task with `TextVectorization`.
+4. Trains an `Embedding -> LSTM -> Dense -> Softmax` network for each classifier.
+5. Evaluates both classifiers and produces sample predictions.
 
 All reusable logic lives in `.py` files; the notebook only configures, runs, and presents the result.
 
@@ -36,9 +41,12 @@ All reusable logic lives in `.py` files; the notebook only configures, runs, and
 
 ```text
 .github/workflows/pipeline.yml     automated GitHub Actions execution
-data/topic_samples.csv             synthetic, balanced, PII-free data
-notebooks/topic_classification_pipeline.ipynb
-src/topic_classifier/              pipeline functions
+data/sentiment_samples.csv         synthetic sentiment data
+data/topic_samples.csv             synthetic topic data
+notebooks/text_classification_pipeline.ipynb
+src/text_classifier/               shared LSTM implementation
+src/sentiment_classifier/          sentiment entry point
+src/topic_classifier/              topic entry point
 ```
 
 ## Run locally
@@ -49,7 +57,7 @@ Requires Python 3.12.
 python -m venv .venv
 source .venv/bin/activate           # Windows: .venv\Scripts\activate
 python -m pip install -r requirements.txt
-python -m jupyter nbconvert --execute --to notebook --inplace notebooks/topic_classification_pipeline.ipynb
+python -m jupyter nbconvert --execute --to notebook --inplace notebooks/text_classification_pipeline.ipynb
 ```
 
 The executed notebook retains metrics and predictions in its output cells.
@@ -63,4 +71,4 @@ The `pipeline.yml` workflow runs on every push, pull request, or manual dispatch
 - executes the notebook from start to finish;
 - uploads the executed notebook as a workflow artifact.
 
-The included dataset is synthetic and intended for demonstration. For real use, replace `data/topic_samples.csv` with labeled, PII-free data while preserving the `text` and `topic` columns.
+The included datasets are synthetic and intended for demonstration. For real use, replace them with labeled, PII-free data while preserving the `text` and `label` columns.

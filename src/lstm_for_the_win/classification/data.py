@@ -1,4 +1,4 @@
-"""Text data loading, cleaning, and splitting."""
+"""Text data loading, cleaning, validation, and splitting."""
 
 from __future__ import annotations
 

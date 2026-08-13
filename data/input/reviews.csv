@@ -1,0 +1,49 @@
+text,expected_sentiment,expected_topic
+the ice maker on this refrigerator stopped working and needs support,negative,refrigerator
+the app storage on this smartphone performs far below expectations,negative,smartphone
+the touchscreen on this smartphone arrived in ordinary packaging,neutral,smartphone
+the ice maker on this refrigerator is unreliable and fails during use,negative,refrigerator
+the picture panel on this display has delivered consistently good results,positive,television
+the battery on this phone performs better than expected,positive,smartphone
+the remote control on this television stopped working and needs support,negative,television
+the screen on this tv has delivered consistently good results,positive,television
+the water inlet on this washer is unreliable and fails during use,negative,washing_machine
+the channel tuner on this television is typical for this product category,neutral,television
+the interior light on this cooling unit is typical for this product category,neutral,refrigerator
+the water dispenser on this cooling unit is disappointing and causes repeated problems,negative,refrigerator
+the water inlet on this laundry appliance is disappointing and causes repeated problems,negative,washing_machine
+the spin cycle on this laundry machine is typical for this product category,neutral,washing_machine
+the screen on this display performs better than expected,positive,television
+the drum on this laundry appliance has delivered consistently good results,positive,washing_machine
+the wifi connection on this display performs far below expectations,negative,television
+the door lock on this laundry appliance matches the standard specification,neutral,washing_machine
+the touchscreen on this handset is reliable and easy to use,positive,smartphone
+the storage drawer on this refrigerator performs the expected basic function,neutral,refrigerator
+the door seal on this refrigerator performs better than expected,positive,refrigerator
+the door seal on this freezer appliance has delivered consistently good results,positive,refrigerator
+the picture panel on this display stopped working and needs support,negative,television
+the water inlet on this washing machine is reliable and easy to use,positive,washing_machine
+the sound output on this display matches the standard specification,neutral,television
+the water inlet on this laundry appliance performs far below expectations,negative,washing_machine
+the mobile signal on this smartphone arrived in ordinary packaging,neutral,smartphone
+the fingerprint reader on this smartphone matches the standard specification,neutral,smartphone
+the speaker on this smartphone is excellent and works perfectly,positive,smartphone
+the control panel on this washing machine is typical for this product category,neutral,washing_machine
+the detergent drawer on this washer matches the standard specification,neutral,washing_machine
+the fingerprint reader on this phone stopped working and needs support,negative,smartphone
+the sound output on this television is unreliable and fails during use,negative,television
+the temperature control on this fridge is disappointing and causes repeated problems,negative,refrigerator
+the mobile signal on this smartphone matches the standard specification,neutral,smartphone
+the remote control on this display performs the expected basic function,neutral,television
+the cooling fan on this cooling unit has delivered consistently good results,positive,refrigerator
+the touchscreen on this handset is excellent and works perfectly,positive,smartphone
+the detergent drawer on this washing machine is reliable and easy to use,positive,washing_machine
+the picture panel on this television arrived in ordinary packaging,neutral,television
+the water dispenser on this fridge performs the expected basic function,neutral,refrigerator
+the picture panel on this display performs better than expected,positive,television
+the door seal on this freezer appliance arrived in ordinary packaging,neutral,refrigerator
+the battery on this handset performs far below expectations,negative,smartphone
+the water inlet on this washer is excellent and works perfectly,positive,washing_machine
+the water inlet on this laundry appliance is unreliable and fails during use,negative,washing_machine
+the temperature control on this fridge performs better than expected,positive,refrigerator
+the mobile signal on this mobile device performs far below expectations,negative,smartphone

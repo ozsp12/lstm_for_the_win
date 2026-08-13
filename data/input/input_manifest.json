@@ -1,0 +1,25 @@
+{
+  "agent_version": "1.0.0",
+  "config": {
+    "agent_name": "synthetic-review-generator",
+    "agent_version": "1.0.0",
+    "allow_personal_data": false,
+    "language": "en",
+    "reviews_per_sentiment_topic_pair": 4,
+    "seed": 42,
+    "sentiment_samples_per_label": 64,
+    "synthetic_only": true,
+    "topic_samples_per_label": 32
+  },
+  "generated_by": "synthetic-review-generator",
+  "record_counts": {
+    "reviews.csv": 48,
+    "sentiment_samples.csv": 192,
+    "topic_samples.csv": 128
+  },
+  "sha256": {
+    "reviews.csv": "050465419d41f16758a4e91fc6b1ebb5362fe3f68e22c0e87a8675c58fb520ea",
+    "sentiment_samples.csv": "bacc5b9ca94dc2d03bda2cfbce7efda7ae5ba8310ade1623b97acc354fefa0c9",
+    "topic_samples.csv": "482a6167e7763a16addb979113b5263969fc01af4af3015dd1f1b0cf58c7f674"
+  }
+}

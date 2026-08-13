@@ -1,6 +1,6 @@
-# LSTM for Sentiment and Topic Classification
+# LSTM Product Review Intelligence
 
-A minimal, reproducible project with two product-review classifiers:
+A small software application that trains two LSTM classifiers and presents their results in Streamlit:
 
 - sentiment: `positive`, `neutral`, or `negative`;
 - topic: `smartphone`, `television`, `refrigerator`, or `washing_machine`.
@@ -11,84 +11,114 @@ A minimal, reproducible project with two product-review classifiers:
 
 ```mermaid
 flowchart LR
-    A["Product reviews"] --> B["Cleaning and tokenization"]
-    B --> C["Sentiment vectorization"]
-    C --> D["Embedding + LSTM"]
-    D --> E["Positive, neutral, or negative"]
-    B --> F["Topic vectorization"]
-    F --> G["Embedding + LSTM"]
-    G --> H["Predicted product topic"]
-    E --> I["Business routing suggestion"]
-    H --> I
+    A["Synthetic Data Agent"] --> B["data/input"]
+    B --> C["Pipeline Handler"]
+    C --> D["Sentiment LSTM"]
+    C --> E["Topic LSTM"]
+    D --> F["Versioned run artifacts"]
+    E --> F
+    F --> G["Streamlit application"]
+    F --> H["GitHub Actions artifact"]
 ```
 
-The two classifiers share one reusable implementation but learn independent vocabularies and model weights.
+`PipelineHandler` is the single execution boundary. It controls synthetic-data generation, model training, evaluation, inference, model persistence, and run publication. The Streamlit application reads completed artifacts and never retrains a model during a page refresh.
 
-## Stakeholder demonstration
+## Dashboard
 
-The executed notebook includes a presentation-ready dashboard with:
+The one-page application provides:
 
-- executive accuracy, evaluation-volume, and supported-class indicators;
-- training-accuracy curves for both models;
-- class-distribution comparisons;
-- sentiment and topic confusion-matrix heatmaps;
-- prediction examples with expected class, predicted class, confidence, and review status;
-- a business demonstration that applies both classifiers to the same review;
-- per-class confidence profiles and an illustrative routing suggestion;
-- a visible warning that synthetic results are not production benchmarks.
+- total review volume, negative share, top topic, and low-confidence volume;
+- predicted sentiment percentages and topic volumes;
+- confidence distributions;
+- filterable word clouds and precise top-term rankings;
+- review-level predictions and suggested routing actions;
+- training curves, holdout accuracy, and confusion matrices;
+- live classification with probabilities from both persisted models.
 
-Edit the `demo_reviews` tuple in the notebook to demonstrate different product reviews. GitHub Actions publishes both the executed notebook and a standalone HTML report as workflow artifacts.
+Word clouds communicate frequency only. They do not represent feature importance or causality.
 
-## How it works
+## Run locally
 
-1. Loads and validates the sentiment and topic datasets.
-2. Normalizes text and creates stratified train/test splits.
-3. Learns an independent vocabulary for each task with `TextVectorization`.
-4. Trains an `Embedding -> LSTM -> Dense -> Softmax` network for each classifier.
-5. Evaluates both classifiers and produces sample predictions.
+Python 3.12 is required.
 
-All reusable logic lives in `.py` files; the notebook only configures, runs, and presents the result.
+```bash
+python -m venv .venv
+source .venv/bin/activate            # Windows: .venv\Scripts\activate
+python -m pip install -e ".[test]"
+lstm-pipeline run --epochs 20
+streamlit run streamlit_app.py
+```
+
+Open `http://localhost:8501` after Streamlit starts.
+
+### Handler commands
+
+```bash
+# Regenerate only the synthetic input datasets
+lstm-pipeline generate-data --overwrite
+
+# Train from existing input datasets without regenerating them
+lstm-pipeline train --run-id my-run --epochs 20
+
+# Regenerate synthetic input, train both classifiers, and publish one run
+lstm-pipeline run --run-id demo-run --epochs 20
+```
+
+## Data and artifacts
+
+```text
+data/
+├── input/
+│   ├── input_manifest.json
+│   ├── sentiment_samples.csv
+│   ├── topic_samples.csv
+│   └── reviews.csv
+└── output/
+    └── <run_id>/
+        ├── run_manifest.json
+        ├── results.json
+        ├── evaluation_predictions.csv
+        ├── inference_predictions.csv
+        └── models/
+            ├── sentiment.keras
+            └── topic.keras
+```
+
+`data/input` contains reproducible, PII-free synthetic demonstration data and is versioned. `data/output` is generated, ignored by Git, and published by GitHub Actions as a downloadable workflow artifact.
+
+Every completed run records its input hashes, execution parameters, Python and TensorFlow versions, creation timestamp, Git commit, metrics, predictions, and trained models.
+
+## Synthetic Data Agent
+
+The local agent is configured in `config/synthetic_data.json`. It uses seeded phrase libraries to create balanced English datasets without calling external services. This keeps continuous integration deterministic, avoids API credentials, and prevents accidental use of personal information.
+
+Use `lstm-pipeline train` instead of `run` when replacing the synthetic files with reviewed real-world inputs.
 
 ## Project structure
 
 ```text
-.github/workflows/pipeline.yml     automated GitHub Actions execution
-data/sentiment_samples.csv         synthetic sentiment data
-data/topic_samples.csv             synthetic topic data
-notebooks/text_classification_pipeline.ipynb
-docs/assets/stakeholder_overview.svg
-src/text_classifier/               shared LSTM implementation
-src/sentiment_classifier/          sentiment entry point
-src/topic_classifier/              topic entry point
-```
-
-## Run locally
-
-Requires Python 3.12.
-
-```bash
-python -m venv .venv
-source .venv/bin/activate           # Windows: .venv\Scripts\activate
-python -m pip install -r requirements.txt
-python -m jupyter nbconvert --execute --to notebook --inplace notebooks/text_classification_pipeline.ipynb
-```
-
-The executed notebook retains metrics and predictions in its output cells.
-
-To generate a standalone stakeholder report after executing the notebook:
-
-```bash
-python -m jupyter nbconvert --to html --no-input --no-prompt --output stakeholder_report.html notebooks/text_classification_pipeline.ipynb
+.github/workflows/pipeline.yml        continuous integration workflow
+config/synthetic_data.json            synthetic-data agent configuration
+data/input/                           versioned demonstration inputs
+data/output/                          ignored, versioned run directories
+src/lstm_for_the_win/agents/          synthetic-data generation
+src/lstm_for_the_win/classification/  reusable LSTM implementation
+src/lstm_for_the_win/dashboard/       dashboard data, charts, and inference
+src/lstm_for_the_win/handler.py       controlled application entry point
+streamlit_app.py                      stakeholder-facing application
+tests/                                data, visualization, and app tests
 ```
 
 ## GitHub Actions
 
-The `pipeline.yml` workflow runs on every push, pull request, or manual dispatch. It:
+The workflow runs on pushes, pull requests, and manual dispatches. It:
 
-- installs the environment;
-- validates Python module syntax;
-- executes the notebook from start to finish;
-- exports a standalone stakeholder HTML report;
-- uploads the executed notebook and HTML report as workflow artifacts.
+1. installs the package;
+2. generates deterministic synthetic input;
+3. trains and evaluates both classifiers through the handler;
+4. verifies that generated input matches the committed snapshot;
+5. runs automated dashboard and live-inference tests;
+6. starts the Streamlit server and checks its health endpoint;
+7. uploads the complete run directory as `software-demonstration`.
 
-The included datasets are synthetic and intended for demonstration. For real use, replace them with labeled, PII-free data while preserving the `text` and `label` columns.
+The included results are a software demonstration, not a production benchmark. Production use requires representative data, privacy review, confidence calibration, acceptance thresholds, and model monitoring.

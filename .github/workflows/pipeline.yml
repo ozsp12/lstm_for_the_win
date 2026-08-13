@@ -1,4 +1,4 @@
-name: Run LSTM pipeline
+name: Validate LSTM software pipeline
 
 on:
   push:
@@ -28,37 +28,48 @@ jobs:
           cache: pip
 
       - name: Install dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -r requirements.txt
+        run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src
+        run: python -m compileall -q src streamlit_app.py
 
-      - name: Execute notebook
+      - name: Generate data and execute both classifiers
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
           PIPELINE_EPOCHS: "20"
+        run: >-
+          python -m lstm_for_the_win.handler run
+          --run-id github-${{ github.run_id }}
+          --epochs 20
+
+      - name: Verify reproducible synthetic input
+        run: git diff --exit-code -- data/input
+
+      - name: Run automated tests
+        env:
+          PIPELINE_TEST_RUN_PATH: data/output/github-${{ github.run_id }}
+        run: python -m pytest -q
+
+      - name: Smoke-test the Streamlit server
+        env:
+          PIPELINE_OUTPUT_ROOT: data/output
         run: |
-          mkdir -p artifacts
-          python -m jupyter nbconvert \
-            --execute \
-            --to notebook \
-            --ExecutePreprocessor.timeout=600 \
-            --output text_classification_pipeline.executed.ipynb \
-            --output-dir artifacts \
-            notebooks/text_classification_pipeline.ipynb
+          python -m streamlit run streamlit_app.py --server.headless=true --server.port=8501 > data/output/streamlit.log 2>&1 &
+          APP_PID=$!
+          trap "kill $APP_PID" EXIT
+          for attempt in {1..30}; do
+            if curl --fail --silent http://localhost:8501/_stcore/health; then
+              exit 0
+            fi
+            sleep 1
+          done
+          cat data/output/streamlit.log
+          exit 1
 
-          python -m jupyter nbconvert \
-            --to html \
-            --no-input \
-            --no-prompt \
-            --output stakeholder_report.html \
-            --output-dir artifacts \
-            artifacts/text_classification_pipeline.executed.ipynb
-
-      - name: Upload stakeholder artifacts
+      - name: Upload software demonstration
         uses: actions/upload-artifact@v4
         with:
-          name: stakeholder-demonstration
+          name: software-demonstration
           path: |
-            artifacts/text_classification_pipeline.executed.ipynb
-            artifacts/stakeholder_report.html
+            data/output/github-${{ github.run_id }}
+            data/output/streamlit.log

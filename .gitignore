@@ -1,16 +1,23 @@
 # Python
 __pycache__/
 *.py[cod]
+*.egg-info/
 .venv/
 
 # Jupyter
 .ipynb_checkpoints/
 
-# Artefatos gerados
+# Generated pipeline artifacts
 artifacts/
+data/output/*
+!data/output/.gitkeep
 *.keras
 
-# IDE e sistema
+# Test and tool caches
+.pytest_cache/
+.streamlit/secrets.toml
+
+# IDE and operating system
 .vscode/
 .idea/
 .DS_Store

@@ -15,21 +15,21 @@
   "generated_by": "synthetic-review-generator",
   "id_range": {
     "first": 1,
-    "last": 1000
+    "last": 1200
   },
-  "latest_input_timestamp": "2026-08-13T15:30:24Z",
+  "latest_input_timestamp": "2026-08-13T17:00:50Z",
   "record_counts": {
-    "reviews.csv": 1000,
-    "sentiment_samples.csv": 1000,
-    "topic_samples.csv": 1000
+    "reviews.csv": 1200,
+    "sentiment_samples.csv": 1200,
+    "topic_samples.csv": 1200
   },
   "review_type_counts": {
-    "test": 500,
-    "train": 500
+    "test": 600,
+    "train": 600
   },
   "sha256": {
-    "reviews.csv": "798c80fa6bbafe546f84b3c58128a022d5b522f308ff3fb9e6756564ca1dae61",
-    "sentiment_samples.csv": "3c8bae4c5a9246004dcadab8d9ac9dc1b307fc596b554c72c0fd8f9d164aa615",
-    "topic_samples.csv": "5e72cdedf216ef89cfe40cb23f1d93ddd8b1e2159c4906768097ebc26fa6c13a"
+    "reviews.csv": "f1c70879bc52f452e9f60f95a0a090c7615a9c7cd9aedb671191b916debb2cf7",
+    "sentiment_samples.csv": "3b0e02b6b64b1e2318d8a0c078c906516beb824da99b908b5c8f9676b43c4bdb",
+    "topic_samples.csv": "683f1445ff2917aea83561bbf33445651545c7b1484d24e662e3610925f6111e"
   }
 }

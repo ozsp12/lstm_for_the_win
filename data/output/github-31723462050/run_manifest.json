@@ -1,0 +1,39 @@
+{
+  "created_at": "2026-08-13T17:01:09.553111+00:00",
+  "git_sha": "420ee35956c824f65693ba290fc239d0212117f1",
+  "input_files": {
+    "reviews.csv": {
+      "sha256": "f1c70879bc52f452e9f60f95a0a090c7615a9c7cd9aedb671191b916debb2cf7",
+      "size_bytes": 229522
+    },
+    "sentiment_samples.csv": {
+      "sha256": "3b0e02b6b64b1e2318d8a0c078c906516beb824da99b908b5c8f9676b43c4bdb",
+      "size_bytes": 214194
+    },
+    "topic_samples.csv": {
+      "sha256": "683f1445ff2917aea83561bbf33445651545c7b1484d24e662e3610925f6111e",
+      "size_bytes": 219094
+    }
+  },
+  "input_timestamps": [
+    "2026-08-13T15:30:24Z",
+    "2026-08-13T17:00:50Z"
+  ],
+  "model_timestamp": "2026-08-13T17:00:54.465197+00:00",
+  "outputs": {
+    "evaluation_predictions": "evaluation_predictions.csv",
+    "predictions": "predictions.csv",
+    "results": "results.json",
+    "sentiment_model": "models/sentiment.keras",
+    "topic_model": "models/topic.keras"
+  },
+  "parameters": {
+    "epochs": 20,
+    "seed": 42
+  },
+  "pipeline_version": "0.4.0",
+  "python_version": "3.12.13",
+  "run_id": "github-31723462050",
+  "status": "complete",
+  "tensorflow_version": "2.20.0"
+}

@@ -1,12 +1,13 @@
 {
   "agent_name": "synthetic-review-generator",
-  "agent_version": "2.0.0",
+  "agent_version": "3.0.0",
   "language": "en",
   "seed": 42,
-  "initial_train_rows": 500,
-  "initial_test_rows": 500,
-  "append_train_rows": 100,
-  "append_test_rows": 100,
+  "initial_train_rows": 6000,
+  "incoming_rows": 1200,
+  "profanity_fraction": 0.25,
+  "goldtest_fraction": 0.20,
+  "validation_fraction": 0.15,
   "synthetic_only": true,
   "allow_personal_data": false
 }

@@ -64,6 +64,29 @@ jobs:
           --epochs 20
           --patience 3
 
+      - name: Prepare compact dashboard metrics
+        run: |
+          RUN_PATH="data/output/github-${{ github.run_id }}"
+          python - "$RUN_PATH/results.json" "$RUN_PATH/metrics.json" <<'PY'
+          import json
+          import sys
+          from pathlib import Path
+
+          source = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          fields = (
+              "task", "train_size", "fit_size", "validation_size", "incoming_size",
+              "labels", "metrics", "baseline_metrics", "metric_delta_vs_baseline",
+          )
+          compact = {
+              task: {field: result[field] for field in fields}
+              for task, result in source.items()
+          }
+          Path(sys.argv[2]).write_text(
+              json.dumps(compact, indent=2, sort_keys=True) + "\n",
+              encoding="utf-8",
+          )
+          PY
+
       - name: Run automated tests
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
@@ -73,6 +96,7 @@ jobs:
         run: |
           RUN_PATH="data/output/github-${{ github.run_id }}"
           test -f "$RUN_PATH/predictions.csv"
+          test -f "$RUN_PATH/metrics.json"
           test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -80,6 +104,7 @@ jobs:
           git add \
             data/output/latest.json \
             "$RUN_PATH/predictions.csv" \
+            "$RUN_PATH/metrics.json" \
             "$RUN_PATH/run_manifest.json"
           if git diff --cached --quiet; then
             echo "The pipeline did not produce a versioned state transition."

@@ -2,7 +2,7 @@
 
 LSTM-based text-classification pipeline for product reviews, with independent models for sentiment and product topic.
 
-**Project page:** https://ozsp12.github.io/en/lstm_ftw/
+**Project page:** https://ozsp12.github.io/en/projects/lstm_ftw/
 
 ## Tasks
 

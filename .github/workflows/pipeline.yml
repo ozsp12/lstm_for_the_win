@@ -1,4 +1,4 @@
-name: Version data and validate LSTM pipeline
+name: Run continual-learning LSTM pipeline
 
 on:
   workflow_dispatch:
@@ -13,7 +13,7 @@ concurrency:
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
@@ -32,30 +32,40 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src
+        run: python -m compileall -q src tests
 
-      - name: Timestamp the manual experiment
+      - name: Timestamp experiment
         run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
-      - name: Append 100 train and 100 test reviews and execute both classifiers
+      - name: Ensure initial input state exists
+        run: |
+          if [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
+            python -m lstm_for_the_win.handler generate-data \
+              --mode initialize \
+              --data-timestamp "$DATA_TIMESTAMP" \
+              --overwrite
+          fi
+
+      - name: Train, evaluate incoming data, promote goldtest, and refresh incoming
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
-          PIPELINE_EPOCHS: "20"
         run: >-
           python -m lstm_for_the_win.handler run
-          --append-data
+          --advance-data
           --data-timestamp "$DATA_TIMESTAMP"
           --run-id github-${{ github.run_id }}
           --epochs 20
+          --patience 3
 
       - name: Run automated tests
+        env:
+          TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
-      - name: Commit versioned inputs and CSV outputs
+      - name: Commit next data generation and evaluation outputs
         run: |
           RUN_PATH="data/output/github-${{ github.run_id }}"
           test -f "$RUN_PATH/predictions.csv"
-          test -f "$RUN_PATH/evaluation_predictions.csv"
           test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -63,17 +73,16 @@ jobs:
           git add \
             data/output/latest.json \
             "$RUN_PATH/predictions.csv" \
-            "$RUN_PATH/evaluation_predictions.csv" \
             "$RUN_PATH/run_manifest.json"
           if git diff --cached --quiet; then
-            echo "The agent did not append versioned inputs and outputs."
+            echo "The pipeline did not produce a versioned state transition."
             exit 1
           fi
-          git commit -m "data: append synthetic batch and results from run ${{ github.run_id }} [skip ci]"
+          git commit -m "data: advance continual-learning generation ${{ github.run_id }} [skip ci]"
           git push origin HEAD:main
 
-      - name: Upload versioned experiment artifacts
+      - name: Upload complete experiment artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: software-demonstration-${{ github.run_id }}
+          name: lstm-experiment-${{ github.run_id }}
           path: data/output/github-${{ github.run_id }}

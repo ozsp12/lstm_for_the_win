@@ -1,63 +1,76 @@
 from __future__ import annotations
 
 import csv
+import json
 from collections import Counter
 from pathlib import Path
 
 from lstm_for_the_win.agents import SyntheticDataAgent, SyntheticDataConfig
 
 
-ROOT = Path(__file__).resolve().parents[1]
-INITIAL_TIMESTAMP = "2026-08-13T12:00:00+00:00"
-APPEND_TIMESTAMP = "2026-08-14T12:00:00+00:00"
+TIMESTAMP_0 = "2026-08-15T12:00:00+00:00"
+TIMESTAMP_1 = "2026-08-16T12:00:00+00:00"
 
 
-def _read_rows(path: Path) -> list[dict[str, str]]:
+def _rows(path: Path) -> list[dict[str, str]]:
     with path.open("r", encoding="utf-8", newline="") as file:
         return list(csv.DictReader(file))
 
 
-def test_synthetic_agent_initializes_aligned_versioned_data(tmp_path: Path) -> None:
-    config = SyntheticDataConfig.from_json(ROOT / "config" / "synthetic_data.json")
-    agent = SyntheticDataAgent(config)
-    first = tmp_path / "first"
-    second = tmp_path / "second"
-
-    agent.initialize(first, INITIAL_TIMESTAMP)
-    agent.initialize(second, INITIAL_TIMESTAMP)
-
-    for filename in ("sentiment_samples.csv", "topic_samples.csv", "reviews.csv"):
-        assert (first / filename).read_bytes() == (second / filename).read_bytes()
-
-    reviews = _read_rows(first / "reviews.csv")
-    sentiment = _read_rows(first / "sentiment_samples.csv")
-    topic = _read_rows(first / "topic_samples.csv")
-
-    assert len(reviews) == 1_000
-    assert Counter(row["type"] for row in reviews) == {"train": 500, "test": 500}
-    assert [int(row["ID"]) for row in reviews] == list(range(1, 1_001))
-    assert len({row["text"] for row in reviews}) == len(reviews)
-    assert {row["input_timestamp"] for row in reviews} == {INITIAL_TIMESTAMP}
-    assert [row["ID"] for row in sentiment] == [row["ID"] for row in reviews]
-    assert [row["ID"] for row in topic] == [row["ID"] for row in reviews]
-    assert [row["label"] for row in sentiment] == [
-        row["expected_sentiment"] for row in reviews
-    ]
-    assert [row["label"] for row in topic] == [row["expected_topic"] for row in reviews]
+def _config() -> SyntheticDataConfig:
+    return SyntheticDataConfig(
+        initial_train_rows=1_200,
+        incoming_rows=1_200,
+        profanity_fraction=0.25,
+        goldtest_fraction=0.20,
+        validation_fraction=0.15,
+    )
 
 
-def test_synthetic_agent_appends_100_train_and_100_test_rows(tmp_path: Path) -> None:
-    config = SyntheticDataConfig.from_json(ROOT / "config" / "synthetic_data.json")
-    destination = tmp_path / "input"
-    agent = SyntheticDataAgent(config)
-    agent.initialize(destination, INITIAL_TIMESTAMP)
-    agent.append(destination, APPEND_TIMESTAMP)
+def test_initialize_creates_balanced_disjoint_train_and_incoming(tmp_path: Path) -> None:
+    agent = SyntheticDataAgent(_config())
+    manifest_path = agent.initialize(tmp_path, TIMESTAMP_0)
 
-    reviews = _read_rows(destination / "reviews.csv")
-    appended = reviews[1_000:]
-    assert len(reviews) == 1_200
-    assert Counter(row["type"] for row in reviews) == {"train": 600, "test": 600}
-    assert Counter(row["type"] for row in appended) == {"train": 100, "test": 100}
-    assert [int(row["ID"]) for row in reviews] == list(range(1, 1_201))
-    assert {row["input_timestamp"] for row in appended} == {APPEND_TIMESTAMP}
-    assert len({row["text"] for row in reviews}) == len(reviews)
+    train = _rows(tmp_path / "train.csv")
+    incoming = _rows(tmp_path / "incoming.csv")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert len(train) == 1_200
+    assert len(incoming) == 1_200
+    assert len({row["ID"] for row in train}) == len(train)
+    assert len({row["ID"] for row in incoming}) == len(incoming)
+    assert not ({row["ID"] for row in train} & {row["ID"] for row in incoming})
+    assert not ({row["text"] for row in train} & {row["text"] for row in incoming})
+    assert Counter(row["linguistic_level"] for row in incoming) == {
+        "limited": 240,
+        "informal": 240,
+        "standard": 240,
+        "advanced": 240,
+        "technical": 240,
+    }
+    assert sum(row["flagprofanity"] == "1" for row in incoming) == 300
+    assert sum(row["goldtest"] == "1" for row in incoming) == 240
+    assert manifest["generation"] == 0
+    assert manifest["record_counts"] == {"incoming.csv": 1_200, "train.csv": 1_200}
+
+
+def test_advance_promotes_goldtest_and_replaces_entire_incoming_batch(tmp_path: Path) -> None:
+    agent = SyntheticDataAgent(_config())
+    agent.initialize(tmp_path, TIMESTAMP_0)
+    first_incoming = _rows(tmp_path / "incoming.csv")
+    promoted_ids = {row["ID"] for row in first_incoming if row["goldtest"] == "1"}
+    first_incoming_ids = {row["ID"] for row in first_incoming}
+
+    manifest_path = agent.advance(tmp_path, TIMESTAMP_1)
+    train = _rows(tmp_path / "train.csv")
+    next_incoming = _rows(tmp_path / "incoming.csv")
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+
+    assert len(train) == 1_440
+    assert len(next_incoming) == 1_200
+    assert promoted_ids.issubset({row["ID"] for row in train})
+    assert not (first_incoming_ids & {row["ID"] for row in next_incoming})
+    assert Counter(row["source"] for row in train)["goldtest"] == 240
+    assert {row["training_generation"] for row in train if row["source"] == "goldtest"} == {"1"}
+    assert manifest["generation"] == 1
+    assert manifest["promoted_from_previous_incoming"] == 240

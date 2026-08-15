@@ -1,44 +1,82 @@
 {
-  "agent_version": "3.0.0",
+  "agent_version": "4.0.0",
   "config": {
     "agent_name": "synthetic-review-generator",
-    "agent_version": "3.0.0",
+    "agent_version": "4.0.0",
     "allow_personal_data": false,
+    "emoji_fraction": 0.18,
+    "emoji_fraction_jitter": 0.07,
     "goldtest_fraction": 0.2,
-    "incoming_rows": 1200,
-    "initial_train_rows": 6000,
+    "goldtest_fraction_jitter": 0.05,
+    "incoming_rows": 1800,
+    "incoming_rows_jitter": 300,
+    "initial_train_rows": 12000,
     "language": "en",
+    "mixed_sentiment_fraction": 0.12,
     "profanity_fraction": 0.25,
+    "profanity_fraction_jitter": 0.08,
     "seed": 42,
+    "slang_fraction": 0.22,
+    "spelling_error_fraction": 0.22,
     "synthetic_only": true,
-    "validation_fraction": 0.15
+    "validation_fraction": 0.15,
+    "validation_fraction_jitter": 0.03,
+    "vary_counts": true
+  },
+  "effective_generation": {
+    "emoji_fraction": 0.18962901730475756,
+    "goldtest_fraction": 0.17707853417894026,
+    "incoming_rows": 2040,
+    "profanity_fraction": 0.3278520533401083,
+    "validation_fraction": 0.13565273244572126
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 2,
-  "incoming_goldtest_count": 240,
+  "generation": 3,
+  "incoming_emoji_counts": {
+    "0": 1680,
+    "1": 360
+  },
+  "incoming_goldtest_count": 360,
+  "incoming_length_counts": {
+    "long": 506,
+    "medium": 1514,
+    "short": 20
+  },
   "incoming_linguistic_level_counts": {
-    "advanced": 240,
-    "informal": 240,
-    "limited": 240,
-    "standard": 240,
-    "technical": 240
+    "advanced": 408,
+    "informal": 408,
+    "limited": 408,
+    "standard": 408,
+    "technical": 408
+  },
+  "incoming_mixed_sentiment_counts": {
+    "0": 1800,
+    "1": 240
   },
   "incoming_profanity_counts": {
-    "0": 900,
-    "1": 300
+    "0": 1380,
+    "1": 660
   },
-  "last_issued_id": 9600,
+  "incoming_slang_counts": {
+    "0": 1620,
+    "1": 420
+  },
+  "incoming_spelling_error_counts": {
+    "0": 1620,
+    "1": 420
+  },
+  "last_issued_id": 11640,
   "promoted_from_previous_incoming": 240,
   "record_counts": {
-    "incoming.csv": 1200,
-    "train.csv": 6480
+    "incoming.csv": 2040,
+    "train.csv": 6720
   },
   "sha256": {
-    "incoming.csv": "c0c404eaf22f6e3659dfe6ee027fa23c6ebc5f3a122c009f185eaa55ff1a5d8f",
-    "train.csv": "000937e2b74698614fe77d2419c1999abcffc8836232a141fdd22db98cb5337b"
+    "incoming.csv": "bf38a07aacb497576a2da975643b1d0244e7358301d447dd0d2cae06b910a50a",
+    "train.csv": "a3ee209be7b73f211d774357f17a734fb8adb3cc47d0b8517efe9f69e20bf5ab"
   },
   "train_source_counts": {
-    "goldtest": 480,
+    "goldtest": 720,
     "initial": 6000
   }
 }

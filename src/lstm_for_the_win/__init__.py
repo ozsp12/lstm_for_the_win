@@ -1,3 +1,3 @@
-"""Product-review intelligence application."""
+"""Reproducible LSTM continual-learning experiment."""
 
-__version__ = "0.4.0"
+__version__ = "0.5.0"

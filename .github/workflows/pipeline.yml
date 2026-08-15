@@ -2,6 +2,13 @@ name: Run continual-learning LSTM pipeline
 
 on:
   workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - "config/**"
+      - "pyproject.toml"
+      - ".github/workflows/pipeline.yml"
 
 permissions:
   contents: write

@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lstm-for-the-win"
-version = "0.5.0"
+version = "0.6.0"
 description = "Reproducible continual-learning LSTM experiment for product-review classification."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"

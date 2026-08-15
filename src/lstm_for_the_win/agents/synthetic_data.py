@@ -1,4 +1,4 @@
-"""Balanced synthetic review generation for continual-learning experiments."""
+"""Rich synthetic review generation for continual-learning experiments."""
 
 from __future__ import annotations
 
@@ -17,28 +17,42 @@ from typing import Any, Iterable, Sequence
 SENTIMENTS = ("positive", "neutral", "negative")
 TOPICS = ("smartphone", "television", "refrigerator", "washing_machine")
 LINGUISTIC_LEVELS = ("limited", "informal", "standard", "advanced", "technical")
+LENGTH_CLASSES = ("short", "medium", "long")
+STYLE_FIELDS = ("hasemoji", "hasspellingerror", "hasslang", "mixed_sentiment")
 
 TRAIN_FIELDS = (
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
+    "hasemoji", "hasspellingerror", "hasslang", "length_class", "mixed_sentiment",
     "source", "training_generation", "input_timestamp",
 )
 INCOMING_FIELDS = (
     "ID", "text", "expected_sentiment", "expected_topic", "linguistic_level",
-    "flagprofanity", "goldtest", "input_timestamp",
+    "flagprofanity", "hasemoji", "hasspellingerror", "hasslang", "length_class",
+    "mixed_sentiment", "goldtest", "input_timestamp",
 )
 
 
 @dataclass(frozen=True)
 class SyntheticDataConfig:
     agent_name: str = "synthetic-review-generator"
-    agent_version: str = "3.0.0"
+    agent_version: str = "4.0.0"
     language: str = "en"
     seed: int = 42
-    initial_train_rows: int = 6_000
+    initial_train_rows: int = 12_000
     incoming_rows: int = 1_200
+    incoming_rows_jitter: int = 180
     profanity_fraction: float = 0.25
+    profanity_fraction_jitter: float = 0.08
     goldtest_fraction: float = 0.20
+    goldtest_fraction_jitter: float = 0.05
+    emoji_fraction: float = 0.18
+    emoji_fraction_jitter: float = 0.07
+    spelling_error_fraction: float = 0.22
+    slang_fraction: float = 0.22
+    mixed_sentiment_fraction: float = 0.12
     validation_fraction: float = 0.15
+    validation_fraction_jitter: float = 0.03
+    vary_counts: bool = False
     synthetic_only: bool = True
     allow_personal_data: bool = False
 
@@ -54,78 +68,99 @@ class SyntheticDataConfig:
         if not self.synthetic_only or self.allow_personal_data:
             raise ValueError("The generator must remain synthetic-only and PII-free.")
         strata = len(SENTIMENTS) * len(TOPICS) * len(LINGUISTIC_LEVELS)
-        if any(count < strata or count % strata for count in (self.initial_train_rows, self.incoming_rows)):
-            raise ValueError(f"Row counts must be positive multiples of {strata}.")
-        if any(not 0.0 < value < 1.0 for value in (
-            self.profanity_fraction, self.goldtest_fraction, self.validation_fraction
-        )):
+        if self.initial_train_rows < strata or self.initial_train_rows % strata:
+            raise ValueError(f"initial_train_rows must be a positive multiple of {strata}.")
+        if self.incoming_rows < strata or self.incoming_rows % strata:
+            raise ValueError(f"incoming_rows must be a positive multiple of {strata}.")
+        if self.incoming_rows_jitter < 0:
+            raise ValueError("incoming_rows_jitter cannot be negative.")
+        fractions = (
+            self.profanity_fraction, self.goldtest_fraction, self.emoji_fraction,
+            self.spelling_error_fraction, self.slang_fraction, self.mixed_sentiment_fraction,
+            self.validation_fraction,
+        )
+        if any(not 0.0 < value < 1.0 for value in fractions):
             raise ValueError("Fractions must be strictly between 0 and 1.")
+        jitters = (
+            self.profanity_fraction_jitter, self.goldtest_fraction_jitter,
+            self.emoji_fraction_jitter, self.validation_fraction_jitter,
+        )
+        if any(value < 0.0 for value in jitters):
+            raise ValueError("Fraction jitters cannot be negative.")
+
+    def effective_generation(self, generation: int) -> dict[str, float | int]:
+        """Return deterministic generation-level quantities derived from seed + generation."""
+        rng = random.Random(self.seed + generation * 104_729)
+        strata = len(SENTIMENTS) * len(TOPICS) * len(LINGUISTIC_LEVELS)
+        incoming = self.incoming_rows
+        if self.vary_counts and self.incoming_rows_jitter:
+            low = max(strata, self.incoming_rows - self.incoming_rows_jitter)
+            high = self.incoming_rows + self.incoming_rows_jitter
+            candidates = [n for n in range(low, high + 1) if n % strata == 0]
+            incoming = rng.choice(candidates) if candidates else self.incoming_rows
+
+        def vary(center: float, jitter: float) -> float:
+            if not self.vary_counts or jitter == 0:
+                return center
+            return min(0.95, max(0.01, center + rng.uniform(-jitter, jitter)))
+
+        return {
+            "incoming_rows": incoming,
+            "profanity_fraction": vary(self.profanity_fraction, self.profanity_fraction_jitter),
+            "goldtest_fraction": vary(self.goldtest_fraction, self.goldtest_fraction_jitter),
+            "emoji_fraction": vary(self.emoji_fraction, self.emoji_fraction_jitter),
+            "validation_fraction": vary(self.validation_fraction, self.validation_fraction_jitter),
+        }
 
 
 TOPIC_LANGUAGE = {
     "smartphone": {
-        "train": (("smartphone", "phone", "handset"), ("battery", "camera", "touchscreen", "charging port")),
-        "incoming": (("cell phone", "mobile", "pocket device"), ("power cell", "rear lens", "touch panel", "usb port")),
+        "train": (("smartphone", "phone", "handset", "mobile phone"), ("battery", "camera", "touchscreen", "charging port", "speaker", "signal reception")),
+        "incoming": (("cell phone", "mobile", "pocket device", "daily driver"), ("power cell", "rear lens", "touch panel", "usb port", "earpiece", "network reception")),
     },
     "television": {
-        "train": (("television", "tv", "smart tv"), ("screen", "remote control", "hdmi input", "sound output")),
-        "incoming": (("television set", "screen unit", "video panel"), ("picture panel", "controller", "video input", "built in audio")),
+        "train": (("television", "tv", "smart tv", "display"), ("screen", "remote control", "hdmi input", "sound output", "backlight", "menu system")),
+        "incoming": (("television set", "screen unit", "video panel", "living room display"), ("picture panel", "controller", "video input", "built in audio", "panel lighting", "interface")),
     },
     "refrigerator": {
-        "train": (("refrigerator", "fridge", "cooling unit"), ("temperature control", "door seal", "ice maker", "cooling fan")),
-        "incoming": (("cold storage unit", "kitchen fridge", "food cooler"), ("thermostat", "gasket", "ice tray system", "compressor fan")),
+        "train": (("refrigerator", "fridge", "cooling unit", "kitchen refrigerator"), ("temperature control", "door seal", "ice maker", "cooling fan", "shelves", "compressor")),
+        "incoming": (("cold storage unit", "kitchen fridge", "food cooler", "refrigeration unit"), ("thermostat", "gasket", "ice tray system", "compressor fan", "shelf layout", "cooling motor")),
     },
     "washing_machine": {
-        "train": (("washing machine", "washer", "laundry machine"), ("spin cycle", "water inlet", "detergent drawer", "drain pump")),
-        "incoming": (("clothes washer", "wash unit", "front loader"), ("spin program", "fill valve", "soap tray", "drainage motor")),
+        "train": (("washing machine", "washer", "laundry machine", "front loader"), ("spin cycle", "water inlet", "detergent drawer", "drain pump", "drum", "control panel")),
+        "incoming": (("clothes washer", "wash unit", "front loading washer", "laundry unit"), ("spin program", "fill valve", "soap tray", "drainage motor", "wash drum", "cycle controls")),
     },
 }
 
 ASSESSMENTS = {
     "train": {
-        "positive": ("works reliably", "is better than expected", "has been consistently good", "does its job very well"),
-        "neutral": ("works as expected", "is fairly ordinary", "meets the basic specification", "does the job and little more"),
-        "negative": ("keeps failing", "works far below expectations", "has become unreliable", "causes repeated problems"),
+        "positive": ("works reliably", "is better than expected", "has been consistently good", "does its job very well", "feels dependable in daily use"),
+        "neutral": ("works as expected", "is fairly ordinary", "meets the basic specification", "does the job and little more", "is acceptable without standing out"),
+        "negative": ("keeps failing", "works far below expectations", "has become unreliable", "causes repeated problems", "is difficult to trust in normal use"),
     },
     "incoming": {
-        "positive": ("still performs well under different use", "has not let me down", "is surprisingly dependable", "remains better than I expected"),
-        "neutral": ("is neither impressive nor bad", "remains basically average", "behaves like a normal unit", "shows no meaningful change"),
-        "negative": ("fails under ordinary use", "has turned into a recurring problem", "is increasingly unreliable", "breaks down when conditions change"),
+        "positive": ("still performs well under different use", "has not let me down", "is surprisingly dependable", "remains better than I expected", "holds up well outside my normal routine"),
+        "neutral": ("is neither impressive nor bad", "remains basically average", "behaves like a normal unit", "shows no meaningful change", "is usable but unremarkable"),
+        "negative": ("fails under ordinary use", "has turned into a recurring problem", "is increasingly unreliable", "breaks down when conditions change", "has become frustratingly inconsistent"),
     },
 }
 
 CONTEXTS = {
-    "train": ("after a week of use", "during routine use", "after setup", "after several normal cycles", "during a basic check"),
-    "incoming": ("after a trip", "during a heavy day of use", "after changing settings", "when another person used it", "outside my usual routine"),
+    "train": ("after a week of use", "during routine use", "after setup", "after several normal cycles", "during a basic check", "after comparing it with my previous unit"),
+    "incoming": ("after a trip", "during a heavy day of use", "after changing settings", "when another person used it", "outside my usual routine", "after a few weeks of mixed use"),
 }
-
 DETAILS = {
-    "train": ("the result was repeatable", "the behavior stayed consistent", "I noticed it more than once", "nothing unusual happened around it"),
-    "incoming": ("this was not part of my first impression", "the change appeared in a new situation", "I checked it again before writing this", "the behavior persisted across repeated attempts"),
+    "train": ("the result was repeatable", "the behavior stayed consistent", "I noticed it more than once", "nothing unusual happened around it", "the same pattern appeared on another day"),
+    "incoming": ("this was not part of my first impression", "the change appeared in a new situation", "I checked it again before writing this", "the behavior persisted across repeated attempts", "a second check gave the same result"),
 }
-
-PATTERNS = {
-    "train": {
-        "limited": ("my {alias} {component} {assessment} {profanity}", "{alias} {component} {assessment} {profanity}"),
-        "informal": ("honestly the {component} on this {alias} {assessment} {profanity}", "been using this {alias} and the {component} {assessment} {profanity}"),
-        "standard": ("{context}, the {component} on this {alias} {assessment}; {detail}. {profanity}", "The {alias}'s {component} {assessment} after regular use; {detail}. {profanity}"),
-        "advanced": ("{context}, I found that the {component} of the {alias} {assessment}; {detail}. {profanity}", "After extended observation, the {alias}'s {component} {assessment}; {detail}. {profanity}"),
-        "technical": ("Under a representative operating profile, the {component} subsystem of the {alias} {assessment}; {detail}. {profanity}", "Repeated observation indicates that the {alias} {component} {assessment}; {detail}. {profanity}"),
-    },
-    "incoming": {
-        "limited": ("got this {alias} {component} now {assessment} {profanity}", "used {alias} today {component} {assessment} {profanity}"),
-        "informal": ("quick update the {component} on my {alias} {assessment} {profanity}", "not gonna overthink it the {alias} {component} {assessment} {profanity}"),
-        "standard": ("{context}, I noticed that the {alias} {component} {assessment}; {detail}. {profanity}", "A later check showed that the {component} in the {alias} {assessment}; {detail}. {profanity}"),
-        "advanced": ("Viewed across several different situations, the {component} of the {alias} {assessment}; {detail}. {profanity}", "My subsequent experience changed the initial impression because the {alias} {component} {assessment}; {detail}. {profanity}"),
-        "technical": ("Under conditions outside the original usage profile, the {component} subsystem of the {alias} {assessment}; {detail}. {profanity}", "Across a shifted usage regime, the observed behavior of the {alias} {component} {assessment}; {detail}. {profanity}"),
-    },
+FOLLOWUPS = {
+    "positive": ("I would keep using it", "overall I am satisfied", "it has earned my confidence"),
+    "neutral": ("I can live with it", "I do not feel strongly either way", "there is little else to add"),
+    "negative": ("I would not rely on it", "I am considering a replacement", "this needs to improve"),
 }
-
-PROFANITY = {
-    "positive": ("damn this is good", "this thing is fucking impressive", "good as hell"),
-    "neutral": ("the damn thing is basically average", "nothing fucking special", "plain as shit"),
-    "negative": ("this shit is frustrating", "the damn thing keeps causing trouble", "this is fucking annoying", "what a piece of crap"),
-}
+SLANG = ("ngl", "tbh", "idk", "imo", "kinda", "lowkey", "fr", "lol", "wtf", "not gonna lie")
+EMOJIS = ("🙂", "😅", "🤷", "😐", "🙃", "🔥", "💀", "🤔", "👍", "👎", "😂", "😬")
+PROFANITY = ("damn", "fucking", "as hell", "this shit", "the damn thing", "crap")
 
 
 def _validate_timestamp(value: str) -> str:
@@ -146,7 +181,7 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
 def _write_csv(path: Path, rows: Iterable[dict[str, Any]], fields: Sequence[str]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=fields, lineterminator="\n")
+        writer = csv.DictWriter(file, fieldnames=fields, lineterminator="\n", extrasaction="ignore")
         writer.writeheader()
         writer.writerows(rows)
 
@@ -170,20 +205,44 @@ def _flags(size: int, fraction: float, rng: random.Random) -> list[int]:
     return flags
 
 
-def _degrade(text: str, rng: random.Random) -> str:
-    replacements = {"battery": "batery", "works": "work", "using": "usin", "nothing": "nothin", "again": "agin"}
-    words = text.lower().replace("'", "").split()
-    for index, word in enumerate(words):
-        clean = re.sub(r"[^a-z]", "", word)
-        if clean in replacements and rng.random() < 0.6:
-            words[index] = replacements[clean]
-    if len(words) > 6 and rng.random() < 0.4:
-        words.pop(rng.randrange(1, len(words) - 1))
-    return re.sub(r"[^a-z\s]", "", " ".join(words)).strip()
+def _length_class(text: str) -> str:
+    words = len(text.split())
+    return "short" if words < 14 else "medium" if words < 30 else "long"
+
+
+def _has_emoji(text: str) -> bool:
+    return any(ord(char) >= 0x1F000 for char in text)
+
+
+def _inject_typo(text: str, rng: random.Random) -> str:
+    words = text.split()
+    candidates = [i for i, word in enumerate(words) if len(re.sub(r"[^A-Za-z]", "", word)) >= 5]
+    if not candidates:
+        return text + " agin"
+    index = rng.choice(candidates)
+    word = words[index]
+    letters = list(word)
+    positions = [i for i, char in enumerate(letters[:-1]) if char.isalpha() and letters[i + 1].isalpha()]
+    if positions:
+        pos = rng.choice(positions)
+        letters[pos], letters[pos + 1] = letters[pos + 1], letters[pos]
+    else:
+        letters.pop(max(1, len(letters) // 2))
+    words[index] = "".join(letters)
+    return " ".join(words)
+
+
+def _legacy_defaults(row: dict[str, str]) -> None:
+    text = row.get("text", "")
+    row.setdefault("hasemoji", "1" if _has_emoji(text) else "0")
+    row.setdefault("hasspellingerror", "0")
+    row.setdefault("hasslang", "0")
+    row.setdefault("mixed_sentiment", "0")
+    row.setdefault("length_class", _length_class(text))
 
 
 class SyntheticDataAgent:
-    """Generate balanced train and incoming streams with controlled linguistic shift."""
+    """Generate reproducible, compositionally varied train and incoming review streams."""
 
     def __init__(self, config: SyntheticDataConfig) -> None:
         config.validate()
@@ -192,15 +251,22 @@ class SyntheticDataAgent:
     def _specs(self, count: int, generation: int, incoming: bool) -> list[dict[str, Any]]:
         strata = list(itertools.product(SENTIMENTS, TOPICS, LINGUISTIC_LEVELS))
         per_stratum = count // len(strata)
+        effective = self.config.effective_generation(generation)
         rng = random.Random(self.config.seed + generation * 10_007 + (97 if incoming else 0))
         specs: list[dict[str, Any]] = []
         for sentiment, topic, level in strata:
-            profanity = _flags(per_stratum, self.config.profanity_fraction, rng)
-            gold = _flags(per_stratum, self.config.goldtest_fraction, rng) if incoming else [0] * per_stratum
+            profanity = _flags(per_stratum, float(effective["profanity_fraction"]), rng)
+            emoji = _flags(per_stratum, float(effective["emoji_fraction"]), rng)
+            spelling = _flags(per_stratum, self.config.spelling_error_fraction, rng)
+            slang = _flags(per_stratum, self.config.slang_fraction, rng)
+            mixed = _flags(per_stratum, self.config.mixed_sentiment_fraction, rng)
+            gold = _flags(per_stratum, float(effective["goldtest_fraction"]), rng) if incoming else [0] * per_stratum
             for repetition in range(per_stratum):
                 specs.append({
                     "sentiment": sentiment, "topic": topic, "linguistic_level": level,
-                    "flagprofanity": profanity[repetition], "goldtest": gold[repetition],
+                    "flagprofanity": profanity[repetition], "hasemoji": emoji[repetition],
+                    "hasspellingerror": spelling[repetition], "hasslang": slang[repetition],
+                    "mixed_sentiment": mixed[repetition], "goldtest": gold[repetition],
                     "repetition": repetition,
                 })
         rng.shuffle(specs)
@@ -209,24 +275,55 @@ class SyntheticDataAgent:
     def _render(self, review_id: int, generation: int, split: str, spec: dict[str, Any], variant: int) -> str:
         rng = random.Random(self.config.seed * 1_000_033 + review_id * 97 + generation * 9_973 + variant * 7_919)
         aliases, components = TOPIC_LANGUAGE[spec["topic"]][split]
-        text = rng.choice(PATTERNS[split][spec["linguistic_level"]]).format(
-            alias=rng.choice(aliases), component=rng.choice(components),
-            assessment=rng.choice(ASSESSMENTS[split][spec["sentiment"]]),
-            context=rng.choice(CONTEXTS[split]), detail=rng.choice(DETAILS[split]),
-            profanity=rng.choice(PROFANITY[spec["sentiment"]]) if spec["flagprofanity"] else "",
-        )
-        text = re.sub(r"\s+", " ", text).strip(" ,;.")
-        if spec["linguistic_level"] == "limited":
-            return _degrade(text, rng)
-        if spec["linguistic_level"] == "informal":
-            return text.lower()
-        return text[0].upper() + text[1:] + ("" if text.endswith((".", "!", "?")) else ".")
+        alias = rng.choice(aliases)
+        component = rng.choice(components)
+        assessment = rng.choice(ASSESSMENTS[split][spec["sentiment"]])
+        context = rng.choice(CONTEXTS[split])
+        detail = rng.choice(DETAILS[split])
+        sentence = f"{context}, the {component} on this {alias} {assessment}."
+
+        length_roll = rng.random()
+        if length_roll >= 0.28:
+            sentence += f" {detail.capitalize()}."
+        if length_roll >= 0.78:
+            sentence += f" {rng.choice(FOLLOWUPS[spec['sentiment']])}."
+
+        if spec["mixed_sentiment"]:
+            other = rng.choice([value for value in SENTIMENTS if value != spec["sentiment"]])
+            secondary = rng.choice(ASSESSMENTS[split][other])
+            other_component = rng.choice([value for value in components if value != component] or components)
+            sentence = f"The {other_component} {secondary}, but overall {sentence[0].lower() + sentence[1:]}"
+
+        if spec["flagprofanity"]:
+            sentence += f" {rng.choice(PROFANITY)}."
+        if spec["hasslang"]:
+            sentence = f"{rng.choice(SLANG)} {sentence}"
+        if spec["hasspellingerror"]:
+            sentence = _inject_typo(sentence, rng)
+
+        level = spec["linguistic_level"]
+        if level == "limited":
+            sentence = sentence.lower().replace("'", "")
+            words = sentence.split()
+            if len(words) > 7 and rng.random() < 0.7:
+                words.pop(rng.randrange(1, len(words) - 1))
+            sentence = " ".join(words)
+        elif level == "informal":
+            sentence = sentence.lower().replace("do not", "don't").replace("going to", "gonna")
+        elif level == "advanced":
+            sentence = sentence.replace("overall", "on balance").replace("use", "usage")
+        elif level == "technical":
+            sentence = "Observed under a representative operating profile: " + sentence
+
+        if spec["hasemoji"]:
+            sentence += f" {rng.choice(EMOJIS)}"
+        return re.sub(r"\s+", " ", sentence).strip()
 
     def _generate(self, start_id: int, count: int, generation: int, split: str, timestamp: str, used: set[str]) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         for offset, spec in enumerate(self._specs(count, generation, split == "incoming")):
             review_id = start_id + offset
-            for variant in range(30):
+            for variant in range(40):
                 text = self._render(review_id, generation, split, spec, variant)
                 key = _text_key(text)
                 if key not in used:
@@ -237,7 +334,10 @@ class SyntheticDataAgent:
             used.add(key)
             common = {
                 "ID": str(review_id), "text": text, "linguistic_level": spec["linguistic_level"],
-                "flagprofanity": str(spec["flagprofanity"]), "input_timestamp": timestamp,
+                "flagprofanity": str(spec["flagprofanity"]), "hasemoji": str(spec["hasemoji"]),
+                "hasspellingerror": str(spec["hasspellingerror"]), "hasslang": str(spec["hasslang"]),
+                "length_class": _length_class(text), "mixed_sentiment": str(spec["mixed_sentiment"]),
+                "input_timestamp": timestamp,
             }
             if split == "incoming":
                 rows.append({**common, "expected_sentiment": spec["sentiment"], "expected_topic": spec["topic"], "goldtest": str(spec["goldtest"])})
@@ -246,14 +346,29 @@ class SyntheticDataAgent:
         return rows
 
     @staticmethod
+    def _upgrade_train(rows: list[dict[str, str]]) -> None:
+        for row in rows:
+            _legacy_defaults(row)
+
+    @staticmethod
+    def _upgrade_incoming(rows: list[dict[str, str]]) -> None:
+        for row in rows:
+            _legacy_defaults(row)
+
+    @staticmethod
     def _validate_train(rows: list[dict[str, str]]) -> None:
-        if not rows or set(rows[0]) != set(TRAIN_FIELDS):
+        SyntheticDataAgent._upgrade_train(rows)
+        if not rows or not set(TRAIN_FIELDS).issubset(rows[0]):
             raise ValueError("train.csv does not use the current schema.")
         ids = [int(row["ID"]) for row in rows]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("Training IDs must be unique and increasing.")
         if any(row["linguistic_level"] not in LINGUISTIC_LEVELS or row["flagprofanity"] not in {"0", "1"} for row in rows):
             raise ValueError("Invalid training metadata.")
+        if any(row[field] not in {"0", "1"} for row in rows for field in STYLE_FIELDS):
+            raise ValueError("Invalid training style metadata.")
+        if any(row["length_class"] not in LENGTH_CLASSES for row in rows):
+            raise ValueError("Invalid training length_class.")
         if any(row["source"] not in {"initial", "goldtest"} or row["sentiment"] not in SENTIMENTS or row["topic"] not in TOPICS for row in rows):
             raise ValueError("Invalid training labels or source.")
         for row in rows:
@@ -261,13 +376,18 @@ class SyntheticDataAgent:
 
     @staticmethod
     def _validate_incoming(rows: list[dict[str, str]]) -> None:
-        if not rows or set(rows[0]) != set(INCOMING_FIELDS):
+        SyntheticDataAgent._upgrade_incoming(rows)
+        if not rows or not set(INCOMING_FIELDS).issubset(rows[0]):
             raise ValueError("incoming.csv does not use the current schema.")
         ids = [int(row["ID"]) for row in rows]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
             raise ValueError("Incoming IDs must be unique and increasing.")
         if any(row["linguistic_level"] not in LINGUISTIC_LEVELS or row["flagprofanity"] not in {"0", "1"} or row["goldtest"] not in {"0", "1"} for row in rows):
             raise ValueError("Invalid incoming metadata.")
+        if any(row[field] not in {"0", "1"} for row in rows for field in STYLE_FIELDS):
+            raise ValueError("Invalid incoming style metadata.")
+        if any(row["length_class"] not in LENGTH_CLASSES for row in rows):
+            raise ValueError("Invalid incoming length_class.")
         if any(row["expected_sentiment"] not in SENTIMENTS or row["expected_topic"] not in TOPICS for row in rows):
             raise ValueError("Invalid incoming labels.")
         for row in rows:
@@ -281,8 +401,9 @@ class SyntheticDataAgent:
         used: set[str] = set()
         train = self._generate(1, self.config.initial_train_rows, 0, "train", timestamp, used)
         start = self.config.initial_train_rows + 1
-        incoming = self._generate(start, self.config.incoming_rows, 0, "incoming", timestamp, used)
-        return self._write_state(destination, train, incoming, 0, start + self.config.incoming_rows - 1)
+        count = int(self.config.effective_generation(0)["incoming_rows"])
+        incoming = self._generate(start, count, 0, "incoming", timestamp, used)
+        return self._write_state(destination, train, incoming, 0, start + count - 1)
 
     def advance(self, output_dir: str | Path, input_timestamp: str) -> Path:
         timestamp = _validate_timestamp(input_timestamp)
@@ -300,17 +421,23 @@ class SyntheticDataAgent:
         train.extend({
             "ID": row["ID"], "text": row["text"], "sentiment": row["expected_sentiment"],
             "topic": row["expected_topic"], "linguistic_level": row["linguistic_level"],
-            "flagprofanity": row["flagprofanity"], "source": "goldtest",
-            "training_generation": str(generation), "input_timestamp": row["input_timestamp"],
+            "flagprofanity": row["flagprofanity"], "hasemoji": row["hasemoji"],
+            "hasspellingerror": row["hasspellingerror"], "hasslang": row["hasslang"],
+            "length_class": row["length_class"], "mixed_sentiment": row["mixed_sentiment"],
+            "source": "goldtest", "training_generation": str(generation),
+            "input_timestamp": row["input_timestamp"],
         } for row in promoted)
         train.sort(key=lambda row: int(row["ID"]))
         last_id = int(manifest["last_issued_id"])
         used = {_text_key(row["text"]) for row in train}
-        next_incoming = self._generate(last_id + 1, self.config.incoming_rows, generation, "incoming", timestamp, used)
-        return self._write_state(destination, train, next_incoming, generation, last_id + self.config.incoming_rows, len(promoted))
+        count = int(self.config.effective_generation(generation)["incoming_rows"])
+        next_incoming = self._generate(last_id + 1, count, generation, "incoming", timestamp, used)
+        return self._write_state(destination, train, next_incoming, generation, last_id + count, len(promoted))
 
     def _write_state(self, destination: Path, train: list[dict[str, Any]], incoming: list[dict[str, Any]], generation: int, last_id: int, promoted: int = 0) -> Path:
         destination.mkdir(parents=True, exist_ok=True)
+        self._upgrade_train(train)
+        self._upgrade_incoming(incoming)
         _write_csv(destination / "train.csv", train, TRAIN_FIELDS)
         _write_csv(destination / "incoming.csv", incoming, INCOMING_FIELDS)
         train_rows, incoming_rows = _read_csv(destination / "train.csv"), _read_csv(destination / "incoming.csv")
@@ -321,15 +448,22 @@ class SyntheticDataAgent:
         if {_text_key(row["text"]) for row in train_rows} & {_text_key(row["text"]) for row in incoming_rows}:
             raise ValueError("train.csv and incoming.csv must have disjoint text.")
         files = (destination / "train.csv", destination / "incoming.csv")
+        effective = self.config.effective_generation(generation)
         manifest = {
             "generated_by": self.config.agent_name, "agent_version": self.config.agent_version,
             "generation": generation, "last_issued_id": last_id,
             "promoted_from_previous_incoming": promoted, "config": asdict(self.config),
+            "effective_generation": effective,
             "record_counts": {"train.csv": len(train_rows), "incoming.csv": len(incoming_rows)},
             "incoming_goldtest_count": sum(row["goldtest"] == "1" for row in incoming_rows),
             "train_source_counts": dict(sorted(Counter(row["source"] for row in train_rows).items())),
             "incoming_linguistic_level_counts": dict(sorted(Counter(row["linguistic_level"] for row in incoming_rows).items())),
             "incoming_profanity_counts": dict(sorted(Counter(row["flagprofanity"] for row in incoming_rows).items())),
+            "incoming_emoji_counts": dict(sorted(Counter(row["hasemoji"] for row in incoming_rows).items())),
+            "incoming_spelling_error_counts": dict(sorted(Counter(row["hasspellingerror"] for row in incoming_rows).items())),
+            "incoming_slang_counts": dict(sorted(Counter(row["hasslang"] for row in incoming_rows).items())),
+            "incoming_length_counts": dict(sorted(Counter(row["length_class"] for row in incoming_rows).items())),
+            "incoming_mixed_sentiment_counts": dict(sorted(Counter(row["mixed_sentiment"] for row in incoming_rows).items())),
             "sha256": {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in files},
         }
         manifest_path = destination / "input_manifest.json"

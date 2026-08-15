@@ -29,8 +29,8 @@ class PipelineConfig:
     train_path: str | Path
     incoming_path: str | Path
     task: str
-    max_tokens: int = 5_000
-    sequence_length: int = 64
+    max_tokens: int = 20_000
+    sequence_length: int = 96
     embedding_dim: int = 48
     lstm_units: int = 48
     epochs: int = 20
@@ -81,6 +81,11 @@ def _segment_metrics(
             ["limited", "informal", "standard", "advanced", "technical"],
         ),
         "flagprofanity": (lambda record: str(record.flagprofanity), ["0", "1"]),
+        "hasemoji": (lambda record: str(record.hasemoji), ["0", "1"]),
+        "hasspellingerror": (lambda record: str(record.hasspellingerror), ["0", "1"]),
+        "hasslang": (lambda record: str(record.hasslang), ["0", "1"]),
+        "length_class": (lambda record: record.length_class, ["short", "medium", "long"]),
+        "mixed_sentiment": (lambda record: str(record.mixed_sentiment), ["0", "1"]),
         "goldtest": (lambda record: str(record.goldtest), ["0", "1"]),
     }
     output: dict[str, dict[str, dict[str, float]]] = {}
@@ -178,6 +183,11 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
             "correct": bool(expected_index == int(predicted_index)),
             "linguistic_level": record.linguistic_level,
             "flagprofanity": record.flagprofanity,
+            "hasemoji": record.hasemoji,
+            "hasspellingerror": record.hasspellingerror,
+            "hasslang": record.hasslang,
+            "length_class": record.length_class,
+            "mixed_sentiment": record.mixed_sentiment,
             "goldtest": record.goldtest,
             "input_timestamp": record.input_timestamp,
         }
@@ -193,24 +203,13 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
         validation_size=len(validation_records),
         incoming_size=len(incoming_records),
         labels=labels,
-        label_counts=dict(
-            sorted(Counter(label_for(record, config.task) for record in train_records).items())
-        ),
+        label_counts=dict(sorted(Counter(label_for(record, config.task) for record in train_records).items())),
         metrics=metrics,
         baseline_metrics=baseline_metrics,
         metric_delta_vs_baseline=delta,
-        segment_metrics=_segment_metrics(
-            incoming_records,
-            expected,
-            probabilities,
-            len(labels),
-        ),
+        segment_metrics=_segment_metrics(incoming_records, expected, probabilities, len(labels)),
         history=history,
-        confusion_matrix=build_confusion_matrix(
-            expected,
-            predicted_indices,
-            class_count=len(labels),
-        ),
+        confusion_matrix=build_confusion_matrix(expected, predicted_indices, class_count=len(labels)),
         predictions=predictions,
     )
     return PipelineExecution(model=model, result=result)

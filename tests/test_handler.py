@@ -29,15 +29,37 @@ class _DummyResult:
                 "correct": True,
                 "linguistic_level": row["linguistic_level"],
                 "flagprofanity": int(row["flagprofanity"]),
+                "hasemoji": int(row["hasemoji"]),
+                "hasspellingerror": int(row["hasspellingerror"]),
+                "hasslang": int(row["hasslang"]),
+                "length_class": row["length_class"],
+                "mixed_sentiment": int(row["mixed_sentiment"]),
                 "goldtest": int(row["goldtest"]),
                 "input_timestamp": row["input_timestamp"],
             }
             for row in incoming_rows
         ]
         self.task = task
+        self.size = len(incoming_rows)
 
     def to_dict(self) -> dict[str, object]:
-        return {"task": self.task, "predictions": self.predictions, "metrics": {"accuracy": 1.0}}
+        metrics = {"accuracy": 1.0}
+        return {
+            "task": self.task,
+            "train_size": 120,
+            "fit_size": 96,
+            "validation_size": 24,
+            "incoming_size": self.size,
+            "labels": ["a", "b"],
+            "label_counts": {},
+            "metrics": metrics,
+            "baseline_metrics": metrics,
+            "metric_delta_vs_baseline": {"accuracy": 0.0},
+            "segment_metrics": {},
+            "history": {},
+            "confusion_matrix": [],
+            "predictions": self.predictions,
+        }
 
 
 def test_handler_publishes_atomic_run_and_advance_changes_only_input_state(
@@ -72,9 +94,12 @@ def test_handler_publishes_atomic_run_and_advance_changes_only_input_state(
     )
 
     assert (run_path / "predictions.csv").is_file()
+    assert (run_path / "metrics.json").is_file()
     assert (run_path / "run_manifest.json").is_file()
     assert (run_path / "models" / "sentiment.keras").is_file()
-    assert json.loads((run_path / "run_manifest.json").read_text(encoding="utf-8"))["input_generation"] == 0
+    manifest = json.loads((run_path / "run_manifest.json").read_text(encoding="utf-8"))
+    assert manifest["input_generation"] == 0
+    assert manifest["pipeline_version"] == "0.6.0"
 
     config_path = tmp_path / "config.json"
     config_path.write_text(json.dumps(asdict(config)), encoding="utf-8")

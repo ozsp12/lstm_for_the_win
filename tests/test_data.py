@@ -29,8 +29,8 @@ def _alpha(index: int) -> str:
     return "".join(reversed(chars))
 
 
-def test_clean_text_preserves_lexical_profanity_signal() -> None:
-    assert clean_text("This DAMN phone is f***ing bad!") == "this damn phone is f ing bad"
+def test_clean_text_preserves_lexical_profanity_and_emoji_signal() -> None:
+    assert clean_text("This DAMN phone is f***ing bad! 😬") == "this damn phone is f ing bad 😬"
 
 
 def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
@@ -57,7 +57,7 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
         incoming_rows.append(
             {
                 "ID": 1000 + index,
-                "text": f"incoming review {token}",
+                "text": f"incoming review {token} 😅" if index % 6 == 0 else f"incoming review {token}",
                 "expected_sentiment": sentiments[index % 3],
                 "expected_topic": topics[index % 4],
                 "linguistic_level": levels[index % 5],
@@ -78,6 +78,7 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
 
     assert len(train) == 60 and len(incoming) == 60
     assert len(fit) + len(validation) == 60
+    assert incoming[0].hasemoji == 1
     assert Counter(label_for(row, "sentiment") for row in validation) == {
         "negative": 4,
         "neutral": 4,

@@ -64,27 +64,22 @@ jobs:
           --epochs 20
           --patience 3
 
-      - name: Prepare compact dashboard metrics
+      - name: Verify dashboard metrics
         run: |
           RUN_PATH="data/output/github-${{ github.run_id }}"
-          python - "$RUN_PATH/results.json" "$RUN_PATH/metrics.json" <<'PY'
+          test -f "$RUN_PATH/metrics.json"
+          python - "$RUN_PATH/metrics.json" <<'PY'
           import json
           import sys
           from pathlib import Path
-
-          source = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-          fields = (
-              "task", "train_size", "fit_size", "validation_size", "incoming_size",
-              "labels", "metrics", "baseline_metrics", "metric_delta_vs_baseline",
-          )
-          compact = {
-              task: {field: result[field] for field in fields}
-              for task, result in source.items()
-          }
-          Path(sys.argv[2]).write_text(
-              json.dumps(compact, indent=2, sort_keys=True) + "\n",
-              encoding="utf-8",
-          )
+          data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          for task in ("sentiment", "topic"):
+              result = data[task]
+              assert "metrics" in result
+              assert "baseline_metrics" in result
+              assert "metric_delta_vs_baseline" in result
+              assert "segment_metrics" in result
+              assert "hasemoji" in result["segment_metrics"]
           PY
 
       - name: Run automated tests

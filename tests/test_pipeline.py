@@ -13,12 +13,13 @@ def test_pipeline_reports_baseline_segments_and_validation(tmp_path: Path) -> No
         incoming_rows=120,
         profanity_fraction=0.50,
         goldtest_fraction=0.50,
+        emoji_fraction=0.50,
+        spelling_error_fraction=0.50,
+        slang_fraction=0.50,
+        mixed_sentiment_fraction=0.50,
         validation_fraction=0.20,
     )
-    SyntheticDataAgent(config).initialize(
-        input_dir,
-        "2026-08-15T12:00:00+00:00",
-    )
+    SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
 
     execution = execute_pipeline(
         PipelineConfig(
@@ -59,6 +60,8 @@ def test_pipeline_reports_baseline_segments_and_validation(tmp_path: Path) -> No
         "advanced",
         "technical",
     }
-    assert set(result.segment_metrics["flagprofanity"]) == {"0", "1"}
-    assert set(result.segment_metrics["goldtest"]) == {"0", "1"}
+    for dimension in ("flagprofanity", "hasemoji", "hasspellingerror", "hasslang", "mixed_sentiment", "goldtest"):
+        assert set(result.segment_metrics[dimension]) == {"0", "1"}
+    assert set(result.segment_metrics["length_class"]).issubset({"short", "medium", "long"})
     assert len(result.predictions) == 120
+    assert {"hasemoji", "hasspellingerror", "hasslang", "length_class", "mixed_sentiment"}.issubset(result.predictions[0])

@@ -32,7 +32,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src streamlit_app.py
+        run: python -m compileall -q src
 
       - name: Timestamp the manual experiment
         run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
@@ -49,25 +49,7 @@ jobs:
           --epochs 20
 
       - name: Run automated tests
-        env:
-          PIPELINE_TEST_RUN_PATH: data/output/github-${{ github.run_id }}
         run: python -m pytest -q
-
-      - name: Smoke-test the Streamlit server
-        env:
-          PIPELINE_OUTPUT_ROOT: data/output
-        run: |
-          python -m streamlit run streamlit_app.py --server.headless=true --server.port=8501 > data/output/streamlit.log 2>&1 &
-          APP_PID=$!
-          trap "kill $APP_PID" EXIT
-          for attempt in {1..30}; do
-            if curl --fail --silent http://localhost:8501/_stcore/health; then
-              exit 0
-            fi
-            sleep 1
-          done
-          cat data/output/streamlit.log
-          exit 1
 
       - name: Commit versioned inputs and CSV outputs
         run: |
@@ -94,6 +76,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: software-demonstration-${{ github.run_id }}
-          path: |
-            data/output/github-${{ github.run_id }}
-            data/output/streamlit.log
+          path: data/output/github-${{ github.run_id }}

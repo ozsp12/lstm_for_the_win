@@ -16,7 +16,6 @@ data/output/*.log
 
 # Test and tool caches
 .pytest_cache/
-.streamlit/secrets.toml
 
 # IDE and operating system
 .vscode/

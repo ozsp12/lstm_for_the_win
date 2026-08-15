@@ -14,7 +14,7 @@
     "validation_fraction": 0.15
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 0,
+  "generation": 1,
   "incoming_goldtest_count": 240,
   "incoming_linguistic_level_counts": {
     "advanced": 240,
@@ -27,17 +27,18 @@
     "0": 900,
     "1": 300
   },
-  "last_issued_id": 7200,
-  "promoted_from_previous_incoming": 0,
+  "last_issued_id": 8400,
+  "promoted_from_previous_incoming": 240,
   "record_counts": {
     "incoming.csv": 1200,
-    "train.csv": 6000
+    "train.csv": 6240
   },
   "sha256": {
-    "incoming.csv": "98ce3e787a1f7736067c0d8c44ba6e3322ab914ab52939cf2e20dd5a9d01f94e",
-    "train.csv": "d161390d9d67d7fb6326e9e47fd246269a07ae8cdb3930ddd33b00c00e3eaa1a"
+    "incoming.csv": "c6521ad35ada897a5472ad20b026d956fc9dce330b393c721cb21822dcfc3d5d",
+    "train.csv": "fb9c4d295e68b962e2e940a0dc6ebd2e61f5898437bda1025de23e82eff6983f"
   },
   "train_source_counts": {
+    "goldtest": 240,
     "initial": 6000
   }
 }

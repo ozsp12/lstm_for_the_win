@@ -5999,3 +5999,243 @@ ID,text,sentiment,topic,linguistic_level,flagprofanity,source,training_generatio
 5998,been using this laundry machine and the detergent drawer has been consistently good,positive,washing_machine,informal,0,initial,0,2026-08-15T16:45:24Z
 5999,"Under a representative operating profile, the charging port subsystem of the phone is fairly ordinary; the behavior stayed consistent.",neutral,smartphone,technical,0,initial,0,2026-08-15T16:45:24Z
 6000,"During routine use, the door seal on this refrigerator causes repeated problems; the behavior stayed consistent.",negative,refrigerator,standard,0,initial,0,2026-08-15T16:45:24Z
+6009,quick update the touch panel on my cell phone shows no meaningful change,neutral,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6015,A later check showed that the thermostat in the food cooler has not let me down; I checked it again before writing this.,positive,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6018,"Viewed across several different situations, the built in audio of the television set behaves like a normal unit; the behavior persisted across repeated attempts.",neutral,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6025,A later check showed that the drainage motor in the front loader breaks down when conditions change; the behavior persisted across repeated attempts.,negative,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6031,not gonna overthink it the cell phone touch panel breaks down when conditions change,negative,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6045,"Viewed across several different situations, the gasket of the food cooler still performs well under different use; this was not part of my first impression.",positive,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6048,My subsequent experience changed the initial impression because the video panel built in audio breaks down when conditions change; the change appeared in a new situation. this shit is frustrating.,negative,television,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6050,"After a trip, I noticed that the mobile usb port has turned into a recurring problem; the change appeared in a new situation.",negative,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6053,A later check showed that the spin program in the front loader is neither impressive nor bad; I checked it again before writing this.,neutral,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6056,"Viewed across several different situations, the ice tray system of the kitchen fridge fails under ordinary use; I checked it again before writing this.",negative,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6060,"Under conditions outside the original usage profile, the drainage motor subsystem of the wash unit behaves like a normal unit; I checked it again before writing this.",neutral,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6061,"Across a shifted usage regime, the observed behavior of the cell phone power cell is increasingly unreliable; I checked it again before writing this.",negative,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6068,got this front loader soap tray now is surprisingly dependable,positive,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6080,"Across a shifted usage regime, the observed behavior of the television set built in audio remains better than I expected; the change appeared in a new situation.",positive,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6086,used television set today built in audio remains better than i expected,positive,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6096,A later check showed that the video input in the video panel remains basically average; I checked it again before writing this.,neutral,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6101,A later check showed that the picture panel in the television set is surprisingly dependable; this was not part of my first impression.,positive,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6110,not gonna overthink it the pocket device usb port has not let me down,positive,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6112,"Under conditions outside the original usage profile, the gasket subsystem of the food cooler behaves like a normal unit; the behavior persisted across repeated attempts.",neutral,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6113,got this screen picture panel now breaks down when conditions change,negative,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6115,"Viewed across several different situations, the picture panel of the television set remains basically average; this was not part of my first impression. nothing fucking special.",neutral,television,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6117,"During a heavy day of use, I noticed that the cold storage unit compressor fan fails under ordinary use; this was not part of my first impression.",negative,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6134,"Viewed across several different situations, the compressor fan of the kitchen fridge has not let me down; this was not part of my first impression.",positive,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6137,got this pocket device power cell now remains basically average,neutral,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6138,"Under conditions outside the original usage profile, the gasket subsystem of the kitchen fridge remains basically average; the behavior persisted across repeated attempts.",neutral,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6139,quick update the fill valve on my wash unit remains better than i expected,positive,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6142,"Across a shifted usage regime, the observed behavior of the television set picture panel remains better than I expected; the change appeared in a new situation.",positive,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6167,"Under conditions outside the original usage profile, the video input subsystem of the video panel remains better than I expected; this was not part of my first impression.",positive,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6178,My subsequent experience changed the initial impression because the mobile power cell shows no meaningful change; the change appeared in a new situation.,neutral,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6182,A later check showed that the thermostat in the food cooler is increasingly unreliable; the behavior persisted across repeated attempts.,negative,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6184,"During a heavy day of use, I noticed that the pocket device power cell is neither impressive nor bad; the behavior persisted across repeated attempts. nothing fucking special.",neutral,smartphone,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6187,"Under conditions outside the original usage profile, the ice tray system subsystem of the kitchen fridge still performs well under different use; the behavior persisted across repeated attempts. good as hell.",positive,refrigerator,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6192,"Across a shifted usage regime, the observed behavior of the screen unit video input fails under ordinary use; the behavior persisted across repeated attempts.",negative,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6200,not gonna overthink it the pocket device power cell behaves like a normal unit the damn thing is basically average,neutral,smartphone,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6206,quick update the spin program on my front loader remains basically average,neutral,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6211,"Under conditions outside the original usage profile, the power cell subsystem of the mobile is neither impressive nor bad; the change appeared in a new situation. plain as shit.",neutral,smartphone,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6215,My subsequent experience changed the initial impression because the television set picture panel still performs well under different use; this was not part of my first impression.,positive,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6225,"Viewed across several different situations, the rear lens of the cell phone has not let me down; the change appeared in a new situation. good as hell.",positive,smartphone,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6226,"Viewed across several different situations, the picture panel of the television set still performs well under different use; the change appeared in a new situation.",positive,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6235,A later check showed that the thermostat in the kitchen fridge has not let me down; this was not part of my first impression. good as hell.,positive,refrigerator,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6238,"Under conditions outside the original usage profile, the touch panel subsystem of the mobile is neither impressive nor bad; I checked it again before writing this.",neutral,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6242,quick update the compressor fan on my cold storage unit still performs well under different use damn this is good,positive,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6244,"Viewed across several different situations, the usb port of the mobile still performs well under different use; I checked it again before writing this.",positive,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6245,quick update the video input on my screen unit fails under ordinary use,negative,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6259,got this mobile rear lens now is surprisingly dependable,positive,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6274,quick update the picture panel on my screen unit has not let me down,positive,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6277,A later check showed that the video input in the screen unit has turned into a recurring problem; the behavior persisted across repeated attempts.,negative,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6278,used kitchen fridge today compressor fan remains average nothin fucking special,neutral,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6286,"Across a shifted usage regime, the observed behavior of the cell phone rear lens shows no meaningful change; I checked it again before writing this.",neutral,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6294,used wash unit today drainage motor fails under ordinary use,negative,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6317,My subsequent experience changed the initial impression because the clothes washer drainage motor remains better than I expected; the behavior persisted across repeated attempts. good as hell.,positive,washing_machine,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6328,not gonna overthink it the mobile power cell fails under ordinary use,negative,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6337,"After changing settings, I noticed that the cell phone usb port remains basically average; the change appeared in a new situation.",neutral,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6338,"Across a shifted usage regime, the observed behavior of the cold storage unit thermostat shows no meaningful change; the change appeared in a new situation.",neutral,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6343,My subsequent experience changed the initial impression because the wash unit soap tray breaks down when conditions change; the behavior persisted across repeated attempts. the damn thing keeps causing trouble.,negative,washing_machine,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6344,used screen today built in audio has not let me down good as hell,positive,television,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6346,A later check showed that the touch panel in the cell phone shows no meaningful change; the change appeared in a new situation.,neutral,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6351,quick update the built in audio on my television set shows no meaningful change plain as shit,neutral,television,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6354,got this clothes washer soap tray now has not let me down,positive,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6356,"During a heavy day of use, I noticed that the kitchen fridge thermostat shows no meaningful change; the change appeared in a new situation.",neutral,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6357,"Across a shifted usage regime, the observed behavior of the cell phone usb port breaks down when conditions change; the behavior persisted across repeated attempts.",negative,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6362,not gonna overthink it the kitchen fridge compressor fan breaks down when conditions change,negative,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6363,"Across a shifted usage regime, the observed behavior of the kitchen fridge thermostat breaks down when conditions change; this was not part of my first impression.",negative,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6364,"Across a shifted usage regime, the observed behavior of the screen unit picture panel shows no meaningful change; this was not part of my first impression. nothing fucking special.",neutral,television,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6367,used screen unit today built in audio fails under ordinary use,negative,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6371,My subsequent experience changed the initial impression because the clothes washer drainage motor is neither impressive nor bad; this was not part of my first impression.,neutral,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6372,My subsequent experience changed the initial impression because the video panel video input fails under ordinary use; I checked it again before writing this.,negative,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6379,"After a trip, I noticed that the cold storage unit compressor fan remains better than I expected; this was not part of my first impression.",positive,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6390,A later check showed that the compressor fan in the food cooler behaves like a normal unit; I checked it again before writing this.,neutral,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6395,not gonna overthink it the pocket device power cell is neither impressive nor bad nothing fucking special,neutral,smartphone,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6400,quick update the built in audio on my screen unit is increasingly unreliable,negative,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6401,"Across a shifted usage regime, the observed behavior of the clothes washer drainage motor shows no meaningful change; this was not part of my first impression.",neutral,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6404,not gonna overthink it the clothes washer spin program remains better than i expected,positive,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6409,got this video panel video input now remains basically average plain as shit,neutral,television,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6416,"Under conditions outside the original usage profile, the usb port subsystem of the cell phone still performs well under different use; the behavior persisted across repeated attempts.",positive,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6430,quick update the built in audio on my video panel fails under ordinary use this is fucking annoying,negative,television,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6440,My subsequent experience changed the initial impression because the kitchen fridge thermostat remains basically average; I checked it again before writing this.,neutral,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6447,used wash unit today fill valve shows no meaningful change the damn thing is basically average,neutral,washing_machine,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6450,quick update the drainage motor on my wash unit fails under ordinary use,negative,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6452,"Under conditions outside the original usage profile, the built in audio subsystem of the television set has turned into a recurring problem; the behavior persisted across repeated attempts.",negative,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6455,"Under conditions outside the original usage profile, the picture panel subsystem of the screen unit is increasingly unreliable; the behavior persisted across repeated attempts.",negative,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6459,"After changing settings, I noticed that the mobile power cell still performs well under different use; I checked it again before writing this.",positive,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6461,"Across a shifted usage regime, the observed behavior of the pocket device touch panel breaks down when conditions change; the behavior persisted across repeated attempts.",negative,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6469,"Viewed across several different situations, the usb port of the mobile breaks down when conditions change; this was not part of my first impression.",negative,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6482,A later check showed that the fill valve in the wash unit is surprisingly dependable; this was not part of my first impression. good as hell.,positive,washing_machine,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6483,My subsequent experience changed the initial impression because the cell phone rear lens is increasingly unreliable; I checked it again before writing this.,negative,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6484,A later check showed that the built in audio in the video panel is neither impressive nor bad; I checked it again before writing this.,neutral,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6489,A later check showed that the drainage motor in the front loader is increasingly unreliable; the behavior persisted across repeated attempts.,negative,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6490,quick update the fill valve on my wash unit fails under ordinary use,negative,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6497,"After a trip, I noticed that the cell phone usb port breaks down when conditions change; the change appeared in a new situation.",negative,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6500,not gonna overthink it the television set video input still performs well under different use,positive,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6505,got this cell phone rear lens now fails under ordinary use,negative,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6512,"After a trip, I noticed that the television set controller still performs well under different use; the behavior persisted across repeated attempts.",positive,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6515,"Across a shifted usage regime, the observed behavior of the wash unit soap tray is increasingly unreliable; I checked it again before writing this.",negative,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6517,"Across a shifted usage regime, the observed behavior of the clothes washer drainage motor has not let me down; I checked it again before writing this.",positive,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6528,A later check showed that the power cell in the pocket device has not let me down; the change appeared in a new situation.,positive,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6537,"Across a shifted usage regime, the observed behavior of the cold storage unit ice tray system behaves like a normal unit; the behavior persisted across repeated attempts. plain as shit.",neutral,refrigerator,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6538,"Viewed across several different situations, the ice tray system of the cold storage unit behaves like a normal unit; this was not part of my first impression.",neutral,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6549,"Across a shifted usage regime, the observed behavior of the clothes washer drainage motor remains basically average; the change appeared in a new situation.",neutral,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6553,used video panel today built audio fails under ordinary use,negative,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6557,quick update the soap tray on my front loader has not let me down,positive,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6562,used cell phone today power cell has turned a recurring problem,negative,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6570,got this cell phone power cell now remains better than i expected,positive,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6571,quick update the video input on my video panel is neither impressive nor bad,neutral,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6574,"Viewed across several different situations, the thermostat of the food cooler is surprisingly dependable; this was not part of my first impression.",positive,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6579,My subsequent experience changed the initial impression because the screen unit video input breaks down when conditions change; I checked it again before writing this.,negative,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6590,got this phone power cell now still performs well under different use,positive,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6592,"Viewed across several different situations, the ice tray system of the food cooler has not let me down; this was not part of my first impression.",positive,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6593,used pocket device today rear lens still well under different use damn this is good,positive,smartphone,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6594,A later check showed that the power cell in the pocket device has turned into a recurring problem; I checked it again before writing this.,negative,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6605,"Viewed across several different situations, the picture panel of the video panel remains better than I expected; I checked it again before writing this.",positive,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6626,"After changing settings, I noticed that the food cooler compressor fan breaks down when conditions change; I checked it again before writing this.",negative,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6629,A later check showed that the picture panel in the television set remains better than I expected; the change appeared in a new situation. good as hell.,positive,television,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6630,"Under conditions outside the original usage profile, the drainage motor subsystem of the wash unit breaks down when conditions change; the change appeared in a new situation.",negative,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6642,"Under conditions outside the original usage profile, the drainage motor subsystem of the front loader has turned into a recurring problem; I checked it again before writing this. this shit is frustrating.",negative,washing_machine,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6650,used screen unit today has not let me down,positive,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6651,My subsequent experience changed the initial impression because the wash unit spin program still performs well under different use; the behavior persisted across repeated attempts.,positive,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6652,"Viewed across several different situations, the gasket of the food cooler is increasingly unreliable; the behavior persisted across repeated attempts. this shit is frustrating.",negative,refrigerator,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6653,"Viewed across several different situations, the rear lens of the cell phone shows no meaningful change; I checked it again before writing this.",neutral,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6655,"During a heavy day of use, I noticed that the television set controller shows no meaningful change; I checked it again before writing this.",neutral,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6658,"Viewed across several different situations, the video input of the television set remains basically average; the change appeared in a new situation.",neutral,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6666,"After a trip, I noticed that the wash unit spin program is neither impressive nor bad; the behavior persisted across repeated attempts.",neutral,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6669,My subsequent experience changed the initial impression because the mobile usb port still performs well under different use; the change appeared in a new situation. good as hell.,positive,smartphone,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6671,not gonna overthink it the cold storage unit gasket behaves like a normal unit plain as shit,neutral,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6683,"After changing settings, I noticed that the screen unit picture panel still performs well under different use; the change appeared in a new situation. damn this is good.",positive,television,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6684,got this front loader drainage motor now breaks down when conditions change,negative,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6688,used video panel today controller shows no meaningful change,neutral,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6691,"Under conditions outside the original usage profile, the power cell subsystem of the pocket device behaves like a normal unit; I checked it again before writing this. nothing fucking special.",neutral,smartphone,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6692,not gonna overthink it the pocket device rear lens remains better than i expected,positive,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6694,"After changing settings, I noticed that the video panel video input has turned into a recurring problem; the change appeared in a new situation.",negative,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6706,got this cold storage unit ice system now still performs well under different use this thing is fucking impressive,positive,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6711,quick update the controller on my screen unit still performs well under different use,positive,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6713,"Under conditions outside the original usage profile, the controller subsystem of the television set is neither impressive nor bad; this was not part of my first impression.",neutral,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6716,"Across a shifted usage regime, the observed behavior of the front loader soap tray is neither impressive nor bad; the change appeared in a new situation.",neutral,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6718,My subsequent experience changed the initial impression because the front loader drainage motor still performs well under different use; the change appeared in a new situation. this thing is fucking impressive.,positive,washing_machine,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6721,not gonna overthink it the cold storage unit thermostat shows no meaningful change nothing fucking special,neutral,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6724,got wash unit fill valve now is neither impressive nor bad,neutral,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6726,"After changing settings, I noticed that the mobile rear lens still performs well under different use; the change appeared in a new situation.",positive,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6733,not gonna overthink it the front loader fill valve is surprisingly dependable,positive,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6743,"Under conditions outside the original usage profile, the controller subsystem of the television set has not let me down; the behavior persisted across repeated attempts. this thing is fucking impressive.",positive,television,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6744,"Across a shifted usage regime, the observed behavior of the wash unit spin program has not let me down; this was not part of my first impression.",positive,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6745,used front loader today drainage motor is impressive nor bad plain as shit,neutral,washing_machine,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6753,My subsequent experience changed the initial impression because the clothes washer fill valve behaves like a normal unit; the behavior persisted across repeated attempts.,neutral,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6754,"Viewed across several different situations, the compressor fan of the kitchen fridge remains basically average; the behavior persisted across repeated attempts.",neutral,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6760,A later check showed that the gasket in the kitchen fridge behaves like a normal unit; the behavior persisted across repeated attempts.,neutral,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6761,not gonna overthink it the wash unit spin program fails under ordinary use,negative,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6763,My subsequent experience changed the initial impression because the cell phone touch panel breaks down when conditions change; this was not part of my first impression.,negative,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6769,A later check showed that the fill valve in the front loader breaks down when conditions change; the behavior persisted across repeated attempts.,negative,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6770,not gonna overthink it the cold storage unit compressor fan has turned into a recurring problem,negative,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6781,used screen unit today controller is unreliable,negative,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6785,used cold storage today ice tray system remains better than i expected,positive,refrigerator,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6788,used television set today picture panel remains better than i expected,positive,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6791,quick update the compressor fan on my cold storage unit still performs well under different use this thing is fucking impressive,positive,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6793,quick update the gasket on my cold storage unit breaks down when conditions change,negative,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6796,"Viewed across several different situations, the built in audio of the video panel is neither impressive nor bad; I checked it again before writing this.",neutral,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6797,used kitchen fridge today thermostat fails under ordinary use,negative,refrigerator,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6798,My subsequent experience changed the initial impression because the clothes washer fill valve remains better than I expected; this was not part of my first impression.,positive,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6799,not gonna overthink it the cold storage unit gasket still performs well under different use,positive,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6807,used cold storage unit today compressor fan neither impressive nor bad nothin fucking special,neutral,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6808,not gonna overthink it the wash unit fill valve remains basically average,neutral,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6810,got this television set video input now neither impressive nor bad plain as shit,neutral,television,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6812,got this cell phone rear lens now remains basically average nothing fucking special,neutral,smartphone,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6820,"Viewed across several different situations, the drainage motor of the clothes washer has turned into a recurring problem; this was not part of my first impression.",negative,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6821,A later check showed that the built in audio in the television set fails under ordinary use; the change appeared in a new situation.,negative,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6824,quick update the built in audio on my television set behaves like a normal unit,neutral,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6829,My subsequent experience changed the initial impression because the clothes washer soap tray has turned into a recurring problem; the change appeared in a new situation.,negative,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6834,not gonna overthink it the cell phone usb port fails under ordinary use,negative,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6841,A later check showed that the soap tray in the front loader shows no meaningful change; the behavior persisted across repeated attempts.,neutral,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6857,used video panel today video input remains basically average,neutral,television,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6862,A later check showed that the controller in the television set behaves like a normal unit; I checked it again before writing this.,neutral,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6872,used pocket device today power cell is increasingly unreliable,negative,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6873,not gonna overthink it the mobile rear lens has turned into a recurring problem,negative,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6882,"Under conditions outside the original usage profile, the fill valve subsystem of the clothes washer is surprisingly dependable; the behavior persisted across repeated attempts.",positive,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6890,got this wash unit drainage motor now still performs well under use,positive,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6894,got this mobile usb port now is neither impressive nor bad,neutral,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6895,"Under conditions outside the original usage profile, the compressor fan subsystem of the cold storage unit has turned into a recurring problem; I checked it again before writing this.",negative,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6896,quick update the soap tray on my front loader remains basically average,neutral,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+6907,"Across a shifted usage regime, the observed behavior of the food cooler compressor fan has not let me down; this was not part of my first impression.",positive,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6917,got this kitchen fridge ice tray system breaks down when conditions change the damn thing keeps causing trouble,negative,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6920,"After changing settings, I noticed that the television set picture panel breaks down when conditions change; this was not part of my first impression.",negative,television,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6921,quick update the touch panel on my pocket device still performs well under different use good as hell,positive,smartphone,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6922,"Viewed across several different situations, the ice tray system of the cold storage unit fails under ordinary use; the behavior persisted across repeated attempts. this shit is frustrating.",negative,refrigerator,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6935,got this front loader soap tray now fails under ordinary use,negative,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6936,got this kitchen fridge ice tray system now has turned into a recurring problem,negative,refrigerator,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6937,"Viewed across several different situations, the compressor fan of the kitchen fridge fails under ordinary use; the behavior persisted across repeated attempts.",negative,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6939,got this food cooler ice tray system now is surprisingly dependable,positive,refrigerator,limited,0,goldtest,1,2026-08-15T16:45:24Z
+6943,"Under conditions outside the original usage profile, the compressor fan subsystem of the cold storage unit breaks down when conditions change; the change appeared in a new situation. what a piece of crap.",negative,refrigerator,technical,1,goldtest,1,2026-08-15T16:45:24Z
+6944,My subsequent experience changed the initial impression because the mobile rear lens is neither impressive nor bad; I checked it again before writing this.,neutral,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6945,"Across a shifted usage regime, the observed behavior of the mobile rear lens still performs well under different use; I checked it again before writing this.",positive,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6948,"Outside my usual routine, I noticed that the wash unit soap tray is increasingly unreliable; the behavior persisted across repeated attempts. what a piece of crap.",negative,washing_machine,standard,1,goldtest,1,2026-08-15T16:45:24Z
+6949,"Under conditions outside the original usage profile, the built in audio subsystem of the video panel is neither impressive nor bad; the change appeared in a new situation.",neutral,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6950,A later check showed that the rear lens in the cell phone is surprisingly dependable; I checked it again before writing this.,positive,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6957,"During a heavy day of use, I noticed that the pocket device power cell fails under ordinary use; I checked it again before writing this.",negative,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6959,"After a trip, I noticed that the cell phone touch panel shows no meaningful change; this was not part of my first impression.",neutral,smartphone,standard,0,goldtest,1,2026-08-15T16:45:24Z
+6968,quick update the power cell on my cell phone is surprisingly dependable this thing is fucking impressive,positive,smartphone,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6979,My subsequent experience changed the initial impression because the front loader drainage motor is increasingly unreliable; I checked it again before writing this.,negative,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+6984,"Under conditions outside the original usage profile, the video input subsystem of the video panel fails under ordinary use; the change appeared in a new situation.",negative,television,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6987,My subsequent experience changed the initial impression because the television set built in audio has not let me down; the change appeared in a new situation. good as hell.,positive,television,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+6988,"Under conditions outside the original usage profile, the thermostat subsystem of the kitchen fridge has turned into a recurring problem; the change appeared in a new situation.",negative,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+6993,got this wash unit spin now fails under ordinary use this shit is frustrating,negative,washing_machine,limited,1,goldtest,1,2026-08-15T16:45:24Z
+6997,not gonna overthink it the cold storage unit thermostat fails under ordinary use this shit is frustrating,negative,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+6998,not gonna overthink it the screen unit controller shows no meaningful change,neutral,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7002,"Viewed across several different situations, the drainage motor of the wash unit is neither impressive nor bad; I checked it again before writing this. nothing fucking special.",neutral,washing_machine,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+7007,"Outside my usual routine, I noticed that the wash unit fill valve shows no meaningful change; the change appeared in a new situation.",neutral,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7009,used mobile today rear lens breaks down when change this shit is frustrating,negative,smartphone,limited,1,goldtest,1,2026-08-15T16:45:24Z
+7013,"Across a shifted usage regime, the observed behavior of the cell phone usb port is surprisingly dependable; I checked it again before writing this.",positive,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7018,got this food cooler gasket now has turned into a recurring problem the damn keeps causing trouble,negative,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+7019,My subsequent experience changed the initial impression because the mobile touch panel behaves like a normal unit; I checked it again before writing this. the damn thing is basically average.,neutral,smartphone,advanced,1,goldtest,1,2026-08-15T16:45:24Z
+7020,used clothes washer today soap tray shows meaningful change,neutral,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+7021,"When another person used it, I noticed that the front loader soap tray is surprisingly dependable; I checked it again before writing this.",positive,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7022,"During a heavy day of use, I noticed that the food cooler thermostat remains basically average; the behavior persisted across repeated attempts.",neutral,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7029,"Viewed across several different situations, the usb port of the cell phone is increasingly unreliable; the behavior persisted across repeated attempts.",negative,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+7032,quick update the controller on my television set fails under ordinary use,negative,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7040,got this pocket device rear lens remains basically average,neutral,smartphone,limited,0,goldtest,1,2026-08-15T16:45:24Z
+7054,A later check showed that the ice tray system in the food cooler has turned into a recurring problem; this was not part of my first impression.,negative,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7059,quick update the rear lens on my cell phone behaves like a normal unit,neutral,smartphone,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7060,My subsequent experience changed the initial impression because the television set picture panel is increasingly unreliable; this was not part of my first impression.,negative,television,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+7071,A later check showed that the soap tray in the front loader is surprisingly dependable; the change appeared in a new situation.,positive,washing_machine,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7073,quick update the soap tray on my clothes washer fails under ordinary use,negative,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7074,quick update the spin program on my clothes washer is neither impressive nor bad,neutral,washing_machine,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7079,"During a heavy day of use, I noticed that the kitchen fridge gasket is surprisingly dependable; this was not part of my first impression.",positive,refrigerator,standard,0,goldtest,1,2026-08-15T16:45:24Z
+7086,got this unit drainage motor now has not let me down,positive,washing_machine,limited,0,goldtest,1,2026-08-15T16:45:24Z
+7088,quick update the built in audio on my screen unit is surprisingly dependable,positive,television,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7098,"Across a shifted usage regime, the observed behavior of the kitchen fridge thermostat remains better than I expected; I checked it again before writing this.",positive,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7118,My subsequent experience changed the initial impression because the kitchen fridge thermostat shows no meaningful change; the change appeared in a new situation.,neutral,refrigerator,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+7125,"Under conditions outside the original usage profile, the touch panel subsystem of the mobile is surprisingly dependable; this was not part of my first impression.",positive,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7130,"Across a shifted usage regime, the observed behavior of the cold storage unit compressor fan still performs well under different use; the behavior persisted across repeated attempts.",positive,refrigerator,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7148,used kitchen fridge today compressor fan is neither impressive nor bad,neutral,refrigerator,limited,0,goldtest,1,2026-08-15T16:45:24Z
+7157,used food cooler today ice tray system is neither impressive nor bad plain as shit,neutral,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+7160,"Across a shifted usage regime, the observed behavior of the wash unit drainage motor remains better than I expected; this was not part of my first impression.",positive,washing_machine,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7162,"Viewed across several different situations, the touch panel of the cell phone is surprisingly dependable; the change appeared in a new situation.",positive,smartphone,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+7163,"Under conditions outside the original usage profile, the spin program subsystem of the wash unit breaks down when conditions change; the change appeared in a new situation. this shit is frustrating.",negative,washing_machine,technical,1,goldtest,1,2026-08-15T16:45:24Z
+7165,got cold storage unit compressor fan now has not let me down good as hell,positive,refrigerator,limited,1,goldtest,1,2026-08-15T16:45:24Z
+7168,not gonna overthink it the food cooler ice tray system behaves like a normal unit,neutral,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7169,"Under conditions outside the original usage profile, the rear lens subsystem of the pocket device fails under ordinary use; the behavior persisted across repeated attempts.",negative,smartphone,technical,0,goldtest,1,2026-08-15T16:45:24Z
+7170,quick update the compressor fan on my food cooler shows no meaningful change,neutral,refrigerator,informal,0,goldtest,1,2026-08-15T16:45:24Z
+7180,"Outside my usual routine, I noticed that the front loader spin program remains better than I expected; this was not part of my first impression. good as hell.",positive,washing_machine,standard,1,goldtest,1,2026-08-15T16:45:24Z
+7190,quick update the gasket on my food cooler remains better than i expected good as hell,positive,refrigerator,informal,1,goldtest,1,2026-08-15T16:45:24Z
+7197,My subsequent experience changed the initial impression because the clothes washer fill valve remains basically average; the behavior persisted across repeated attempts.,neutral,washing_machine,advanced,0,goldtest,1,2026-08-15T16:45:24Z
+7199,"Across a shifted usage regime, the observed behavior of the television set built in audio is neither impressive nor bad; I checked it again before writing this.",neutral,television,technical,0,goldtest,1,2026-08-15T16:45:24Z

@@ -1,4 +1,4 @@
-"""Command handler for synthetic data, model training, and artifact publication."""
+"""Command boundary for data-state transitions, model training, and artifact publication."""
 
 from __future__ import annotations
 
@@ -22,15 +22,27 @@ from .classification import PipelineConfig, PipelineExecution, execute_pipeline
 
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
-REVIEW_COLUMNS = {
+TRAIN_COLUMNS = {
+    "ID",
+    "text",
+    "sentiment",
+    "topic",
+    "linguistic_level",
+    "flagprofanity",
+    "source",
+    "training_generation",
+    "input_timestamp",
+}
+INCOMING_COLUMNS = {
     "ID",
     "text",
     "expected_sentiment",
     "expected_topic",
-    "type",
+    "linguistic_level",
+    "flagprofanity",
+    "goldtest",
     "input_timestamp",
 }
-SAMPLE_COLUMNS = {"ID", "text", "label", "type", "input_timestamp"}
 
 
 def _utc_now() -> datetime:
@@ -63,78 +75,43 @@ def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: Sequence[str]
         writer.writerows(rows)
 
 
-def _suggested_action(sentiment: str, topic: str) -> str:
-    team = topic.replace("_", " ").title()
-    if sentiment == "negative":
-        return f"Prioritize and route to the {team} support team."
-    if sentiment == "positive":
-        return f"Route to the {team} insights queue for advocacy analysis."
-    return f"Add to the {team} monitoring queue."
-
-
-def _validate_input_alignment(
-    review_rows: list[dict[str, str]],
-    sentiment_rows: list[dict[str, str]],
-    topic_rows: list[dict[str, str]],
-) -> None:
-    """Guarantee that all three inputs are projections of the same review IDs."""
-
-    if not review_rows or not REVIEW_COLUMNS.issubset(review_rows[0]):
-        raise ValueError(f"reviews.csv must contain: {', '.join(sorted(REVIEW_COLUMNS))}.")
-    for name, rows in (
-        ("sentiment_samples.csv", sentiment_rows),
-        ("topic_samples.csv", topic_rows),
-    ):
-        if not rows or not SAMPLE_COLUMNS.issubset(rows[0]):
-            raise ValueError(f"{name} must contain: {', '.join(sorted(SAMPLE_COLUMNS))}.")
-        if len(rows) != len(review_rows):
-            raise ValueError(f"{name} must contain the same IDs as reviews.csv.")
-
-    ids = [int(row["ID"]) for row in review_rows]
-    if ids != sorted(ids) or len(ids) != len(set(ids)):
-        raise ValueError("Review IDs must be unique and monotonically increasing.")
-
-    for review, sentiment, topic in zip(
-        review_rows,
-        sentiment_rows,
-        topic_rows,
-        strict=True,
-    ):
-        shared = ("ID", "text", "type", "input_timestamp")
-        if any(review[field] != sentiment[field] for field in shared):
-            raise ValueError("Sentiment input is not aligned with reviews.csv.")
-        if any(review[field] != topic[field] for field in shared):
-            raise ValueError("Topic input is not aligned with reviews.csv.")
-        if review["expected_sentiment"] != sentiment["label"]:
-            raise ValueError("Sentiment labels are not aligned with reviews.csv.")
-        if review["expected_topic"] != topic["label"]:
-            raise ValueError("Topic labels are not aligned with reviews.csv.")
+def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list[dict[str, str]]) -> None:
+    if not train_rows or set(train_rows[0]) != TRAIN_COLUMNS:
+        raise ValueError("train.csv does not use the expected schema.")
+    if not incoming_rows or set(incoming_rows[0]) != INCOMING_COLUMNS:
+        raise ValueError("incoming.csv does not use the expected schema.")
+    train_ids = {row["ID"] for row in train_rows}
+    incoming_ids = {row["ID"] for row in incoming_rows}
+    if train_ids & incoming_ids:
+        raise ValueError("train.csv and incoming.csv must contain disjoint IDs.")
+    train_text = {row["text"] for row in train_rows}
+    incoming_text = {row["text"] for row in incoming_rows}
+    if train_text & incoming_text:
+        raise ValueError("train.csv and incoming.csv must contain disjoint text.")
 
 
 class PipelineHandler:
-    """Single application boundary for all controlled pipeline operations."""
+    """Single controlled boundary for all pipeline state changes."""
 
     def generate_inputs(
         self,
         config_path: str | Path,
         input_dir: str | Path,
         *,
-        mode: str = "append",
+        mode: str = "advance",
         input_timestamp: str | None = None,
         overwrite: bool = False,
     ) -> Path:
-        """Initialize or append versioned synthetic input through the local agent."""
-
         config = SyntheticDataConfig.from_json(config_path)
         agent = SyntheticDataAgent(config)
         timestamp = input_timestamp or _default_timestamp()
         if mode == "initialize":
             return agent.initialize(input_dir, timestamp, overwrite=overwrite)
-        if mode == "append":
+        if mode == "advance":
             if overwrite:
                 raise ValueError("overwrite is valid only when mode=initialize.")
-            return agent.append(input_dir, timestamp)
-        raise ValueError("mode must be initialize or append.")
+            return agent.advance(input_dir, timestamp)
+        raise ValueError("mode must be initialize or advance.")
 
     def train_and_publish(
         self,
@@ -143,15 +120,15 @@ class PipelineHandler:
         *,
         run_id: str | None = None,
         epochs: int = 20,
+        validation_fraction: float = 0.15,
+        patience: int = 3,
         seed: int = 42,
     ) -> Path:
-        """Train both models and atomically publish a complete run directory."""
-
         resolved_run_id = run_id or _default_run_id()
         if not RUN_ID_PATTERN.fullmatch(resolved_run_id):
             raise ValueError("run_id may contain only letters, numbers, dot, dash, and underscore.")
-        if epochs < 1:
-            raise ValueError("epochs must be positive.")
+        if epochs < 1 or patience < 0:
+            raise ValueError("epochs must be positive and patience cannot be negative.")
 
         input_path = Path(input_dir).resolve()
         output_path = Path(output_root).resolve()
@@ -160,75 +137,66 @@ class PipelineHandler:
         if final_path.exists():
             raise FileExistsError(f"Run already exists: {final_path}")
 
-        sentiment_path = input_path / "sentiment_samples.csv"
-        topic_path = input_path / "topic_samples.csv"
-        reviews_path = input_path / "reviews.csv"
-        review_rows = _read_csv(reviews_path)
-        sentiment_rows = _read_csv(sentiment_path)
-        topic_rows = _read_csv(topic_path)
-        _validate_input_alignment(review_rows, sentiment_rows, topic_rows)
+        train_path = input_path / "train.csv"
+        incoming_path = input_path / "incoming.csv"
+        input_manifest_path = input_path / "input_manifest.json"
+        train_rows = _read_csv(train_path)
+        incoming_rows = _read_csv(incoming_path)
+        _validate_input_schema(train_rows, incoming_rows)
+        if not input_manifest_path.is_file():
+            raise FileNotFoundError(f"Input manifest not found: {input_manifest_path}")
+        input_manifest = json.loads(input_manifest_path.read_text(encoding="utf-8"))
 
-        temporary_path = Path(
-            tempfile.mkdtemp(prefix=f".{resolved_run_id}-", dir=output_path)
-        )
+        temporary_path = Path(tempfile.mkdtemp(prefix=f".{resolved_run_id}-", dir=output_path))
         model_timestamp = _default_timestamp()
         try:
             models_path = temporary_path / "models"
             models_path.mkdir()
-            sentiment = execute_pipeline(
-                PipelineConfig(
-                    dataset_path=sentiment_path,
-                    epochs=epochs,
-                    seed=seed,
+            executions: dict[str, PipelineExecution] = {}
+            for task in ("sentiment", "topic"):
+                executions[task] = execute_pipeline(
+                    PipelineConfig(
+                        train_path=train_path,
+                        incoming_path=incoming_path,
+                        task=task,
+                        epochs=epochs,
+                        validation_fraction=validation_fraction,
+                        early_stopping_patience=patience,
+                        seed=seed,
+                    )
                 )
-            )
-            topic = execute_pipeline(
-                PipelineConfig(
-                    dataset_path=topic_path,
-                    epochs=epochs,
-                    seed=seed,
-                )
-            )
+                executions[task].model.save(models_path / f"{task}.keras")
 
-            sentiment.model.save(models_path / "sentiment.keras")
-            topic.model.save(models_path / "topic.keras")
-
-            results = {
-                "sentiment": sentiment.result.to_dict(),
-                "topic": topic.result.to_dict(),
-            }
+            results = {task: execution.result.to_dict() for task, execution in executions.items()}
             (temporary_path / "results.json").write_text(
                 json.dumps(results, indent=2, sort_keys=True) + "\n",
                 encoding="utf-8",
             )
-            self._write_evaluation_predictions(
-                temporary_path,
-                sentiment,
-                topic,
-                model_timestamp,
-            )
             self._write_predictions(
                 temporary_path,
-                review_rows,
-                sentiment,
-                topic,
+                incoming_rows,
+                executions["sentiment"],
+                executions["topic"],
                 model_timestamp,
             )
 
-            created_at = _default_timestamp()
-            input_files = (sentiment_path, topic_path, reviews_path)
-            input_timestamps = sorted({row["input_timestamp"] for row in review_rows})
+            input_files = (train_path, incoming_path, input_manifest_path)
             manifest = {
                 "run_id": resolved_run_id,
-                "created_at": created_at,
+                "created_at": _default_timestamp(),
                 "model_timestamp": model_timestamp,
-                "input_timestamps": input_timestamps,
                 "status": "complete",
-                "pipeline_version": "0.4.0",
+                "pipeline_version": "0.5.0",
+                "input_generation": int(input_manifest["generation"]),
                 "git_sha": os.getenv("GITHUB_SHA", "local"),
                 "python_version": platform.python_version(),
                 "tensorflow_version": tf.__version__,
-                "parameters": {"epochs": epochs, "seed": seed},
+                "parameters": {
+                    "epochs": epochs,
+                    "validation_fraction": validation_fraction,
+                    "early_stopping_patience": patience,
+                    "seed": seed,
+                },
                 "input_files": {
                     path.name: {"sha256": _sha256(path), "size_bytes": path.stat().st_size}
                     for path in input_files
@@ -236,7 +204,6 @@ class PipelineHandler:
                 "outputs": {
                     "results": "results.json",
                     "predictions": "predictions.csv",
-                    "evaluation_predictions": "evaluation_predictions.csv",
                     "sentiment_model": "models/sentiment.keras",
                     "topic_model": "models/topic.keras",
                 },
@@ -257,55 +224,18 @@ class PipelineHandler:
         return final_path
 
     @staticmethod
-    def _write_evaluation_predictions(
-        destination: Path,
-        sentiment: PipelineExecution,
-        topic: PipelineExecution,
-        model_timestamp: str,
-    ) -> None:
-        rows: list[dict[str, Any]] = []
-        for task, execution in (("sentiment", sentiment), ("topic", topic)):
-            rows.extend(
-                {"task": task, **prediction, "model_timestamp": model_timestamp}
-                for prediction in execution.result.predictions
-            )
-        _write_csv(
-            destination / "evaluation_predictions.csv",
-            rows,
-            (
-                "ID",
-                "task",
-                "text",
-                "expected",
-                "predicted",
-                "confidence",
-                "correct",
-                "type",
-                "input_timestamp",
-                "model_timestamp",
-            ),
-        )
-
-    @staticmethod
     def _write_predictions(
         destination: Path,
-        review_rows: list[dict[str, str]],
+        incoming_rows: list[dict[str, str]],
         sentiment: PipelineExecution,
         topic: PipelineExecution,
         model_timestamp: str,
     ) -> None:
-        sentiment_by_id = {
-            str(prediction["ID"]): prediction
-            for prediction in sentiment.result.predictions
-        }
-        topic_by_id = {
-            str(prediction["ID"]): prediction
-            for prediction in topic.result.predictions
-        }
-        test_rows = [row for row in review_rows if row["type"] == "test"]
-        expected_ids = {row["ID"] for row in test_rows}
+        sentiment_by_id = {str(row["ID"]): row for row in sentiment.result.predictions}
+        topic_by_id = {str(row["ID"]): row for row in topic.result.predictions}
+        expected_ids = {row["ID"] for row in incoming_rows}
         if set(sentiment_by_id) != expected_ids or set(topic_by_id) != expected_ids:
-            raise ValueError("Model predictions do not cover every versioned test ID.")
+            raise ValueError("Predictions do not cover every incoming ID.")
 
         rows = [
             {
@@ -315,11 +245,17 @@ class PipelineHandler:
                 "expected_topic": source["expected_topic"],
                 "predicted_sentiment": sentiment_by_id[source["ID"]]["predicted"],
                 "predicted_topic": topic_by_id[source["ID"]]["predicted"],
-                "type": "test",
+                "sentiment_confidence": sentiment_by_id[source["ID"]]["confidence"],
+                "topic_confidence": topic_by_id[source["ID"]]["confidence"],
+                "sentiment_correct": sentiment_by_id[source["ID"]]["correct"],
+                "topic_correct": topic_by_id[source["ID"]]["correct"],
+                "linguistic_level": source["linguistic_level"],
+                "flagprofanity": source["flagprofanity"],
+                "goldtest": source["goldtest"],
                 "input_timestamp": source["input_timestamp"],
                 "model_timestamp": model_timestamp,
             }
-            for source in test_rows
+            for source in incoming_rows
         ]
         _write_csv(
             destination / "predictions.csv",
@@ -331,7 +267,13 @@ class PipelineHandler:
                 "expected_topic",
                 "predicted_sentiment",
                 "predicted_topic",
-                "type",
+                "sentiment_confidence",
+                "topic_confidence",
+                "sentiment_correct",
+                "topic_correct",
+                "linguistic_level",
+                "flagprofanity",
+                "goldtest",
                 "input_timestamp",
                 "model_timestamp",
             ),
@@ -343,42 +285,44 @@ def _add_training_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--output-root", default="data/output")
     parser.add_argument("--run-id")
     parser.add_argument("--epochs", type=int, default=int(os.getenv("PIPELINE_EPOCHS", "20")))
+    parser.add_argument(
+        "--validation-fraction",
+        type=float,
+        default=float(os.getenv("PIPELINE_VALIDATION_FRACTION", "0.15")),
+    )
+    parser.add_argument("--patience", type=int, default=int(os.getenv("PIPELINE_PATIENCE", "3")))
     parser.add_argument("--seed", type=int, default=42)
 
 
 def build_parser() -> argparse.ArgumentParser:
-    """Create the command-line contract for controlled execution."""
-
     parser = argparse.ArgumentParser(
         prog="lstm-pipeline",
-        description="Version synthetic data, train both LSTM models, and publish artifacts.",
+        description="Train LSTM classifiers on train.csv and evaluate new incoming reviews.",
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    generate = commands.add_parser("generate-data", help="Initialize or append input data.")
+    generate = commands.add_parser("generate-data", help="Initialize or advance versioned input data.")
     generate.add_argument("--config", default="config/synthetic_data.json")
     generate.add_argument("--input-dir", default="data/input")
-    generate.add_argument("--mode", choices=("initialize", "append"), default="append")
+    generate.add_argument("--mode", choices=("initialize", "advance"), default="advance")
     generate.add_argument("--data-timestamp", default=os.getenv("DATA_TIMESTAMP"))
     generate.add_argument("--overwrite", action="store_true")
 
-    train = commands.add_parser("train", help="Train using existing versioned input data.")
+    train = commands.add_parser("train", help="Train and evaluate using the current input state.")
     _add_training_arguments(train)
 
     run = commands.add_parser(
         "run",
-        help="Optionally append one batch, train both models, and publish artifacts.",
+        help="Train, evaluate incoming reviews, then optionally promote goldtest and refresh incoming.",
     )
     run.add_argument("--config", default="config/synthetic_data.json")
-    run.add_argument("--append-data", action="store_true")
+    run.add_argument("--advance-data", action="store_true")
     run.add_argument("--data-timestamp", default=os.getenv("DATA_TIMESTAMP"))
     _add_training_arguments(run)
     return parser
 
 
 def main(argv: Sequence[str] | None = None) -> int:
-    """Execute one handler command and print a machine-readable result."""
-
     arguments = build_parser().parse_args(argv)
     handler = PipelineHandler()
 
@@ -393,22 +337,26 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps({"status": "ok", "input_manifest": str(manifest.resolve())}))
         return 0
 
-    if arguments.command == "run" and arguments.append_data:
-        handler.generate_inputs(
-            arguments.config,
-            arguments.input_dir,
-            mode="append",
-            input_timestamp=arguments.data_timestamp,
-        )
-
     run_path = handler.train_and_publish(
         arguments.input_dir,
         arguments.output_root,
         run_id=arguments.run_id,
         epochs=arguments.epochs,
+        validation_fraction=arguments.validation_fraction,
+        patience=arguments.patience,
         seed=arguments.seed,
     )
-    print(json.dumps({"status": "ok", "run_path": str(run_path.resolve())}))
+
+    response: dict[str, Any] = {"status": "ok", "run_path": str(run_path.resolve())}
+    if arguments.command == "run" and arguments.advance_data:
+        manifest = handler.generate_inputs(
+            arguments.config,
+            arguments.input_dir,
+            mode="advance",
+            input_timestamp=arguments.data_timestamp,
+        )
+        response["next_input_manifest"] = str(manifest.resolve())
+    print(json.dumps(response))
     return 0
 
 

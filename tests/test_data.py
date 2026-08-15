@@ -20,6 +20,15 @@ def _write(path: Path, fieldnames: list[str], rows: list[dict[str, object]]) -> 
         writer.writerows(rows)
 
 
+def _alpha(index: int) -> str:
+    value = index + 1
+    chars: list[str] = []
+    while value:
+        value, remainder = divmod(value - 1, 26)
+        chars.append(chr(97 + remainder))
+    return "".join(reversed(chars))
+
+
 def test_clean_text_preserves_lexical_profanity_signal() -> None:
     assert clean_text("This DAMN phone is f***ing bad!") == "this damn phone is f ing bad"
 
@@ -31,10 +40,11 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
     topics = ("smartphone", "television", "refrigerator", "washing_machine")
     levels = ("limited", "informal", "standard", "advanced", "technical")
     for index in range(60):
+        token = _alpha(index)
         train_rows.append(
             {
                 "ID": index + 1,
-                "text": f"training review {index} damn" if index % 4 == 0 else f"training review {index}",
+                "text": f"training review {token} damn" if index % 4 == 0 else f"training review {token}",
                 "sentiment": sentiments[index % 3],
                 "topic": topics[index % 4],
                 "linguistic_level": levels[index % 5],
@@ -47,7 +57,7 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
         incoming_rows.append(
             {
                 "ID": 1000 + index,
-                "text": f"incoming review {index}",
+                "text": f"incoming review {token}",
                 "expected_sentiment": sentiments[index % 3],
                 "expected_topic": topics[index % 4],
                 "linguistic_level": levels[index % 5],

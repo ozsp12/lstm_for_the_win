@@ -20,29 +20,16 @@ import tensorflow as tf
 from .agents import SyntheticDataAgent, SyntheticDataConfig
 from .classification import PipelineConfig, PipelineExecution, execute_pipeline
 
-
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
-TRAIN_COLUMNS = {
-    "ID",
-    "text",
-    "sentiment",
-    "topic",
-    "linguistic_level",
-    "flagprofanity",
-    "source",
-    "training_generation",
-    "input_timestamp",
+LEGACY_TRAIN_COLUMNS = {
+    "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
+    "source", "training_generation", "input_timestamp",
 }
-INCOMING_COLUMNS = {
-    "ID",
-    "text",
-    "expected_sentiment",
-    "expected_topic",
-    "linguistic_level",
-    "flagprofanity",
-    "goldtest",
-    "input_timestamp",
+LEGACY_INCOMING_COLUMNS = {
+    "ID", "text", "expected_sentiment", "expected_topic", "linguistic_level",
+    "flagprofanity", "goldtest", "input_timestamp",
 }
+RICH_STYLE_COLUMNS = {"hasemoji", "hasspellingerror", "hasslang", "length_class", "mixed_sentiment"}
 
 
 def _utc_now() -> datetime:
@@ -76,10 +63,16 @@ def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: Sequence[str]
 
 
 def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list[dict[str, str]]) -> None:
-    if not train_rows or set(train_rows[0]) != TRAIN_COLUMNS:
+    if not train_rows or not LEGACY_TRAIN_COLUMNS.issubset(train_rows[0]):
         raise ValueError("train.csv does not use the expected schema.")
-    if not incoming_rows or set(incoming_rows[0]) != INCOMING_COLUMNS:
+    if not incoming_rows or not LEGACY_INCOMING_COLUMNS.issubset(incoming_rows[0]):
         raise ValueError("incoming.csv does not use the expected schema.")
+    train_extra = set(train_rows[0]) - LEGACY_TRAIN_COLUMNS
+    incoming_extra = set(incoming_rows[0]) - LEGACY_INCOMING_COLUMNS
+    if train_extra and not RICH_STYLE_COLUMNS.issubset(train_extra):
+        raise ValueError("train.csv contains an unsupported partial metadata schema.")
+    if incoming_extra and not RICH_STYLE_COLUMNS.issubset(incoming_extra):
+        raise ValueError("incoming.csv contains an unsupported partial metadata schema.")
     train_ids = {row["ID"] for row in train_rows}
     incoming_ids = {row["ID"] for row in incoming_rows}
     if train_ids & incoming_ids:
@@ -88,6 +81,14 @@ def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list
     incoming_text = {row["text"] for row in incoming_rows}
     if train_text & incoming_text:
         raise ValueError("train.csv and incoming.csv must contain disjoint text.")
+
+
+def _compact_metrics(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    fields = (
+        "task", "train_size", "fit_size", "validation_size", "incoming_size", "labels",
+        "metrics", "baseline_metrics", "metric_delta_vs_baseline", "segment_metrics",
+    )
+    return {task: {field: result[field] for field in fields} for task, result in results.items()}
 
 
 class PipelineHandler:
@@ -169,15 +170,13 @@ class PipelineHandler:
 
             results = {task: execution.result.to_dict() for task, execution in executions.items()}
             (temporary_path / "results.json").write_text(
-                json.dumps(results, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
+                json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            )
+            (temporary_path / "metrics.json").write_text(
+                json.dumps(_compact_metrics(results), indent=2, sort_keys=True) + "\n", encoding="utf-8"
             )
             self._write_predictions(
-                temporary_path,
-                incoming_rows,
-                executions["sentiment"],
-                executions["topic"],
-                model_timestamp,
+                temporary_path, incoming_rows, executions["sentiment"], executions["topic"], model_timestamp
             )
 
             input_files = (train_path, incoming_path, input_manifest_path)
@@ -186,7 +185,7 @@ class PipelineHandler:
                 "created_at": _default_timestamp(),
                 "model_timestamp": model_timestamp,
                 "status": "complete",
-                "pipeline_version": "0.5.0",
+                "pipeline_version": "0.6.0",
                 "input_generation": int(input_manifest["generation"]),
                 "git_sha": os.getenv("GITHUB_SHA", "local"),
                 "python_version": platform.python_version(),
@@ -196,6 +195,8 @@ class PipelineHandler:
                     "validation_fraction": validation_fraction,
                     "early_stopping_patience": patience,
                     "seed": seed,
+                    "max_tokens": 20_000,
+                    "sequence_length": 96,
                 },
                 "input_files": {
                     path.name: {"sha256": _sha256(path), "size_bytes": path.stat().st_size}
@@ -203,14 +204,14 @@ class PipelineHandler:
                 },
                 "outputs": {
                     "results": "results.json",
+                    "metrics": "metrics.json",
                     "predictions": "predictions.csv",
                     "sentiment_model": "models/sentiment.keras",
                     "topic_model": "models/topic.keras",
                 },
             }
             (temporary_path / "run_manifest.json").write_text(
-                json.dumps(manifest, indent=2, sort_keys=True) + "\n",
-                encoding="utf-8",
+                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
             )
             temporary_path.rename(final_path)
         except Exception:
@@ -218,8 +219,7 @@ class PipelineHandler:
             raise
 
         (output_path / "latest.json").write_text(
-            json.dumps({"run_id": resolved_run_id}, indent=2) + "\n",
-            encoding="utf-8",
+            json.dumps({"run_id": resolved_run_id}, indent=2) + "\n", encoding="utf-8"
         )
         return final_path
 
@@ -237,45 +237,41 @@ class PipelineHandler:
         if set(sentiment_by_id) != expected_ids or set(topic_by_id) != expected_ids:
             raise ValueError("Predictions do not cover every incoming ID.")
 
-        rows = [
-            {
-                "ID": source["ID"],
+        rows = []
+        for source in incoming_rows:
+            sid = source["ID"]
+            rich = sentiment_by_id[sid]
+            rows.append({
+                "ID": sid,
                 "text": source["text"],
                 "expected_sentiment": source["expected_sentiment"],
                 "expected_topic": source["expected_topic"],
-                "predicted_sentiment": sentiment_by_id[source["ID"]]["predicted"],
-                "predicted_topic": topic_by_id[source["ID"]]["predicted"],
-                "sentiment_confidence": sentiment_by_id[source["ID"]]["confidence"],
-                "topic_confidence": topic_by_id[source["ID"]]["confidence"],
-                "sentiment_correct": sentiment_by_id[source["ID"]]["correct"],
-                "topic_correct": topic_by_id[source["ID"]]["correct"],
+                "predicted_sentiment": sentiment_by_id[sid]["predicted"],
+                "predicted_topic": topic_by_id[sid]["predicted"],
+                "sentiment_confidence": sentiment_by_id[sid]["confidence"],
+                "topic_confidence": topic_by_id[sid]["confidence"],
+                "sentiment_correct": sentiment_by_id[sid]["correct"],
+                "topic_correct": topic_by_id[sid]["correct"],
                 "linguistic_level": source["linguistic_level"],
                 "flagprofanity": source["flagprofanity"],
+                "hasemoji": rich["hasemoji"],
+                "hasspellingerror": rich["hasspellingerror"],
+                "hasslang": rich["hasslang"],
+                "length_class": rich["length_class"],
+                "mixed_sentiment": rich["mixed_sentiment"],
                 "goldtest": source["goldtest"],
                 "input_timestamp": source["input_timestamp"],
                 "model_timestamp": model_timestamp,
-            }
-            for source in incoming_rows
-        ]
+            })
         _write_csv(
             destination / "predictions.csv",
             rows,
             (
-                "ID",
-                "text",
-                "expected_sentiment",
-                "expected_topic",
-                "predicted_sentiment",
-                "predicted_topic",
-                "sentiment_confidence",
-                "topic_confidence",
-                "sentiment_correct",
-                "topic_correct",
-                "linguistic_level",
-                "flagprofanity",
-                "goldtest",
-                "input_timestamp",
-                "model_timestamp",
+                "ID", "text", "expected_sentiment", "expected_topic", "predicted_sentiment",
+                "predicted_topic", "sentiment_confidence", "topic_confidence", "sentiment_correct",
+                "topic_correct", "linguistic_level", "flagprofanity", "hasemoji",
+                "hasspellingerror", "hasslang", "length_class", "mixed_sentiment", "goldtest",
+                "input_timestamp", "model_timestamp",
             ),
         )
 
@@ -285,11 +281,7 @@ def _add_training_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--output-root", default="data/output")
     parser.add_argument("--run-id")
     parser.add_argument("--epochs", type=int, default=int(os.getenv("PIPELINE_EPOCHS", "20")))
-    parser.add_argument(
-        "--validation-fraction",
-        type=float,
-        default=float(os.getenv("PIPELINE_VALIDATION_FRACTION", "0.15")),
-    )
+    parser.add_argument("--validation-fraction", type=float, default=None)
     parser.add_argument("--patience", type=int, default=int(os.getenv("PIPELINE_PATIENCE", "3")))
     parser.add_argument("--seed", type=int, default=42)
 
@@ -322,6 +314,22 @@ def build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _resolve_validation_fraction(arguments: argparse.Namespace) -> float:
+    if arguments.validation_fraction is not None:
+        return float(arguments.validation_fraction)
+    env_value = os.getenv("PIPELINE_VALIDATION_FRACTION")
+    if env_value is not None:
+        return float(env_value)
+    if arguments.command != "run":
+        return 0.15
+    config = SyntheticDataConfig.from_json(arguments.config)
+    manifest_path = Path(arguments.input_dir) / "input_manifest.json"
+    generation = 0
+    if manifest_path.is_file():
+        generation = int(json.loads(manifest_path.read_text(encoding="utf-8"))["generation"])
+    return float(config.effective_generation(generation)["validation_fraction"])
+
+
 def main(argv: Sequence[str] | None = None) -> int:
     arguments = build_parser().parse_args(argv)
     handler = PipelineHandler()
@@ -337,17 +345,22 @@ def main(argv: Sequence[str] | None = None) -> int:
         print(json.dumps({"status": "ok", "input_manifest": str(manifest.resolve())}))
         return 0
 
+    validation_fraction = _resolve_validation_fraction(arguments)
     run_path = handler.train_and_publish(
         arguments.input_dir,
         arguments.output_root,
         run_id=arguments.run_id,
         epochs=arguments.epochs,
-        validation_fraction=arguments.validation_fraction,
+        validation_fraction=validation_fraction,
         patience=arguments.patience,
         seed=arguments.seed,
     )
 
-    response: dict[str, Any] = {"status": "ok", "run_path": str(run_path.resolve())}
+    response: dict[str, Any] = {
+        "status": "ok",
+        "run_path": str(run_path.resolve()),
+        "validation_fraction": validation_fraction,
+    }
     if arguments.command == "run" and arguments.advance_data:
         manifest = handler.generate_inputs(
             arguments.config,

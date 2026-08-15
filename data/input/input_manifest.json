@@ -1,0 +1,43 @@
+{
+  "agent_version": "3.0.0",
+  "config": {
+    "agent_name": "synthetic-review-generator",
+    "agent_version": "3.0.0",
+    "allow_personal_data": false,
+    "goldtest_fraction": 0.2,
+    "incoming_rows": 1200,
+    "initial_train_rows": 6000,
+    "language": "en",
+    "profanity_fraction": 0.25,
+    "seed": 42,
+    "synthetic_only": true,
+    "validation_fraction": 0.15
+  },
+  "generated_by": "synthetic-review-generator",
+  "generation": 0,
+  "incoming_goldtest_count": 240,
+  "incoming_linguistic_level_counts": {
+    "advanced": 240,
+    "informal": 240,
+    "limited": 240,
+    "standard": 240,
+    "technical": 240
+  },
+  "incoming_profanity_counts": {
+    "0": 900,
+    "1": 300
+  },
+  "last_issued_id": 7200,
+  "promoted_from_previous_incoming": 0,
+  "record_counts": {
+    "incoming.csv": 1200,
+    "train.csv": 6000
+  },
+  "sha256": {
+    "incoming.csv": "98ce3e787a1f7736067c0d8c44ba6e3322ab914ab52939cf2e20dd5a9d01f94e",
+    "train.csv": "d161390d9d67d7fb6326e9e47fd246269a07ae8cdb3930ddd33b00c00e3eaa1a"
+  },
+  "train_source_counts": {
+    "initial": 6000
+  }
+}

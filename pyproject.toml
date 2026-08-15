@@ -4,12 +4,13 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lstm-for-the-win"
-version = "0.4.0"
-description = "Reproducible LSTM pipeline for sentiment and product-topic classification."
+version = "0.5.0"
+description = "Reproducible continual-learning LSTM experiment for product-review classification."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "tensorflow==2.20.0",
+    "scikit-learn>=1.5,<2",
 ]
 
 [project.optional-dependencies]

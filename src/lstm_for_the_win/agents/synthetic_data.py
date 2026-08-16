@@ -19,6 +19,7 @@ TOPICS = ("smartphone", "television", "refrigerator", "washing_machine")
 LINGUISTIC_LEVELS = ("limited", "informal", "standard", "advanced", "technical")
 LENGTH_CLASSES = ("short", "medium", "long")
 STYLE_FIELDS = ("hasemoji", "hasspellingerror", "hasslang", "mixed_sentiment")
+MIN_CORPUS_ROWS = 1_000
 
 TRAIN_FIELDS = (
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
@@ -35,12 +36,12 @@ INCOMING_FIELDS = (
 @dataclass(frozen=True)
 class SyntheticDataConfig:
     agent_name: str = "synthetic-review-generator"
-    agent_version: str = "4.0.0"
+    agent_version: str = "4.1.0"
     language: str = "en"
     seed: int = 42
     initial_train_rows: int = 12_000
-    incoming_rows: int = 1_200
-    incoming_rows_jitter: int = 180
+    incoming_rows: int = 1_800
+    incoming_rows_jitter: int = 300
     profanity_fraction: float = 0.25
     profanity_fraction_jitter: float = 0.08
     goldtest_fraction: float = 0.20
@@ -52,7 +53,7 @@ class SyntheticDataConfig:
     mixed_sentiment_fraction: float = 0.12
     validation_fraction: float = 0.15
     validation_fraction_jitter: float = 0.03
-    vary_counts: bool = False
+    vary_counts: bool = True
     synthetic_only: bool = True
     allow_personal_data: bool = False
 
@@ -68,12 +69,14 @@ class SyntheticDataConfig:
         if not self.synthetic_only or self.allow_personal_data:
             raise ValueError("The generator must remain synthetic-only and PII-free.")
         strata = len(SENTIMENTS) * len(TOPICS) * len(LINGUISTIC_LEVELS)
-        if self.initial_train_rows < strata or self.initial_train_rows % strata:
-            raise ValueError(f"initial_train_rows must be a positive multiple of {strata}.")
-        if self.incoming_rows < strata or self.incoming_rows % strata:
-            raise ValueError(f"incoming_rows must be a positive multiple of {strata}.")
+        if self.initial_train_rows < MIN_CORPUS_ROWS or self.initial_train_rows % strata:
+            raise ValueError(f"initial_train_rows must be at least {MIN_CORPUS_ROWS} and a multiple of {strata}.")
+        if self.incoming_rows < MIN_CORPUS_ROWS or self.incoming_rows % strata:
+            raise ValueError(f"incoming_rows must be at least {MIN_CORPUS_ROWS} and a multiple of {strata}.")
         if self.incoming_rows_jitter < 0:
             raise ValueError("incoming_rows_jitter cannot be negative.")
+        if self.incoming_rows - self.incoming_rows_jitter < MIN_CORPUS_ROWS:
+            raise ValueError(f"incoming_rows - incoming_rows_jitter must remain at least {MIN_CORPUS_ROWS}.")
         fractions = (
             self.profanity_fraction, self.goldtest_fraction, self.emoji_fraction,
             self.spelling_error_fraction, self.slang_fraction, self.mixed_sentiment_fraction,
@@ -94,7 +97,7 @@ class SyntheticDataConfig:
         strata = len(SENTIMENTS) * len(TOPICS) * len(LINGUISTIC_LEVELS)
         incoming = self.incoming_rows
         if self.vary_counts and self.incoming_rows_jitter:
-            low = max(strata, self.incoming_rows - self.incoming_rows_jitter)
+            low = max(MIN_CORPUS_ROWS, self.incoming_rows - self.incoming_rows_jitter)
             high = self.incoming_rows + self.incoming_rows_jitter
             candidates = [n for n in range(low, high + 1) if n % strata == 0]
             incoming = rng.choice(candidates) if candidates else self.incoming_rows
@@ -115,52 +118,152 @@ class SyntheticDataConfig:
 
 TOPIC_LANGUAGE = {
     "smartphone": {
-        "train": (("smartphone", "phone", "handset", "mobile phone"), ("battery", "camera", "touchscreen", "charging port", "speaker", "signal reception")),
-        "incoming": (("cell phone", "mobile", "pocket device", "daily driver"), ("power cell", "rear lens", "touch panel", "usb port", "earpiece", "network reception")),
+        "train": (
+            ("smartphone", "phone", "handset", "mobile phone", "device", "daily phone"),
+            ("battery", "camera", "touchscreen", "charging port", "speaker", "signal reception", "face unlock", "software", "microphone"),
+        ),
+        "incoming": (
+            ("cell phone", "mobile", "pocket device", "daily driver", "new phone", "work phone"),
+            ("battery life", "rear camera", "touch panel", "USB port", "earpiece", "network reception", "fingerprint reader", "apps", "call quality"),
+        ),
     },
     "television": {
-        "train": (("television", "tv", "smart tv", "display"), ("screen", "remote control", "hdmi input", "sound output", "backlight", "menu system")),
-        "incoming": (("television set", "screen unit", "video panel", "living room display"), ("picture panel", "controller", "video input", "built in audio", "panel lighting", "interface")),
+        "train": (
+            ("television", "TV", "smart TV", "display", "living-room TV", "screen"),
+            ("screen", "remote control", "HDMI input", "sound output", "backlight", "menu system", "Wi-Fi", "streaming apps", "motion handling"),
+        ),
+        "incoming": (
+            ("television set", "screen unit", "video panel", "living room display", "TV set", "bedroom TV"),
+            ("picture quality", "controller", "video input", "built-in audio", "panel lighting", "interface", "wireless connection", "streaming menu", "sports motion"),
+        ),
     },
     "refrigerator": {
-        "train": (("refrigerator", "fridge", "cooling unit", "kitchen refrigerator"), ("temperature control", "door seal", "ice maker", "cooling fan", "shelves", "compressor")),
-        "incoming": (("cold storage unit", "kitchen fridge", "food cooler", "refrigeration unit"), ("thermostat", "gasket", "ice tray system", "compressor fan", "shelf layout", "cooling motor")),
+        "train": (
+            ("refrigerator", "fridge", "cooling unit", "kitchen refrigerator", "family fridge", "appliance"),
+            ("temperature control", "door seal", "ice maker", "cooling fan", "shelves", "compressor", "freezer drawer", "interior light", "door alarm"),
+        ),
+        "incoming": (
+            ("cold-storage unit", "kitchen fridge", "food cooler", "refrigeration unit", "main fridge", "new refrigerator"),
+            ("thermostat", "gasket", "ice system", "compressor fan", "shelf layout", "cooling motor", "freezer compartment", "inside lighting", "door warning"),
+        ),
     },
     "washing_machine": {
-        "train": (("washing machine", "washer", "laundry machine", "front loader"), ("spin cycle", "water inlet", "detergent drawer", "drain pump", "drum", "control panel")),
-        "incoming": (("clothes washer", "wash unit", "front loading washer", "laundry unit"), ("spin program", "fill valve", "soap tray", "drainage motor", "wash drum", "cycle controls")),
+        "train": (
+            ("washing machine", "washer", "laundry machine", "front loader", "washing unit", "laundry appliance"),
+            ("spin cycle", "water inlet", "detergent drawer", "drain pump", "drum", "control panel", "door lock", "rinse cycle", "noise level"),
+        ),
+        "incoming": (
+            ("clothes washer", "wash unit", "front-loading washer", "laundry unit", "new washer", "machine"),
+            ("spin program", "fill valve", "soap tray", "drainage motor", "wash drum", "cycle controls", "door latch", "rinse program", "vibration"),
+        ),
     },
 }
 
 ASSESSMENTS = {
     "train": {
-        "positive": ("works reliably", "is better than expected", "has been consistently good", "does its job very well", "feels dependable in daily use"),
-        "neutral": ("works as expected", "is fairly ordinary", "meets the basic specification", "does the job and little more", "is acceptable without standing out"),
-        "negative": ("keeps failing", "works far below expectations", "has become unreliable", "causes repeated problems", "is difficult to trust in normal use"),
+        "positive": (
+            "has been reliable", "works better than I expected", "still feels solid", "does its job without fuss",
+            "has held up well", "performs consistently", "has been easy to live with", "keeps doing what I need",
+        ),
+        "neutral": (
+            "works about as expected", "is pretty ordinary", "does the basic job", "is fine but forgettable",
+            "has no major strengths or weaknesses", "feels average", "is usable without standing out", "does what the specification says",
+        ),
+        "negative": (
+            "has become unreliable", "keeps causing problems", "works worse than I expected", "has been frustrating to use",
+            "fails too often", "is inconsistent", "has not held up", "makes routine use harder than it should be",
+        ),
     },
     "incoming": {
-        "positive": ("still performs well under different use", "has not let me down", "is surprisingly dependable", "remains better than I expected", "holds up well outside my normal routine"),
-        "neutral": ("is neither impressive nor bad", "remains basically average", "behaves like a normal unit", "shows no meaningful change", "is usable but unremarkable"),
-        "negative": ("fails under ordinary use", "has turned into a recurring problem", "is increasingly unreliable", "breaks down when conditions change", "has become frustratingly inconsistent"),
+        "positive": (
+            "has stayed dependable", "works well even outside my usual routine", "has been a pleasant surprise", "still performs consistently",
+            "holds up better than expected", "has not given me trouble", "feels dependable in daily use", "continues to work without drama",
+        ),
+        "neutral": (
+            "is neither impressive nor bad", "remains basically average", "works normally", "has not changed my opinion much",
+            "is acceptable but unremarkable", "does the job", "feels ordinary after more use", "is fine for what it is",
+        ),
+        "negative": (
+            "has turned into a recurring problem", "fails in normal use", "has become increasingly unreliable", "keeps acting up",
+            "breaks down when conditions change", "has been a disappointment", "is difficult to trust", "keeps getting in the way",
+        ),
     },
 }
 
 CONTEXTS = {
-    "train": ("after a week of use", "during routine use", "after setup", "after several normal cycles", "during a basic check", "after comparing it with my previous unit"),
-    "incoming": ("after a trip", "during a heavy day of use", "after changing settings", "when another person used it", "outside my usual routine", "after a few weeks of mixed use"),
+    "train": (
+        "after a week of everyday use", "during normal weekday use", "after the initial setup", "after several routine cycles",
+        "while using it at home", "after comparing it with my previous unit", "after a month of ownership", "during a typical weekend",
+    ),
+    "incoming": (
+        "after taking it on a trip", "during a heavier-than-usual day", "after changing a few settings", "when someone else in the house used it",
+        "outside my normal routine", "after a few weeks of mixed use", "after using it for work and at home", "after coming back to it after a few days",
+    ),
 }
+
 DETAILS = {
-    "train": ("the result was repeatable", "the behavior stayed consistent", "I noticed it more than once", "nothing unusual happened around it", "the same pattern appeared on another day"),
-    "incoming": ("this was not part of my first impression", "the change appeared in a new situation", "I checked it again before writing this", "the behavior persisted across repeated attempts", "a second check gave the same result"),
+    "train": (
+        "I got the same result more than once", "the behavior was consistent from day to day", "I checked it again before making up my mind",
+        "nothing else unusual was happening at the time", "the same pattern showed up in a second test", "it behaved similarly under a few different conditions",
+        "I noticed the pattern gradually rather than all at once", "the result matched what I saw earlier in the week",
+    ),
+    "incoming": (
+        "this was different from my first impression", "I noticed the change only in the new situation", "I repeated the check before writing this",
+        "the behavior persisted across several attempts", "a second check gave me the same result", "the difference became clearer after a few more days",
+        "someone else in the house noticed it too", "I tried the same thing again later and got a similar result",
+    ),
 }
+
 FOLLOWUPS = {
-    "positive": ("I would keep using it", "overall I am satisfied", "it has earned my confidence"),
-    "neutral": ("I can live with it", "I do not feel strongly either way", "there is little else to add"),
-    "negative": ("I would not rely on it", "I am considering a replacement", "this needs to improve"),
+    "positive": (
+        "I would buy it again", "overall I am happy with it", "I plan to keep using it", "it has earned my confidence",
+        "for my use case, this is a keeper", "I have stopped worrying about this part of the product",
+    ),
+    "neutral": (
+        "I can live with it", "I do not feel strongly either way", "there is not much else to say", "it is adequate for now",
+        "I would neither recommend it nor warn people away", "my opinion is still basically in the middle",
+    ),
+    "negative": (
+        "I would not rely on it", "I am considering a replacement", "this needs to improve", "I would hesitate to buy it again",
+        "I am already looking at alternatives", "this is the part that makes me regret the purchase",
+    ),
 }
-SLANG = ("ngl", "tbh", "idk", "imo", "kinda", "lowkey", "fr", "lol", "wtf", "not gonna lie")
+
+SLANG_OPENERS = ("ngl,", "tbh,", "imo,", "lowkey,", "fr,", "not gonna lie,", "honestly tho,", "real talk,")
+SLANG_TAILS = ("lol", "idk", "for real", "kinda wild", "not great tbh", "pretty solid ngl")
 EMOJIS = ("🙂", "😅", "🤷", "😐", "🙃", "🔥", "💀", "🤔", "👍", "👎", "😂", "😬")
-PROFANITY = ("damn", "fucking", "as hell", "this shit", "the damn thing", "crap")
+
+PROFANITY_CLAUSES = {
+    "positive": (
+        "Damn, I did not expect this part to be this solid.",
+        "No bullshit, this has been one of the better parts of the product.",
+        "I expected some crap here, but it has actually held up.",
+        "The damn thing surprised me in a good way.",
+    ),
+    "neutral": (
+        "The damn thing is basically fine.",
+        "It is not amazing, but it is not bullshit either.",
+        "There is no major crap to complain about here.",
+        "Honestly, the damn thing is just average.",
+    ),
+    "negative": (
+        "This is damn annoying.",
+        "I am tired of this crap.",
+        "The damn thing keeps getting in the way.",
+        "This shit should not be happening in normal use.",
+    ),
+}
+
+TECHNICAL_OPENERS = (
+    "Under a representative operating profile,", "Across repeated observations,", "Under ordinary operating conditions,",
+    "After repeated use under comparable conditions,", "From a practical reliability standpoint,",
+)
+
+COMMON_TYPOS = {
+    "battery": "batery", "really": "realy", "received": "recieved", "separate": "seperate", "because": "becuase",
+    "different": "diferent", "reliable": "relaiable", "quality": "quailty", "using": "useing", "problem": "probelm",
+    "frustrating": "frustating", "performance": "perfomance", "connection": "conection", "temperature": "temprature",
+}
 
 
 def _validate_timestamp(value: str) -> str:
@@ -207,7 +310,7 @@ def _flags(size: int, fraction: float, rng: random.Random) -> list[int]:
 
 def _length_class(text: str) -> str:
     words = len(text.split())
-    return "short" if words < 14 else "medium" if words < 30 else "long"
+    return "short" if words < 14 else "medium" if words < 34 else "long"
 
 
 def _has_emoji(text: str) -> bool:
@@ -216,6 +319,17 @@ def _has_emoji(text: str) -> bool:
 
 def _inject_typo(text: str, rng: random.Random) -> str:
     words = text.split()
+    lowered = [re.sub(r"[^A-Za-z]", "", word).lower() for word in words]
+    common = [i for i, word in enumerate(lowered) if word in COMMON_TYPOS]
+    if common and rng.random() < 0.65:
+        index = rng.choice(common)
+        original = words[index]
+        clean = lowered[index]
+        replacement = COMMON_TYPOS[clean]
+        suffix = "".join(char for char in original if not char.isalpha())
+        words[index] = replacement + suffix
+        return " ".join(words)
+
     candidates = [i for i, word in enumerate(words) if len(re.sub(r"[^A-Za-z]", "", word)) >= 5]
     if not candidates:
         return text + " agin"
@@ -272,6 +386,28 @@ class SyntheticDataAgent:
         rng.shuffle(specs)
         return specs
 
+    @staticmethod
+    def _base_review(
+        alias: str,
+        component: str,
+        assessment: str,
+        context: str,
+        detail: str,
+        rng: random.Random,
+    ) -> str:
+        patterns = (
+            f"{context.capitalize()}, I noticed that the {component} on this {alias} {assessment}.",
+            f"I have been using this {alias} {context}, and the {component} {assessment}.",
+            f"The {component} is what stood out {context}; it {assessment}.",
+            f"{context.capitalize()}, the {component} {assessment}.",
+            f"My main impression of this {alias} comes from the {component}: it {assessment} {context}.",
+            f"I did not pay much attention to the {component} at first, but {context} it {assessment}.",
+        )
+        text = rng.choice(patterns)
+        if rng.random() < 0.76:
+            text += f" {detail}."
+        return text
+
     def _render(self, review_id: int, generation: int, split: str, spec: dict[str, Any], variant: int) -> str:
         rng = random.Random(self.config.seed * 1_000_033 + review_id * 97 + generation * 9_973 + variant * 7_919)
         aliases, components = TOPIC_LANGUAGE[spec["topic"]][split]
@@ -280,50 +416,67 @@ class SyntheticDataAgent:
         assessment = rng.choice(ASSESSMENTS[split][spec["sentiment"]])
         context = rng.choice(CONTEXTS[split])
         detail = rng.choice(DETAILS[split])
-        sentence = f"{context}, the {component} on this {alias} {assessment}."
+        sentence = self._base_review(alias, component, assessment, context, detail, rng)
 
-        length_roll = rng.random()
-        if length_roll >= 0.28:
-            sentence += f" {detail.capitalize()}."
-        if length_roll >= 0.78:
+        if rng.random() < 0.36:
             sentence += f" {rng.choice(FOLLOWUPS[spec['sentiment']])}."
 
         if spec["mixed_sentiment"]:
             other = rng.choice([value for value in SENTIMENTS if value != spec["sentiment"]])
             secondary = rng.choice(ASSESSMENTS[split][other])
             other_component = rng.choice([value for value in components if value != component] or components)
-            sentence = f"The {other_component} {secondary}, but overall {sentence[0].lower() + sentence[1:]}"
+            contrasts = (
+                f"That said, the {other_component} {secondary}, so the experience is not completely one-sided.",
+                f"On the other hand, the {other_component} {secondary}, which makes the overall picture more mixed.",
+                f"The {other_component} tells a different story because it {secondary}.",
+            )
+            sentence += f" {rng.choice(contrasts)}"
 
         if spec["flagprofanity"]:
-            sentence += f" {rng.choice(PROFANITY)}."
+            sentence += f" {rng.choice(PROFANITY_CLAUSES[spec['sentiment']])}"
+
         if spec["hasslang"]:
-            sentence = f"{rng.choice(SLANG)} {sentence}"
+            if rng.random() < 0.7:
+                sentence = f"{rng.choice(SLANG_OPENERS)} {sentence[0].lower() + sentence[1:]}"
+            else:
+                sentence += f" {rng.choice(SLANG_TAILS)}."
+
         if spec["hasspellingerror"]:
             sentence = _inject_typo(sentence, rng)
+            if len(sentence.split()) > 38 and rng.random() < 0.35:
+                sentence = _inject_typo(sentence, rng)
 
         level = spec["linguistic_level"]
         if level == "limited":
             sentence = sentence.lower().replace("'", "")
             words = sentence.split()
-            if len(words) > 7 and rng.random() < 0.7:
-                words.pop(rng.randrange(1, len(words) - 1))
+            if len(words) > 10 and rng.random() < 0.65:
+                words.pop(rng.randrange(2, len(words) - 2))
+            if len(words) > 18 and rng.random() < 0.35:
+                words.pop(rng.randrange(2, len(words) - 2))
             sentence = " ".join(words)
         elif level == "informal":
-            sentence = sentence.lower().replace("do not", "don't").replace("going to", "gonna")
+            sentence = sentence.lower().replace("do not", "don't").replace("going to", "gonna").replace("I have", "I've")
         elif level == "advanced":
-            sentence = sentence.replace("overall", "on balance").replace("use", "usage")
+            sentence = sentence.replace("overall", "on balance").replace("normal use", "routine use")
         elif level == "technical":
-            sentence = "Observed under a representative operating profile: " + sentence
+            sentence = f"{rng.choice(TECHNICAL_OPENERS)} {sentence[0].lower() + sentence[1:]}"
 
         if spec["hasemoji"]:
-            sentence += f" {rng.choice(EMOJIS)}"
+            placements = (
+                f"{sentence} {rng.choice(EMOJIS)}",
+                f"{sentence} {rng.choice(EMOJIS)}",
+                f"{sentence} Honestly {rng.choice(EMOJIS)}",
+            )
+            sentence = rng.choice(placements)
+
         return re.sub(r"\s+", " ", sentence).strip()
 
     def _generate(self, start_id: int, count: int, generation: int, split: str, timestamp: str, used: set[str]) -> list[dict[str, Any]]:
         rows: list[dict[str, Any]] = []
         for offset, spec in enumerate(self._specs(count, generation, split == "incoming")):
             review_id = start_id + offset
-            for variant in range(40):
+            for variant in range(80):
                 text = self._render(review_id, generation, split, spec, variant)
                 key = _text_key(text)
                 if key not in used:
@@ -358,7 +511,9 @@ class SyntheticDataAgent:
     @staticmethod
     def _validate_train(rows: list[dict[str, str]]) -> None:
         SyntheticDataAgent._upgrade_train(rows)
-        if not rows or not set(TRAIN_FIELDS).issubset(rows[0]):
+        if len(rows) < MIN_CORPUS_ROWS:
+            raise ValueError(f"train.csv must contain at least {MIN_CORPUS_ROWS} reviews.")
+        if not set(TRAIN_FIELDS).issubset(rows[0]):
             raise ValueError("train.csv does not use the current schema.")
         ids = [int(row["ID"]) for row in rows]
         if ids != sorted(ids) or len(ids) != len(set(ids)):
@@ -377,7 +532,9 @@ class SyntheticDataAgent:
     @staticmethod
     def _validate_incoming(rows: list[dict[str, str]]) -> None:
         SyntheticDataAgent._upgrade_incoming(rows)
-        if not rows or not set(INCOMING_FIELDS).issubset(rows[0]):
+        if len(rows) < MIN_CORPUS_ROWS:
+            raise ValueError(f"incoming.csv must contain at least {MIN_CORPUS_ROWS} reviews.")
+        if not set(INCOMING_FIELDS).issubset(rows[0]):
             raise ValueError("incoming.csv does not use the current schema.")
         ids = [int(row["ID"]) for row in rows]
         if ids != sorted(ids) or len(ids) != len(set(ids)):

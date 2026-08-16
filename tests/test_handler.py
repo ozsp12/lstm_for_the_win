@@ -46,9 +46,9 @@ class _DummyResult:
         metrics = {"accuracy": 1.0}
         return {
             "task": self.task,
-            "train_size": 120,
-            "fit_size": 96,
-            "validation_size": 24,
+            "train_size": 1200,
+            "fit_size": 960,
+            "validation_size": 240,
             "incoming_size": self.size,
             "labels": ["a", "b"],
             "label_counts": {},
@@ -69,11 +69,13 @@ def test_handler_publishes_atomic_run_and_advance_changes_only_input_state(
     input_dir = tmp_path / "input"
     output_dir = tmp_path / "output"
     config = SyntheticDataConfig(
-        initial_train_rows=120,
-        incoming_rows=120,
+        initial_train_rows=1200,
+        incoming_rows=1200,
+        incoming_rows_jitter=0,
         profanity_fraction=0.50,
         goldtest_fraction=0.50,
         validation_fraction=0.20,
+        vary_counts=False,
     )
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
 
@@ -111,5 +113,5 @@ def test_handler_publishes_atomic_run_and_advance_changes_only_input_state(
         input_timestamp="2026-08-16T12:00:00+00:00",
     )
     after_train_rows = sum(1 for _ in (input_dir / "train.csv").open(encoding="utf-8")) - 1
-    assert after_train_rows == before_train_rows + 60
+    assert after_train_rows == before_train_rows + 600
     assert json.loads((input_dir / "input_manifest.json").read_text(encoding="utf-8"))["generation"] == 1

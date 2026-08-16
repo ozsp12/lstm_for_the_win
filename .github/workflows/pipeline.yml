@@ -44,14 +44,57 @@ jobs:
       - name: Timestamp experiment
         run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
 
-      - name: Ensure initial input state exists
+      - name: Refresh corpus when generator version changes
         run: |
-          if [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
+          CONFIG_VERSION=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          print(json.loads(Path("config/synthetic_data.json").read_text())["agent_version"])
+          PY
+          )
+          MANIFEST_VERSION=$(python - <<'PY'
+          import json
+          from pathlib import Path
+          path = Path("data/input/input_manifest.json")
+          if path.is_file():
+              try:
+                  print(json.loads(path.read_text()).get("agent_version", ""))
+              except (json.JSONDecodeError, OSError):
+                  print("")
+          else:
+              print("")
+          PY
+          )
+
+          if [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ] || [ "$CONFIG_VERSION" != "$MANIFEST_VERSION" ]; then
+            echo "Rebuilding corpus with synthetic generator $CONFIG_VERSION"
             python -m lstm_for_the_win.handler generate-data \
               --mode initialize \
               --data-timestamp "$DATA_TIMESTAMP" \
               --overwrite
           fi
+
+      - name: Validate corpus size and rich-language coverage
+        run: |
+          python - <<'PY'
+          import csv
+          from collections import Counter
+          from pathlib import Path
+
+          def read(path):
+              with Path(path).open(encoding="utf-8", newline="") as f:
+                  return list(csv.DictReader(f))
+
+          train = read("data/input/train.csv")
+          incoming = read("data/input/incoming.csv")
+          assert len(train) >= 1000, f"train corpus too small: {len(train)}"
+          assert len(incoming) >= 1000, f"incoming corpus too small: {len(incoming)}"
+          for rows, name in ((train, "train"), (incoming, "incoming")):
+              for field in ("hasemoji", "flagprofanity", "hasspellingerror", "hasslang"):
+                  counts = Counter(row[field] for row in rows)
+                  assert counts["1"] > 0, f"{name} has no positive {field} examples"
+          print({"train": len(train), "incoming": len(incoming)})
+          PY
 
       - name: Train, evaluate incoming data, promote goldtest, and refresh incoming
         env:

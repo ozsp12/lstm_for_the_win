@@ -191,4 +191,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: lstm-experiment-${{ github.run_id }}
-          path: data/output/${{ env.RUN_ID }}
+          path: data/output/*_github-${{ github.run_id }}

@@ -44,7 +44,12 @@ jobs:
         run: python -m compileall -q src scripts tests
 
       - name: Timestamp experiment
-        run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
+        run: |
+          DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          RUN_TIMESTAMP=$(date -u +'%Y%m%dT%H%M%SZ')
+          RUN_ID="${RUN_TIMESTAMP}_github-${{ github.run_id }}"
+          echo "DATA_TIMESTAMP=$DATA_TIMESTAMP" >> "$GITHUB_ENV"
+          echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
 
       - name: Refresh corpus when generator version changes
         run: |
@@ -105,22 +110,30 @@ jobs:
           python -m lstm_for_the_win.handler run
           --advance-data
           --data-timestamp "$DATA_TIMESTAMP"
-          --run-id github-${{ github.run_id }}
+          --run-id "$RUN_ID"
           --epochs 20
           --patience 3
 
       - name: Export versioned manuscript and dashboard analyses
         run: |
-          RUN_PATH="data/output/github-${{ github.run_id }}"
+          RUN_PATH="data/output/$RUN_ID"
           python scripts/export_article_analysis.py "$RUN_PATH"
           test -s "$RUN_PATH/article_analysis.csv"
           test -s "$RUN_PATH/results.json"
 
-      - name: Verify dashboard metrics
+      - name: Export article and website figures
         run: |
-          RUN_PATH="data/output/github-${{ github.run_id }}"
+          RUN_PATH="data/output/$RUN_ID"
+          python scripts/export_figures.py "$RUN_PATH"
+          test -s "$RUN_PATH/figures/figures_manifest.json"
+          test -s "$RUN_PATH/figures/confusion_matrix_sentiment.png"
+          test -s "$RUN_PATH/figures/confusion_matrix_topic.png"
+
+      - name: Verify dashboard and manuscript artifacts
+        run: |
+          RUN_PATH="data/output/$RUN_ID"
           test -f "$RUN_PATH/metrics.json"
-          python - "$RUN_PATH/metrics.json" "$RUN_PATH/article_analysis.csv" <<'PY'
+          python - "$RUN_PATH/metrics.json" "$RUN_PATH/article_analysis.csv" "$RUN_PATH/figures/figures_manifest.json" <<'PY'
           import csv
           import json
           import sys
@@ -142,6 +155,9 @@ jobs:
               "training_history", "validation_incoming_gap",
           }
           assert required.issubset(groups), required - groups
+          figures = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
+          types = {item["figure_type"] for item in figures["figure_files"]}
+          assert {"model_performance", "confusion_matrix", "classwise_metrics", "calibration", "segment_robustness"}.issubset(types)
           PY
 
       - name: Run automated tests
@@ -149,33 +165,30 @@ jobs:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
-      - name: Commit next data generation and evaluation outputs
+      - name: Remove previous experiment directories
+        run: python scripts/prune_old_runs.py --output-root data/output --keep "$RUN_ID"
+
+      - name: Commit latest data and complete experiment artifacts
         run: |
-          RUN_PATH="data/output/github-${{ github.run_id }}"
+          RUN_PATH="data/output/$RUN_ID"
           test -f "$RUN_PATH/predictions.csv"
           test -f "$RUN_PATH/metrics.json"
           test -f "$RUN_PATH/results.json"
           test -f "$RUN_PATH/article_analysis.csv"
+          test -f "$RUN_PATH/figures/figures_manifest.json"
           test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/input
-          git add \
-            data/output/latest.json \
-            "$RUN_PATH/predictions.csv" \
-            "$RUN_PATH/metrics.json" \
-            "$RUN_PATH/results.json" \
-            "$RUN_PATH/article_analysis.csv" \
-            "$RUN_PATH/run_manifest.json"
+          git add -A data/input data/output
           if git diff --cached --quiet; then
             echo "The pipeline did not produce a versioned state transition."
             exit 1
           fi
-          git commit -m "data: advance continual-learning generation ${{ github.run_id }} [skip ci]"
+          git commit -m "data: publish $RUN_ID [skip ci]"
           git push origin HEAD:main
 
       - name: Upload complete experiment artifacts
         uses: actions/upload-artifact@v4
         with:
           name: lstm-experiment-${{ github.run_id }}
-          path: data/output/github-${{ github.run_id }}
+          path: data/output/*_github-${{ github.run_id }}

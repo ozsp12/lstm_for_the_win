@@ -11,6 +11,7 @@ requires-python = ">=3.12,<3.13"
 dependencies = [
     "tensorflow==2.20.0",
     "scikit-learn>=1.5,<2",
+    "matplotlib>=3.9,<4",
 ]
 
 [project.optional-dependencies]

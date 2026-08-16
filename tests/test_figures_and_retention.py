@@ -5,6 +5,7 @@ import json
 from pathlib import Path
 
 from lstm_for_the_win.analysis.article_analysis import ANALYSIS_COLUMNS
+from lstm_for_the_win.analysis.dashboard_figures import export_dashboard_figures
 from lstm_for_the_win.analysis.figures import export_figures
 from lstm_for_the_win.analysis.retention import prune_output_runs
 
@@ -36,7 +37,7 @@ def test_export_figures_creates_png_svg_and_manifest(tmp_path: Path) -> None:
                     value=4 if expected == predicted else 1, support=5,
                 ))
         for label in labels:
-            for metric, value in (("precision", 0.9), ("recall", 0.9), ("specificity", 0.95), ("f1", 0.9)):
+            for metric, value in (("precision", 0.9), ("recall", 0.9), ("specificity", 0.95), ("f1", 0.9), ("support", 5)):
                 rows.append(_row(analysis_group="classwise_metrics", task=task, model="lstm", class_label=label, metric=metric, value=value, support=5))
             rows.append(_row(analysis_group="class_distribution", task=task, model="lstm", class_label=label, metric="expected_proportion", value=0.5, support=10))
             rows.append(_row(analysis_group="class_distribution", task=task, model="lstm", class_label=label, metric="predicted_proportion", value=0.5, support=10))
@@ -49,6 +50,8 @@ def test_export_figures_creates_png_svg_and_manifest(tmp_path: Path) -> None:
         for value, score in (("0", 0.88), ("1", 0.92)):
             rows.append(_row(analysis_group="segment_metrics", task=task, model="lstm", segment_dimension="hasemoji", segment_value=value, metric="accuracy", value=score, support=5))
             rows.append(_row(analysis_group="segment_metrics", task=task, model="lstm", segment_dimension="hasemoji", segment_value=value, metric="macro_f1", value=score - 0.01, support=5))
+        rows.append(_row(analysis_group="confidence_accuracy", task=task, model="lstm", metric="accuracy", value=0.9, support=10))
+        rows.append(_row(analysis_group="confidence_accuracy", task=task, model="lstm", metric="mean_selected_class_confidence", value=0.93, support=10))
         rows.append(_row(analysis_group="error_record", task=task, model="lstm", metric="confidence", value=0.82, record_id="9", expected_label=labels[0], predicted_label=labels[1]))
 
     with (run / "article_analysis.csv").open("w", encoding="utf-8", newline="") as handle:
@@ -57,11 +60,16 @@ def test_export_figures_creates_png_svg_and_manifest(tmp_path: Path) -> None:
         writer.writerows(rows)
     (run / "run_manifest.json").write_text(json.dumps({"run_id": run.name, "outputs": {}}), encoding="utf-8")
 
-    manifest_path = export_figures(run)
+    export_figures(run)
+    manifest_path = export_dashboard_figures(run)
     manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
     assert (run / "figures" / "confusion_matrix_sentiment.png").is_file()
     assert (run / "figures" / "confusion_matrix_topic.svg").is_file()
     assert (run / "figures" / "segment_hasemoji_sentiment.png").is_file()
+    assert (run / "figures" / "dashboard_model_accuracy.png").is_file()
+    assert (run / "figures" / "dashboard_sentiment_class_recall.svg").is_file()
+    assert (run / "figures" / "dashboard_topic_volume_accuracy.png").is_file()
+    assert (run / "figures" / "dashboard_confidence_vs_accuracy.png").is_file()
     assert {item["format"] for item in manifest["figure_files"]} == {"png", "svg"}
     updated = json.loads((run / "run_manifest.json").read_text(encoding="utf-8"))
     assert updated["figures"]["logical_figures"] > 0

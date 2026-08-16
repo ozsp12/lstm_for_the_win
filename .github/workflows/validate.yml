@@ -31,7 +31,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src tests
+        run: python -m compileall -q src scripts tests
 
       - name: Prepare current generator corpus
         run: |
@@ -79,6 +79,24 @@ jobs:
           --run-id validation-${{ github.run_id }}
           --epochs 3
           --patience 1
+
+      - name: Smoke-test manuscript analysis export
+        run: |
+          RUN_PATH="artifacts/validation/validation-${{ github.run_id }}"
+          python scripts/export_article_analysis.py "$RUN_PATH"
+          test -s "$RUN_PATH/article_analysis.csv"
+          python - "$RUN_PATH/article_analysis.csv" <<'PY'
+          import csv
+          import sys
+          from pathlib import Path
+          with Path(sys.argv[1]).open(encoding="utf-8", newline="") as handle:
+              rows = list(csv.DictReader(handle))
+          groups = {row["analysis_group"] for row in rows}
+          assert "confusion_matrix" in groups
+          assert "classwise_metrics" in groups
+          assert "calibration_bins" in groups
+          assert "training_history" in groups
+          PY
 
       - name: Run automated tests
         env:

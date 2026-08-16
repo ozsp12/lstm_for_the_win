@@ -21,9 +21,11 @@ def _config() -> SyntheticDataConfig:
     return SyntheticDataConfig(
         initial_train_rows=1_200,
         incoming_rows=1_200,
+        incoming_rows_jitter=0,
         profanity_fraction=0.25,
         goldtest_fraction=0.20,
         validation_fraction=0.15,
+        vary_counts=False,
     )
 
 

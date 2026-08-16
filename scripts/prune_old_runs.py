@@ -5,23 +5,15 @@ from __future__ import annotations
 
 import argparse
 import json
-import shutil
+import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[1]
+SRC = ROOT / "src"
+if str(SRC) not in sys.path:
+    sys.path.insert(0, str(SRC))
 
-def prune(output_root: Path, keep: str) -> list[str]:
-    kept = output_root / keep
-    if not kept.is_dir():
-        raise FileNotFoundError(f"Run to keep does not exist: {kept}")
-
-    removed: list[str] = []
-    for child in sorted(output_root.iterdir()):
-        if child.name in {keep, ".gitkeep", "latest.json"}:
-            continue
-        if child.is_dir():
-            shutil.rmtree(child)
-            removed.append(child.name)
-    return removed
+from lstm_for_the_win.analysis.retention import prune_output_runs
 
 
 def main() -> int:
@@ -30,7 +22,7 @@ def main() -> int:
     parser.add_argument("--keep", required=True, help="Experiment directory name to retain.")
     args = parser.parse_args()
 
-    removed = prune(Path(args.output_root), args.keep)
+    removed = prune_output_runs(args.output_root, args.keep)
     print(json.dumps({"status": "ok", "kept": args.keep, "removed": removed}))
     return 0
 

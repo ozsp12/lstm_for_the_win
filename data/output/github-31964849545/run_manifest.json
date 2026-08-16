@@ -1,0 +1,40 @@
+{
+  "created_at": "2026-08-16T18:35:28.359880+00:00",
+  "git_sha": "eb85beb8bff794d5eafddefa9a56b1790919cad7",
+  "input_files": {
+    "incoming.csv": {
+      "sha256": "d0477e5a9eba5f6e10d5c8e13fb3e95ad13651385ac08b66a73247a7f92b1dfe",
+      "size_bytes": 561482
+    },
+    "input_manifest.json": {
+      "sha256": "d164cc0c165192c20539d38d9b311b091dca419cb5910a6aa4bcddede569b9b4",
+      "size_bytes": 2022
+    },
+    "train.csv": {
+      "sha256": "e73dfa232592e4a5624a2a147e40c829f6f8aab84a059f35136aaf47889843bb",
+      "size_bytes": 3171086
+    }
+  },
+  "input_generation": 0,
+  "model_timestamp": "2026-08-16T18:32:36.038126+00:00",
+  "outputs": {
+    "metrics": "metrics.json",
+    "predictions": "predictions.csv",
+    "results": "results.json",
+    "sentiment_model": "models/sentiment.keras",
+    "topic_model": "models/topic.keras"
+  },
+  "parameters": {
+    "early_stopping_patience": 3,
+    "epochs": 20,
+    "max_tokens": 20000,
+    "seed": 42,
+    "sequence_length": 96,
+    "validation_fraction": 0.12837227571150864
+  },
+  "pipeline_version": "0.6.0",
+  "python_version": "3.12.13",
+  "run_id": "github-31964849545",
+  "status": "complete",
+  "tensorflow_version": "2.20.0"
+}

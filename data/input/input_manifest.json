@@ -1,8 +1,8 @@
 {
-  "agent_version": "4.0.0",
+  "agent_version": "4.1.0",
   "config": {
     "agent_name": "synthetic-review-generator",
-    "agent_version": "4.0.0",
+    "agent_version": "4.1.0",
     "allow_personal_data": false,
     "emoji_fraction": 0.18,
     "emoji_fraction_jitter": 0.07,
@@ -24,23 +24,23 @@
     "vary_counts": true
   },
   "effective_generation": {
-    "emoji_fraction": 0.18962901730475756,
-    "goldtest_fraction": 0.17707853417894026,
+    "emoji_fraction": 0.2162969634195237,
+    "goldtest_fraction": 0.2302380068997209,
     "incoming_rows": 2040,
-    "profanity_fraction": 0.3278520533401083,
-    "validation_fraction": 0.13565273244572126
+    "profanity_fraction": 0.2374354374222456,
+    "validation_fraction": 0.13397770519263977
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 3,
+  "generation": 1,
   "incoming_emoji_counts": {
-    "0": 1680,
-    "1": 360
+    "0": 1620,
+    "1": 420
   },
-  "incoming_goldtest_count": 360,
+  "incoming_goldtest_count": 480,
   "incoming_length_counts": {
-    "long": 506,
-    "medium": 1514,
-    "short": 20
+    "long": 1012,
+    "medium": 1017,
+    "short": 11
   },
   "incoming_linguistic_level_counts": {
     "advanced": 408,
@@ -54,8 +54,8 @@
     "1": 240
   },
   "incoming_profanity_counts": {
-    "0": 1380,
-    "1": 660
+    "0": 1560,
+    "1": 480
   },
   "incoming_slang_counts": {
     "0": 1620,
@@ -65,18 +65,18 @@
     "0": 1620,
     "1": 420
   },
-  "last_issued_id": 11640,
-  "promoted_from_previous_incoming": 240,
+  "last_issued_id": 16140,
+  "promoted_from_previous_incoming": 480,
   "record_counts": {
     "incoming.csv": 2040,
-    "train.csv": 6720
+    "train.csv": 12480
   },
   "sha256": {
-    "incoming.csv": "bf38a07aacb497576a2da975643b1d0244e7358301d447dd0d2cae06b910a50a",
-    "train.csv": "a3ee209be7b73f211d774357f17a734fb8adb3cc47d0b8517efe9f69e20bf5ab"
+    "incoming.csv": "97517a9771f7d3a5d89a5eeb921a910cc7af32f179ebb4e871d5654015888eb9",
+    "train.csv": "6b4bc21bc9e06dbc4bf59509926ebbed8ca17ca5eed6e80ebc50c9a68e012420"
   },
   "train_source_counts": {
-    "goldtest": 720,
-    "initial": 6000
+    "goldtest": 480,
+    "initial": 12000
   }
 }

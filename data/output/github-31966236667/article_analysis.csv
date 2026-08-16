@@ -1,0 +1,863 @@
+run_id,input_generation,analysis_group,task,model,segment_dimension,segment_value,class_label,expected_label,predicted_label,metric,value,support,record_id,text,linguistic_level,flagprofanity,hasemoji,hasspellingerror,hasslang,length_class,mixed_sentiment,goldtest
+github-31966236667,1,run_metadata,,,,,,,,early_stopping_patience,3,,,,,,,,,,,
+github-31966236667,1,run_metadata,,,,,,,,epochs,20,,,,,,,,,,,
+github-31966236667,1,run_metadata,,,,,,,,max_tokens,20000,,,,,,,,,,,
+github-31966236667,1,run_metadata,,,,,,,,seed,42,,,,,,,,,,,
+github-31966236667,1,run_metadata,,,,,,,,sequence_length,96,,,,,,,,,,,
+github-31966236667,1,run_metadata,,,,,,,,validation_fraction,0.13397770519263977,,,,,,,,,,,
+github-31966236667,1,run_metadata,sentiment,lstm,,,,,,train_size,12480,,,,,,,,,,,
+github-31966236667,1,run_metadata,sentiment,lstm,,,,,,fit_size,10809,,,,,,,,,,,
+github-31966236667,1,run_metadata,sentiment,lstm,,,,,,validation_size,1671,,,,,,,,,,,
+github-31966236667,1,run_metadata,sentiment,lstm,,,,,,incoming_size,2040,,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,accuracy,0.9936274509803922,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,brier_score,0.010199448588620928,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,expected_calibration_error,0.002084419131646222,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,log_loss,0.026626683078472362,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,macro_f1,0.9936252491798762,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,precision_macro,0.993636618758107,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,recall_macro,0.9936274509803922,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,lstm,,,,,,weighted_f1,0.9936252491798762,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,accuracy,0.9602941176470589,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,brier_score,0.14679703530239963,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,expected_calibration_error,0.21223348650302665,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,log_loss,0.32839947959228283,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,macro_f1,0.9603089371645037,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,precision_macro,0.9604475975565238,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,recall_macro,0.9602941176470589,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,sentiment,tfidf_logistic,,,,,,weighted_f1,0.9603089371645038,2040,,,,,,,,,,
+github-31966236667,1,model_delta,sentiment,lstm_minus_tfidf_logistic,,,,,,accuracy,0.033333333333333326,2040,,,,,,,,,,
+github-31966236667,1,model_delta,sentiment,lstm_minus_tfidf_logistic,,,,,,brier_score,-0.1365975867137787,2040,,,,,,,,,,
+github-31966236667,1,model_delta,sentiment,lstm_minus_tfidf_logistic,,,,,,log_loss,-0.30177279651381045,2040,,,,,,,,,,
+github-31966236667,1,model_delta,sentiment,lstm_minus_tfidf_logistic,,,,,,macro_f1,0.03331631201537244,2040,,,,,,,,,,
+github-31966236667,1,model_delta,sentiment,lstm_minus_tfidf_logistic,,,,,,weighted_f1,0.03331631201537233,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,accuracy,0.917156862745098,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,brier_score,0.1277399532126046,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,expected_calibration_error,0.04082554734872945,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,log_loss,0.2981514188156584,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,macro_f1,0.9168657045177829,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,precision_macro,0.9195480661332868,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,recall_macro,0.9171568627450981,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,lstm,,,,,,weighted_f1,0.9168657045177829,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,accuracy,0.9450980392156862,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,brier_score,0.2756680517963869,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,expected_calibration_error,0.36063663957087533,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,log_loss,0.5900762443830625,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,macro_f1,0.9450817965930602,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,precision_macro,0.9453197050033716,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,recall_macro,0.9450980392156862,2040,,,,,,,,,,
+github-31966236667,1,aggregate_metrics,topic,tfidf_logistic,,,,,,weighted_f1,0.9450817965930602,2040,,,,,,,,,,
+github-31966236667,1,model_delta,topic,lstm_minus_tfidf_logistic,,,,,,accuracy,-0.027941176470588247,2040,,,,,,,,,,
+github-31966236667,1,model_delta,topic,lstm_minus_tfidf_logistic,,,,,,brier_score,-0.14792809858378234,2040,,,,,,,,,,
+github-31966236667,1,model_delta,topic,lstm_minus_tfidf_logistic,,,,,,log_loss,-0.2919248255674041,2040,,,,,,,,,,
+github-31966236667,1,model_delta,topic,lstm_minus_tfidf_logistic,,,,,,macro_f1,-0.02821609207527731,2040,,,,,,,,,,
+github-31966236667,1,model_delta,topic,lstm_minus_tfidf_logistic,,,,,,weighted_f1,-0.02821609207527731,2040,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,flagprofanity,0,,,,share,0.7647058823529411,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,accuracy,0.9923076923076923,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,brier_score,0.012055085222177575,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,expected_calibration_error,0.00333249500751108,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,log_loss,0.028427331506184754,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,macro_f1,0.9923051416412217,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,precision_macro,0.992325738283185,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,recall_macro,0.9923076923076923,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,0,,,,weighted_f1,0.9923051416412217,1560,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,flagprofanity,1,,,,share,0.23529411764705882,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,accuracy,0.9979166666666667,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,brier_score,0.004168629529561818,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,expected_calibration_error,0.0019718274649142,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,log_loss,0.020774575688407085,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,macro_f1,0.997916646321416,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,precision_macro,0.9979296066252589,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,recall_macro,0.9979166666666667,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,flagprofanity,1,,,,weighted_f1,0.9979166463214159,480,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,goldtest,0,,,,share,0.7647058823529411,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,accuracy,0.9948717948717949,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,brier_score,0.008194068963355419,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,expected_calibration_error,0.0035907377620151525,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,log_loss,0.02103526445261459,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,macro_f1,0.9948674077946618,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,precision_macro,0.9948888357504299,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,recall_macro,0.9948717948717949,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,0,,,,weighted_f1,0.9948674077946617,1560,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,goldtest,1,,,,share,0.23529411764705882,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,accuracy,0.9895833333333334,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,brier_score,0.016716932370733826,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,expected_calibration_error,0.004207400626325577,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,log_loss,0.044798793612510115,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,macro_f1,0.9895693506875936,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,precision_macro,0.9897242439253642,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,recall_macro,0.9895833333333334,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,goldtest,1,,,,weighted_f1,0.9895693506875937,480,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasemoji,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,accuracy,0.9938271604938271,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,brier_score,0.009657573441750585,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,expected_calibration_error,0.0027427686610340582,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,log_loss,0.02221260631098702,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,macro_f1,0.9938259772208112,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,precision_macro,0.993838381077338,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,recall_macro,0.9938271604938271,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,0,,,,weighted_f1,0.9938259772208112,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasemoji,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,accuracy,0.9928571428571429,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,brier_score,0.012289538440835104,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,expected_calibration_error,0.003997967165664405,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,log_loss,0.04365240775305867,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,macro_f1,0.9928485786079633,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,precision_macro,0.992856899890422,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,recall_macro,0.9928571428571429,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasemoji,1,,,,weighted_f1,0.9928485786079633,420,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasslang,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,accuracy,0.9938271604938271,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,brier_score,0.009376979993963306,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,expected_calibration_error,0.002830121412340761,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,log_loss,0.02067521151867579,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,macro_f1,0.9938236977708733,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,precision_macro,0.9938304565870232,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,recall_macro,0.9938271604938271,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,0,,,,weighted_f1,0.9938236977708733,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasslang,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,accuracy,0.9928571428571429,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,brier_score,0.01337182745372889,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,expected_calibration_error,0.004202645570268107,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,log_loss,0.049582359094830566,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,macro_f1,0.9928395858824941,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,precision_macro,0.9929410981253954,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,recall_macro,0.9928571428571429,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasslang,1,,,,weighted_f1,0.9928395858824941,420,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasspellingerror,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,accuracy,0.9944444444444445,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,brier_score,0.008292996990843616,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,expected_calibration_error,0.0027180528505398966,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,log_loss,0.020671818936989866,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,macro_f1,0.9944438295351429,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,precision_macro,0.9944579512014727,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,recall_macro,0.9944444444444445,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,0,,,,weighted_f1,0.994443829535143,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,hasspellingerror,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,accuracy,0.9904761904761905,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,brier_score,0.01755290475147627,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,expected_calibration_error,0.007941061794984956,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,log_loss,0.0495954447670477,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,macro_f1,0.9904588784488423,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,precision_macro,0.9904923424812416,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,recall_macro,0.9904761904761905,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,hasspellingerror,1,,,,weighted_f1,0.9904588784488424,420,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,length_class,long,,,,share,0.49607843137254903,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,accuracy,0.9960474308300395,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,brier_score,0.006702380102656344,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,expected_calibration_error,0.003510207823762649,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,log_loss,0.023928765460679353,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,macro_f1,0.995964970401673,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,precision_macro,0.9960102640220062,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,recall_macro,0.9959287246246696,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,long,,,,weighted_f1,0.9960443460795166,1012,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,length_class,medium,,,,share,0.4985294117647059,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,accuracy,0.992133726647001,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,brier_score,0.012276471163657267,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,expected_calibration_error,0.007331257324786484,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,log_loss,0.027191116546056753,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,macro_f1,0.9920954532851279,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,precision_macro,0.9919609413306075,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,recall_macro,0.9922692990571659,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,medium,,,,weighted_f1,0.9921379679658846,1017,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,length_class,short,,,,share,0.005392156862745098,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,accuracy,0.9090909090909091,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,brier_score,0.13989957122354826,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,expected_calibration_error,0.07988670103049506,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,log_loss,0.22265066423058144,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,macro_f1,0.9153439153439153,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,precision_macro,0.9166666666666666,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,recall_macro,0.9333333333333332,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,length_class,short,,,,weighted_f1,0.9105339105339105,11,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,linguistic_level,advanced,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,accuracy,0.9975490196078431,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,brier_score,0.006223908415230155,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,expected_calibration_error,0.007022723607995858,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,log_loss,0.01110162642641132,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,macro_f1,0.9975489864788757,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,precision_macro,0.9975669099756691,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,recall_macro,0.9975490196078431,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,advanced,,,,weighted_f1,0.9975489864788757,408,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,linguistic_level,informal,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,accuracy,0.9975490196078431,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,brier_score,0.005767163749020243,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,expected_calibration_error,0.002165033294245353,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,log_loss,0.02711910885103042,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,macro_f1,0.9975489864788757,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,precision_macro,0.9975669099756691,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,recall_macro,0.9975490196078431,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,informal,,,,weighted_f1,0.9975489864788757,408,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,linguistic_level,limited,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,accuracy,0.9901960784313726,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,brier_score,0.014057594640651278,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,expected_calibration_error,0.004075175686376849,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,log_loss,0.04285083539126669,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,macro_f1,0.9901951838525204,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,precision_macro,0.9903547750035266,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,recall_macro,0.9901960784313726,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,limited,,,,weighted_f1,0.9901951838525204,408,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,linguistic_level,standard,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,accuracy,0.9901960784313726,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,brier_score,0.014804114625405904,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,expected_calibration_error,0.008036493208694854,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,log_loss,0.027510548039063814,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,macro_f1,0.9901868361749312,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,precision_macro,0.9902308105206656,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,recall_macro,0.9901960784313726,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,standard,,,,weighted_f1,0.9901868361749312,408,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,linguistic_level,technical,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,accuracy,0.9926470588235294,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,brier_score,0.010144461512797055,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,expected_calibration_error,0.007214260197093741,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,log_loss,0.02455129668458958,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,macro_f1,0.9926470588235294,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,precision_macro,0.9926470588235294,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,recall_macro,0.9926470588235294,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,linguistic_level,technical,,,,weighted_f1,0.9926470588235294,408,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,mixed_sentiment,0,,,,share,0.8823529411764706,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,accuracy,0.995,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,brier_score,0.00750586153043803,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,expected_calibration_error,0.0036388266875021173,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,log_loss,0.014616423699316147,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,macro_f1,0.9950004344522215,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,precision_macro,0.9950128217277266,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,recall_macro,0.995,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,0,,,,weighted_f1,0.9950004344522216,1800,,,,,,,,,,
+github-31966236667,1,segment_composition,sentiment,lstm,mixed_sentiment,1,,,,share,0.11764705882352941,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,accuracy,0.9833333333333333,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,brier_score,0.03040135152499265,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,expected_calibration_error,0.015542510370935621,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,log_loss,0.116703628422144,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,macro_f1,0.9833069651158248,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,precision_macro,0.9833320310465177,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,recall_macro,0.9833333333333334,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,sentiment,lstm,mixed_sentiment,1,,,,weighted_f1,0.9833069651158247,240,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,flagprofanity,0,,,,share,0.7647058823529411,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,accuracy,0.9211538461538461,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,brier_score,0.11769074021341228,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,expected_calibration_error,0.032980782950835924,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,log_loss,0.26641311228151404,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,macro_f1,0.9205519420691243,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,precision_macro,0.9234772656547393,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,recall_macro,0.9211538461538462,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,0,,,,weighted_f1,0.9205519420691243,1560,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,flagprofanity,1,,,,share,0.23529411764705882,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,accuracy,0.9041666666666667,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,brier_score,0.16039989545997954,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,expected_calibration_error,0.0710673350670643,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,log_loss,0.40130091505162724,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,macro_f1,0.9045821555979965,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,precision_macro,0.9067613228700749,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,recall_macro,0.9041666666666666,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,flagprofanity,1,,,,weighted_f1,0.9045821555979965,480,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,goldtest,0,,,,share,0.7647058823529411,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,accuracy,0.9198717948717948,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,brier_score,0.12068807941224953,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,expected_calibration_error,0.037004782746938455,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,log_loss,0.280188648883655,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,macro_f1,0.9194273255760309,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,precision_macro,0.9225944662069367,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,recall_macro,0.9198717948717949,1560,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,0,,,,weighted_f1,0.9194273255760308,1560,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,goldtest,1,,,,share,0.23529411764705882,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,accuracy,0.9083333333333333,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,brier_score,0.15065854306375842,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,expected_calibration_error,0.05565527191027854,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,log_loss,0.3565304210946691,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,macro_f1,0.9084463850669646,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,precision_macro,0.9100095119080839,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,recall_macro,0.9083333333333332,480,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,goldtest,1,,,,weighted_f1,0.9084463850669646,480,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasemoji,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,accuracy,0.9160493827160494,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,brier_score,0.1293496569719412,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,expected_calibration_error,0.0406121532819377,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,log_loss,0.2977023418556645,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,macro_f1,0.9156947576145875,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,precision_macro,0.9187428348190874,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,recall_macro,0.9160493827160494,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,0,,,,weighted_f1,0.9156947576145874,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasemoji,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,accuracy,0.9214285714285714,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,brier_score,0.12153109585516328,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,expected_calibration_error,0.043598033986390644,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,log_loss,0.2998835728042059,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,macro_f1,0.921148839092409,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,precision_macro,0.922766504872085,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,recall_macro,0.9214285714285715,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasemoji,1,,,,weighted_f1,0.921148839092409,420,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasslang,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,accuracy,0.924074074074074,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,brier_score,0.11654701078830162,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,expected_calibration_error,0.03412779776763378,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,log_loss,0.2655954210086927,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,macro_f1,0.9237802258785792,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,precision_macro,0.9264971378075447,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,recall_macro,0.924074074074074,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,0,,,,weighted_f1,0.9237802258785792,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasslang,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,accuracy,0.8904761904761904,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,brier_score,0.17091273113491595,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,expected_calibration_error,0.06665972430438358,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,log_loss,0.42372455321395425,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,macro_f1,0.8902682883257759,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,precision_macro,0.8934290837960562,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,recall_macro,0.8904761904761904,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasslang,1,,,,weighted_f1,0.8902682883257759,420,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasspellingerror,0,,,,share,0.7941176470588235,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,accuracy,0.921604938271605,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,brier_score,0.12090019801838034,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,expected_calibration_error,0.03612162153080967,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,log_loss,0.27736305421177226,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,macro_f1,0.9212734752178268,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,precision_macro,0.923807101092355,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,recall_macro,0.921604938271605,1620,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,0,,,,weighted_f1,0.9212734752178268,1620,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,hasspellingerror,1,,,,share,0.20588235294117646,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,accuracy,0.9,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,brier_score,0.15412186610461237,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,expected_calibration_error,0.06128292684553533,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,log_loss,0.3783351108592189,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,macro_f1,0.8999692511837938,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,precision_macro,0.9035414137676353,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,recall_macro,0.9000000000000001,420,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,hasspellingerror,1,,,,weighted_f1,0.8999692511837938,420,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,length_class,long,,,,share,0.49607843137254903,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,accuracy,0.9258893280632411,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,brier_score,0.12251406216183805,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,expected_calibration_error,0.05347856776854154,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,log_loss,0.3098733100992672,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,macro_f1,0.9258594079990503,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,precision_macro,0.9271737934720952,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,recall_macro,0.9267245603215042,1012,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,long,,,,weighted_f1,0.925812268420098,1012,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,length_class,medium,,,,share,0.4985294117647059,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,accuracy,0.9085545722713865,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,brier_score,0.13305121896706484,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,expected_calibration_error,0.030562835721748553,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,log_loss,0.28707367229973996,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,macro_f1,0.9075935289390304,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,precision_macro,0.9121810583207642,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,recall_macro,0.9070328480863993,1017,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,medium,,,,weighted_f1,0.9078982704483591,1017,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,length_class,short,,,,share,0.005392156862745098,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,accuracy,0.9090909090909091,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,brier_score,0.11747126876620766,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,expected_calibration_error,0.18415599331740395,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,log_loss,0.24392543951354503,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,macro_f1,0.9142857142857143,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,precision_macro,0.9375,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,recall_macro,0.9166666666666666,11,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,length_class,short,,,,weighted_f1,0.9064935064935065,11,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,linguistic_level,advanced,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,accuracy,0.9068627450980392,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,brier_score,0.14517313758363762,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,expected_calibration_error,0.048149717414362164,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,log_loss,0.33110760579299425,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,macro_f1,0.9073224655461498,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,precision_macro,0.9132119837243559,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,recall_macro,0.9068627450980393,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,advanced,,,,weighted_f1,0.9073224655461498,408,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,linguistic_level,informal,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,accuracy,0.9166666666666666,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,brier_score,0.12465874028809573,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,expected_calibration_error,0.04201539817920184,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,log_loss,0.30113284662898193,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,macro_f1,0.916278734766821,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,precision_macro,0.9178642823804114,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,recall_macro,0.9166666666666666,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,informal,,,,weighted_f1,0.916278734766821,408,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,linguistic_level,limited,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,accuracy,0.9117647058823529,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,brier_score,0.12790513814902482,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,expected_calibration_error,0.04964283982857739,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,log_loss,0.2973997344494005,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,macro_f1,0.9107565341179895,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,precision_macro,0.9180283191043715,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,recall_macro,0.911764705882353,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,limited,,,,weighted_f1,0.9107565341179896,408,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,linguistic_level,standard,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,accuracy,0.9338235294117647,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,brier_score,0.11314338415750473,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,expected_calibration_error,0.04054259898918257,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,log_loss,0.26012109986925847,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,macro_f1,0.9336084566088049,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,precision_macro,0.9350063047145201,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,recall_macro,0.9338235294117647,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,standard,,,,weighted_f1,0.9336084566088048,408,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,linguistic_level,technical,,,,share,0.2,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,accuracy,0.9166666666666666,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,brier_score,0.12781936588475998,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,expected_calibration_error,0.04669427945556192,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,log_loss,0.30099580733765663,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,macro_f1,0.9164899971533105,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,precision_macro,0.9186408451114334,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,recall_macro,0.9166666666666665,408,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,linguistic_level,technical,,,,weighted_f1,0.9164899971533105,408,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,mixed_sentiment,0,,,,share,0.8823529411764706,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,accuracy,0.9183333333333333,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,brier_score,0.12323761653657779,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,expected_calibration_error,0.03568939240469464,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,log_loss,0.2802976958636909,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,macro_f1,0.9181063339424109,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,precision_macro,0.9212876966231697,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,recall_macro,0.9183333333333333,1800,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,0,,,,weighted_f1,0.9181063339424108,1800,,,,,,,,,,
+github-31966236667,1,segment_composition,topic,lstm,mixed_sentiment,1,,,,share,0.11764705882352941,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,accuracy,0.9083333333333333,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,brier_score,0.16150747828280554,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,expected_calibration_error,0.07934670942898939,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,log_loss,0.4320543409554138,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,macro_f1,0.9079118566309583,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,precision_macro,0.9082047480546952,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,recall_macro,0.9083333333333333,240,,,,,,,,,,
+github-31966236667,1,segment_metrics,topic,lstm,mixed_sentiment,1,,,,weighted_f1,0.9079118566309583,240,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,negative,negative,count,674,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,negative,neutral,count,3,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,negative,positive,count,3,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,neutral,negative,count,3,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,neutral,neutral,count,674,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,neutral,positive,count,3,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,positive,negative,count,1,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,positive,neutral,count,0,680,,,,,,,,,,
+github-31966236667,1,confusion_matrix,sentiment,lstm,,,,positive,positive,count,679,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,true_positive,674,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,false_positive,4,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,false_negative,6,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,true_negative,1356,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,support,680,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,predicted_count,678,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,precision,0.9941002949852508,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,recall,0.9911764705882353,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,specificity,0.9970588235294118,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,negative,,,f1,0.9926362297496317,680,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,negative,,,expected_count,680,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,negative,,,expected_proportion,0.3333333333333333,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,negative,,,predicted_count,678,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,negative,,,predicted_proportion,0.3323529411764706,2040,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,true_positive,674,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,false_positive,3,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,false_negative,6,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,true_negative,1357,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,support,680,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,predicted_count,677,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,precision,0.9955686853766618,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,recall,0.9911764705882353,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,specificity,0.9977941176470588,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,neutral,,,f1,0.993367722918202,680,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,neutral,,,expected_count,680,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,neutral,,,expected_proportion,0.3333333333333333,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,neutral,,,predicted_count,677,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,neutral,,,predicted_proportion,0.3318627450980392,2040,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,true_positive,679,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,false_positive,6,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,false_negative,1,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,true_negative,1354,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,support,680,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,predicted_count,685,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,precision,0.9912408759124087,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,recall,0.9985294117647059,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,specificity,0.9955882352941177,680,,,,,,,,,,
+github-31966236667,1,classwise_metrics,sentiment,lstm,,,positive,,,f1,0.9948717948717948,680,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,positive,,,expected_count,680,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,positive,,,expected_proportion,0.3333333333333333,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,positive,,,predicted_count,685,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,sentiment,lstm,,,positive,,,predicted_proportion,0.33578431372549017,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,sentiment,lstm,,,,,,accuracy,0.9936274509803922,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,sentiment,lstm,,,,,,mean_selected_class_confidence,0.9937800463508157,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,sentiment,lstm,,,,,,confidence_minus_accuracy,0.0001525953704235583,2040,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.5,0.6)",,,,mean_confidence,0.5386616140604019,8,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.5,0.6)",,,,accuracy,0.75,8,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.5,0.6)",,,,absolute_gap,0.21133838593959808,8,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.5,0.6)",,,,weight,0.00392156862745098,8,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.5,0.6)",,,,ece_contribution,0.0008287779840768552,8,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.6,0.7)",,,,mean_confidence,0.6563512325286865,5,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.6,0.7)",,,,accuracy,0.2,5,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.6,0.7)",,,,absolute_gap,0.45635123252868653,5,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.6,0.7)",,,,weight,0.0024509803921568627,5,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.6,0.7)",,,,ece_contribution,0.0011185079228644278,5,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.7,0.8)",,,,mean_confidence,0.7361877858638763,4,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.7,0.8)",,,,accuracy,0.75,4,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.7,0.8)",,,,absolute_gap,0.013812214136123657,4,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.7,0.8)",,,,weight,0.00196078431372549,4,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.7,0.8)",,,,ece_contribution,2.708277281592874e-05,4,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.8,0.9)",,,,mean_confidence,0.8440403250547556,13,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.8,0.9)",,,,accuracy,0.8461538461538461,13,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.8,0.9)",,,,absolute_gap,0.002113521099090576,13,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.8,0.9)",,,,weight,0.006372549019607843,13,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.8,0.9)",,,,ece_contribution,1.3468516807930143e-05,13,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.9,1.0]",,,,mean_confidence,0.9979119254285423,2010,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.9,1.0]",,,,accuracy,0.9980099502487563,2010,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.9,1.0]",,,,absolute_gap,9.802482021392667e-05,2010,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.9,1.0]",,,,weight,0.9852941176470589,2010,,,,,,,,,,
+github-31966236667,1,calibration_bins,sentiment,lstm,confidence_bin,"[0.9,1.0]",,,,ece_contribution,9.658327874019246e-05,2010,,,,,,,,,,
+github-31966236667,1,error_summary,sentiment,lstm,,,,,,error_count,13,2040,,,,,,,,,,
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,positive,confidence,0.6887891292572021,13,14136,"Under ordinary operating conditions, honestly tho, outside my normal routine, the video input works normally. The wireless connection tells a different story because it has stayed dependable. Honestly 🤷",technical,0,1,0,1,medium,1,0
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,negative,confidence,0.8448688387870789,13,14546,"During a heavier-than-usual day, the streaming menu has not chagned my opinion much.",advanced,0,0,1,0,short,0,1
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,neutral,confidence,0.9999542236328125,13,14582,"the compressor fan is what stood out after changing a few stetings; it has been a disappointment. i repeated the check before writing this. that said, the shelf layout feels ordinary after more use, so the experience is not completely one-sided.",limited,0,0,1,0,long,1,0
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,positive,confidence,0.9869681000709534,13,14597,"real talk, after using it for work and at home, I noticed that the door warning on this food cooler does the job. a second chcek gave me the same result.",standard,0,0,1,1,medium,0,1
+github-31966236667,1,error_record,sentiment,lstm,,,,positive,negative,confidence,0.6512404680252075,13,14907,"After repeated use under comparable conditions, during a heavier-than-usual day, the compressor fan has stayed dependable.",technical,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,negative,confidence,0.9998083710670471,13,15013,"imo, after a few weeks of mixed use, i noticed that the vibration on this machine feels ordinary after more use. i noticed the change only in the new situation. that said, the spin program has become increasingly unreliable, so the experience is not completely one-sided. the damn thing is basically fine. 😅",informal,1,1,0,1,long,1,1
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,neutral,confidence,0.9173875451087952,13,15271,"After changing a few settings, the door latch has been a disappointment. On the other hand, the vibration is acceptable but unremarkable, which makes the overall picture more mixed.",standard,0,0,0,0,medium,1,0
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,positive,confidence,0.7173137664794922,13,15324,"I did not pay much attention to the cooling motor at first, but when someone else in the house used it it has been a disappointment. I noticed the change only in the new situation.",standard,0,0,0,0,long,0,0
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,positive,confidence,0.5512652397155762,13,15739,"after changing a settings, i noticed that the vibration on this laundry unit has been a disappointment. a second check gave me same result.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,negative,confidence,0.6030097007751465,13,15823,"Outside my normal routine, I noticed that the network reception on this pocket device feles ordinary after more use. the difference became clearer after a few more days.",standard,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,neutral,confidence,0.8038697838783264,13,15839,"After repeated use under comparable conditions, my main impression of this machine comes from the vibration: it has been a disappointment after changing a few settings. I repeated the check before writing this. 😐",technical,0,1,0,0,long,0,0
+github-31966236667,1,error_record,sentiment,lstm,,,,neutral,positive,confidence,0.5431190133094788,13,16027,the call quality is what stood out after using it for work and at home; it feels after more use. this was different from my first impression.,limited,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,sentiment,lstm,,,,negative,positive,confidence,0.6548491716384888,13,16127,"after a few weeks of mixed use, i noticed that the usb port on this mobile has been a disappointment. a second check me the same result.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,confusion_matrix,topic,lstm,,,,refrigerator,refrigerator,count,430,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,refrigerator,smartphone,count,16,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,refrigerator,television,count,38,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,refrigerator,washing_machine,count,26,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,smartphone,refrigerator,count,0,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,smartphone,smartphone,count,473,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,smartphone,television,count,23,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,smartphone,washing_machine,count,14,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,television,refrigerator,count,0,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,television,smartphone,count,19,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,television,television,count,485,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,television,washing_machine,count,6,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,washing_machine,refrigerator,count,15,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,washing_machine,smartphone,count,6,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,washing_machine,television,count,6,510,,,,,,,,,,
+github-31966236667,1,confusion_matrix,topic,lstm,,,,washing_machine,washing_machine,count,483,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,true_positive,430,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,false_positive,15,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,false_negative,80,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,true_negative,1515,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,support,510,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,predicted_count,445,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,precision,0.9662921348314607,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,recall,0.8431372549019608,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,specificity,0.9901960784313726,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,refrigerator,,,f1,0.900523560209424,510,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,refrigerator,,,expected_count,510,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,refrigerator,,,expected_proportion,0.25,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,refrigerator,,,predicted_count,445,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,refrigerator,,,predicted_proportion,0.2181372549019608,2040,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,true_positive,473,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,false_positive,41,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,false_negative,37,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,true_negative,1489,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,support,510,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,predicted_count,514,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,precision,0.9202334630350194,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,recall,0.9274509803921569,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,specificity,0.973202614379085,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,smartphone,,,f1,0.9238281249999999,510,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,smartphone,,,expected_count,510,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,smartphone,,,expected_proportion,0.25,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,smartphone,,,predicted_count,514,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,smartphone,,,predicted_proportion,0.2519607843137255,2040,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,true_positive,485,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,false_positive,67,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,false_negative,25,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,true_negative,1463,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,support,510,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,predicted_count,552,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,precision,0.8786231884057971,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,recall,0.9509803921568627,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,specificity,0.9562091503267974,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,television,,,f1,0.9133709981167608,510,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,television,,,expected_count,510,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,television,,,expected_proportion,0.25,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,television,,,predicted_count,552,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,television,,,predicted_proportion,0.27058823529411763,2040,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,true_positive,483,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,false_positive,46,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,false_negative,27,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,true_negative,1484,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,support,510,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,predicted_count,529,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,precision,0.9130434782608695,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,recall,0.9470588235294117,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,specificity,0.9699346405228758,510,,,,,,,,,,
+github-31966236667,1,classwise_metrics,topic,lstm,,,washing_machine,,,f1,0.9297401347449471,510,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,washing_machine,,,expected_count,510,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,washing_machine,,,expected_proportion,0.25,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,washing_machine,,,predicted_count,529,2040,,,,,,,,,,
+github-31966236667,1,class_distribution,topic,lstm,,,washing_machine,,,predicted_proportion,0.2593137254901961,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,topic,lstm,,,,,,accuracy,0.917156862745098,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,topic,lstm,,,,,,mean_selected_class_confidence,0.956836023006369,2040,,,,,,,,,,
+github-31966236667,1,confidence_accuracy,topic,lstm,,,,,,confidence_minus_accuracy,0.03967916026127105,2040,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.2,0.3)",,,,mean_confidence,0.276895413796107,3,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.2,0.3)",,,,accuracy,0.6666666666666666,3,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.2,0.3)",,,,absolute_gap,0.38977125287055964,3,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.2,0.3)",,,,weight,0.0014705882352941176,3,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.2,0.3)",,,,ece_contribution,0.0005731930189272936,3,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.3,0.4)",,,,mean_confidence,0.3555935025215149,11,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.3,0.4)",,,,accuracy,0.18181818181818182,11,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.3,0.4)",,,,absolute_gap,0.17377532070333307,11,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.3,0.4)",,,,weight,0.005392156862745098,11,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.3,0.4)",,,,ece_contribution,0.0009370237881062077,11,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.4,0.5)",,,,mean_confidence,0.4595422888624257,29,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.4,0.5)",,,,accuracy,0.20689655172413793,29,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.4,0.5)",,,,absolute_gap,0.25264573713828775,29,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.4,0.5)",,,,weight,0.014215686274509804,29,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.4,0.5)",,,,ece_contribution,0.0035915325377501688,29,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.5,0.6)",,,,mean_confidence,0.5556688110033671,39,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.5,0.6)",,,,accuracy,0.3076923076923077,39,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.5,0.6)",,,,absolute_gap,0.24797650331105936,39,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.5,0.6)",,,,weight,0.01911764705882353,39,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.5,0.6)",,,,ece_contribution,0.004740727269182018,39,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.6,0.7)",,,,mean_confidence,0.6549457939895423,37,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.6,0.7)",,,,accuracy,0.5405405405405406,37,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.6,0.7)",,,,absolute_gap,0.11440525344900176,37,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.6,0.7)",,,,weight,0.018137254901960786,37,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.6,0.7)",,,,ece_contribution,0.002074997243927973,37,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.7,0.8)",,,,mean_confidence,0.7477414497109347,43,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.7,0.8)",,,,accuracy,0.6744186046511628,43,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.7,0.8)",,,,absolute_gap,0.07332284505977194,43,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.7,0.8)",,,,weight,0.02107843137254902,43,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.7,0.8)",,,,ece_contribution,0.0015455305576324479,43,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.8,0.9)",,,,mean_confidence,0.8519110477887667,65,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.8,0.9)",,,,accuracy,0.6923076923076923,65,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.8,0.9)",,,,absolute_gap,0.1596033554810744,65,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.8,0.9)",,,,weight,0.031862745098039214,65,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.8,0.9)",,,,ece_contribution,0.005085401032485213,65,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.9,1.0]",,,,mean_confidence,0.993075216401695,1813,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.9,1.0]",,,,accuracy,0.9680088251516823,1813,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.9,1.0]",,,,absolute_gap,0.025066391250012754,1813,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.9,1.0]",,,,weight,0.8887254901960784,1813,,,,,,,,,,
+github-31966236667,1,calibration_bins,topic,lstm,confidence_bin,"[0.9,1.0]",,,,ece_contribution,0.022277140851114274,1813,,,,,,,,,,
+github-31966236667,1,error_summary,topic,lstm,,,,,,error_count,169,2040,,,,,,,,,,
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.3385923206806183,169,14113,"Outside my normal routine, the panel lighting has been a disappointment. I tried the same thing again later and got a similar result.",advanced,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.48658356070518494,169,14115,"Under a representative operating profile, the thermostat is what stood out outside my normal routine; it has been a disappointment. I tried the same thing again later and got a similar result.",technical,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5772006511688232,169,14124,"I did not pay much attention to the thermostat at first, but after taking it on a trip it is neither impressive nor bad. the difference became clearer after a few more days.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.7263135313987732,169,14127,"after taking it on a trip, the inside lighting keeps getting in the way. the difference became clearer after a few more days.",informal,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.9198679327964783,169,14135,"I did not pay much attention to the touch panel at first, but after using it for work and at home it is acceptable but unremarkable. I repeated the check before writing this. That said, the USB port is difficult to trust, so the experience is not completely one-sided. There is no major crap to complain about here.",advanced,1,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.6890234351158142,169,14159,"After coming back to it after a few days, the drainage motor has not changed my opinion much. this was diferent from my first impression. The damn thing is basically fine.",standard,1,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5980759859085083,169,14163,"i did not pay much attention to the inside lighting at first, but after a few weeks of use it is difficult to trust. the damn thing keeps getting in the way.",limited,1,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.98576420545578,169,14165,"after using it for work and at home, i noticed that the gasket on this food has been a pleasant surprise. i have stopped worrying about this of the product.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.46108874678611755,169,14194,The thermostat is what stood out after using it for work and at home; it is fine for what it is. I tried the same thing again later and got a similar result. 🤔,standard,0,1,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.9193705320358276,169,14195,"After a few weeks of mixed use, the panel lighting works normally. I repeated the check before writing this. Honestly, the damn thing is just average.",advanced,1,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.45359185338020325,169,14200,"From a practical reliability standpoint, when someone else in the house used it, the apps holds up better than expected.",technical,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9680008292198181,169,14207,"i did not pay much attention to the inside lighting at first, but after using it for work and at home it has not changed my opinion much. i would neither recommend it nor warn people away. that said, the gasket keeps acting up, so the experience is not completely one-sided.",informal,0,0,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.48373231291770935,169,14238,"Outside my normal routine, the thermostat is fine for what it is. I repeated the check before writing this.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.9573201537132263,169,14244,"After repeated use under comparable conditions, the thermostat is what stood out outside my normal routine; it has not given me trouble. I noticed the chagne only in the new situation. I would buy it again.",technical,0,0,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.9995331764221191,169,14261,"i did not pay much attention to the inside lighting at first, but after coming back to it after a few days it is difficult to trust. i repeated the check before writing this. i woudl hesitate to buy it again. that said, the shelf layout feels ordinary after more use, so the experience is not completely one-sided. this shit should not be happening in normal use.",informal,1,0,1,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.4740140736103058,169,14264,The thermostat is what stood out after using it for work and at home; it is neither impressive nor bad. the difference became clearer after a few more days.,standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.4480563998222351,169,14291,"fr, after a few weeks of mixed use, the sports fails in normal use. this was different from my first impression.",limited,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.9353852868080139,169,14292,"Under a representative operating profile, the themrostat is what stood out after coming back to it after a few days; it has not changed my opinion much. this was different from my first impression. my opinion is still basically in the middle. 💀",technical,0,1,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.8381023406982422,169,14312,"Outside my normal routine, the touch panel has not given me trouble. I tried the same thing again later and got a similar result. No bullshit, this has been one of the better parts of the product.",standard,1,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.7595770359039307,169,14313,The panel lighting is what stood out after a few weeks of mixed use; it keeps acting up. the behavior persisted across several attempts. this needs to improve.,advanced,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8899338245391846,169,14340,"not gonna lie, after taking it on a trip, the call quality holds up better than expected. the difference became clearer after a few more days. i plan to keep using i expected some crap here, it has actually held up.",limited,1,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9844740629196167,169,14361,"after changing a few settings, the fill valve breaks down when conditions change. i repeated the check beofre writing this. the damn thing keeps getting in the way.",informal,1,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.49641960859298706,169,14373,"i have been using this unit after using it for work and at home, and the interface fails in normal use. i repeated the before writing this. 🙂",limited,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.7404333353042603,169,14379,"during a heavier-than-usual day, the rinse program works well even outside my usual routine. a second check gave me the same result. overall i am happy with it. the fill valve tells a different story because it has become increasingly unreliable.",informal,0,0,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9931609630584717,169,14385,"Across repeated observations, after using it for work and at home, the thermostat keeps acting up. I tried the same thing again later and got a similar result. I would hesitate to buy it again.",technical,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.5210478901863098,169,14390,"From a practical reliability standpoint, imo, after a few weeks of mixed use, the wireless conection keeps getting in the way.",technical,0,0,1,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.6725715398788452,169,14392,"I did not pay much attention to the built-in auido at first, but after a few weeks of mixed use it has stayed dependable. I noticed the change only in the new situation. The damn thing surprised me in a good way.",standard,1,0,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9002352356910706,169,14402,"From a practical reliability standpoint, i did not pay much attention to the picture quality at first, but when someone else in the house used it it keeps acting up. I noticed the change only in the new situation. this is the part that makes me regret the purchase. This shit should not be happening in normal use.",technical,1,0,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.49056559801101685,169,14408,"after changing a few settings, the thermostat basically average. this was different from my first impression.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.9967293739318848,169,14424,"Under ordinary operating conditions, the apps is what stood out after a few weeks of mixed use; it works normally. I tried the same thing again later and got a similar result. That said, the touch panel keeps acting up, so the experience is not completely one-sided. 👎",technical,0,1,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.6260514259338379,169,14427,The inside lighting is what stood out when someone else in the house used it; it breaks down when conditions change. I noticed the change only in the new situation.,advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.9996620416641235,169,14431,"The drainaeg motor is what stood out during a heavier-than-usual day; it has been a pleasant surprise. someone else in the house noticed it too. it has earned my confidence. I expected some crap here, but it has actually held up. lol. 👎",advanced,1,1,1,1,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9950098991394043,169,14432,"I did not pay much attention to the fill valve at first, but when someone else in the house used it it continues to work without drama. I plan to keep using it.",standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.6143463253974915,169,14476,"After repeated use under comparable conditions, during a heavier-than-usual day, the call quailty feels ordinary after more use. someone else in the house noticed it too.",technical,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9947736859321594,169,14513,"After coming back to it after a few days, the vibration has turned into a recurring problem. I tried the same thing again later and got a similar result. pretty solid ngl. 😂",advanced,0,1,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.778760552406311,169,14515,"Under ordinary operating conditions, tbh, when someone else in the house used it, the vibration has been a disappointment. someone else in the house noticed it too. 😅",technical,0,1,0,1,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.9823523163795471,169,14526,"i did not pay much attention to the touch panel at first, but after using it for work and at home it beraks down when conditions change. i tried the same thing again later and got a similar result. this shit should not be happening in normal use.",informal,1,0,1,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.7499706745147705,169,14531,The touch panel is what stood out during a heavier-than-usual day; it is difficult to trust. someone else in the house noticed it too. This shit should not be happening in routine use. 😬,advanced,1,1,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9971585273742676,169,14535,"I did not pay much attention to the apps at first, but after taking it on a trip it holds up better than expected. I plan to keep using it. I expected some crap here, but it has actually held up. not great tbh.",advanced,1,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.6169491410255432,169,14540,"Outside my normal routine, the gasket has been a disappointment. a second check gave me the same result. This shit should not be happening in routine use.",advanced,1,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9960519671440125,169,14544,"From a practical reliability standpoint, honestly tho, the door warning is what stood out after using it for work and at home; it is fine for what it is.",technical,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9911733269691467,169,14545,"after using it for work and at home, the inside continues to work without drama. i repeated the check before this. the damn thing surprised me in a good way.",limited,1,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.5280426740646362,169,14565,"real talk, after using it for work and at home, the thermostat is difficult to trust. Honestly 🔥",standard,0,1,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.5856031179428101,169,14577,"i did not pay much attention to the controls at first, but after taking it a trip it is fine for what it is.",limited,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5053423643112183,169,14593,the thermostat is what stood out after changing a few settings; it is enither impressive nor bad. the difference became clearer after a few more days.,informal,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.993787944316864,169,14597,"real talk, after using it for work and at home, I noticed that the door warning on this food cooler does the job. a second chcek gave me the same result.",standard,0,0,1,1,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.9719582200050354,169,14601,"From a practical reliability standpoint, after taking it on a trip, the fill valve holds up better than expected. a second check gave me the same result. I expected some crap here, but it has actually held up.",technical,1,0,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9838751554489136,169,14617,"i have been using this wash unit after coming back to it after a few days, and the soap tray has turned into a recurring problem. i tried the same thing again later and got a similar result.",informal,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.41475650668144226,169,14629,"ngl, i did not pay much attention to the thermostat at first, but after using it for work and at home it is fine for what it is. i tried the same thing again later and got a similar result.",limited,0,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.7011327147483826,169,14635,"After coming back to it after a few days, the inside lighting feels ordinary after more use. I noticed the change only in the new situation. I can live with it.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.6956118941307068,169,14676,"Under a representative operating profile, my main impression of this vidoe panel comes from the panel lighting: it has not changed my opinion much after changing a few settings. the behavior persisted across several attempts. pretty solid ngl. 😂",technical,0,1,1,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.816241979598999,169,14688,"After useing it for work and at home, the touch panel is acceptable but unremarkable. I repeated the check before writing this.",advanced,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.667161226272583,169,14707,The thermostat is what stood out when someone else in the house used it; it breaks down when conditions change. this was different from my first impression. 🤷,advanced,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9965174198150635,169,14712,"i did not pay much attention to the vibration at first, but after a few weeks of mixed use it has not changed my opinion much. the behavior persisted across several attempts. i don't feel strongly either way. on the other hand, the rinse program has stayed dependable, which makes the overall picture more mixed. there is no major crap to complain about here.",informal,1,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8548074960708618,169,14720,the thermostat is what out udring a heavier-than-usual day; it remains basically average. the difference became clearer after a few more days.,limited,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.990287184715271,169,14732,"i have been using refrigeration unit after using it for work and at home, and the compartment is acceptable but unremarkable. a second check gave me the same result.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.49553531408309937,169,14733,"Under ordinary operating conditions, during a heavier-than-usual day, the door latch has stayed dependable. someone else in the house noticed it too.",technical,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.5385332703590393,169,14737,"Across repeated observations, when someone else in the house used it, the thermostat remains basically average. I repeated the check before writing this. 🔥",technical,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.8038871884346008,169,14749,the panel lighting is what stood out after a few weeks of mixed use; it has been a disappointment. i would hesitate to buy it again. the damn thing keeps getting in the way. Honestly 😐,informal,1,1,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8456993699073792,169,14774,"imo, i did not pay much attention to the apps at first, but during a heavier-than-usual day it has become increasingly unreliable.",advanced,0,0,0,1,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.6426617503166199,169,14796,"i did not pay much attention to the thermostat at first, but after changing a few settings it keeps acting up. someone else in the house noticed it too. this is the part that makes me regret the purchase. the gasket tells a different story because it still performs consistently.",informal,0,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8869487643241882,169,14800,"Outside my normal routine, the apps has stayed dependable. No bullhsit, this has been one of the better parts of the product.",standard,1,0,1,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.7200552225112915,169,14807,"i did not pay much attention to the inside lighting at first, but after taking it on a trip it keeps acting up. this was different from my first impression.",informal,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.5719724297523499,169,14813,"After using it for work and at home, the apps has turned into a recurring problem. this is the part that makes me regret the purchase.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.49297845363616943,169,14824,"after taking it on a trip, the tocuh panel does the job. i repeated the check before writing this. honestly, the damn thing is just average.",informal,1,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9944926500320435,169,14826,"I did not pay much attention to the vibration at first, but after changing a few settings it feels ordinary after more use. a second check gave me the same result. it is adequate for now. The soap tray tells a different story because it has been a pleasant surprise.",standard,0,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.8400796055793762,169,14841,"After taking it on a trip, the interface has not given me trouble. a second check gave me the same result. for my use case, this is a keeper. No bullshit, this has been one of the better parts of the product. for real. Honestly 😅",standard,1,1,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.5871856212615967,169,14855,"Under ordinary operating conditions, when someone else in the house used it, the apps is acceptable but unremarkable. the difference became clearer after a few more days. 😐",technical,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8434022068977356,169,14865,"After ocming back to it after a few days, the apps has turned into a recurring problem. someone else in the house noticed it too.",standard,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.5975807905197144,169,14876,"From a practical reliability standpoint, the inside lighting is what stood out after changing a few settings; it has not given me trouble. I tried the same thing again later and got a similar result. Honestly 😂",technical,0,1,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9113499522209167,169,14892,"Across repeated observations, fr, after taking it on a trip, the panel lighting works normally. I repeated the check before writing this. I would neither recommend it nor warn people away. 🤷",technical,0,1,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.7448227405548096,169,14894,"i did not pay much attention to the thermostat at first, but when someone else in the house used it it has been a pleasant surprise. the difference became clearer after a few more days.",informal,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5932700037956238,169,14915,the inside lighting is what stood out outside my normal routine; it keeps getting in the way. 🙃,limited,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.47861072421073914,169,14923,"i did not pay much attention to the apps at first, but after using it for work and at home it keeps acting up. the difference became clearer after a few more days. i am considering a replacement.",informal,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.48767250776290894,169,14930,"after a few weeks of mixed use, the thermostat feels ordinary after more use. for real.",limited,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.33312422037124634,169,14953,"After repeated use under comparable conditions, fr, after coming back to it after a few days, the gasket holds up better than expected.",technical,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.9968670010566711,169,14960,"real talk, the inside lighting is what stood out atfer useing it for work and at home; it has not changed my opinion much. someone else in the house noticed it too. i do not feel strongly either way. there is no major crap to complain about here.",limited,1,0,1,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.834822952747345,169,14965,"not gonna lie, after using it for work and at home, the inside lighting is fine for what it is. I repeated the check before writing this. I do not feel strongly either way. On the other hand, the door warning works well even outside my usual routine, which makes the on balance picture more mixed.",advanced,0,0,0,1,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.6428393721580505,169,14967,"i did not pay much attention to the fill valve at first, but after taking it on a trip it works well even outside my suual routine.",informal,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.6668722033500671,169,14969,"i did not pay much attention to the at first, but when someone else in the house used it it keeps acting up. the behavior persisted across several attempts.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.30585286021232605,169,14979,"Under ordinary operating conditions, the thermostat is what stood out outside my normal routine; it feels dependable in daily use. I tried the same thing again later and got a similar result.",technical,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9966326355934143,169,14997,"ngl, the is what stood out outside my normal routine; it remains bsaically average. i repeated check before writing this. there is not much else to say. Honestly 😬",limited,0,1,1,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.5577613711357117,169,15005,"From a practical reliability standpoint, fr, i did not pay much attention to the interface at first, but when someone else in the house used it it has not changed my opinion much. a second check gave me the same result. my opinion is still basically in the middle.",technical,0,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9952231049537659,169,15024,"Outside my normal routine, the gasket has not given me trouble. I tried the same thing again later and got a similar result. I expected some crap here, but it has actually held up.",standard,1,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.3758208155632019,169,15031,"When someone else in the house used it, the panel lighting remains basically average. the behavior persisted across several attempts.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.9647243022918701,169,15052,"honestly tho, after a few weeks of mixed use, i noticed that the panel lighting on this unit fails in normal use. i noticed the only in the new situtaion. i would hesitate to buy it again. i am tired of this crap.",limited,1,0,1,1,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9793247580528259,169,15062,"outside my normal routine, the door warning keeps getting in the way. the damn thing keeps getting in the way.",informal,1,0,1,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.5500704646110535,169,15063,"ngl, the gasket is what stood out when someone else in the house used it; it has not changed my opinion much. this was different from my first impression. I can live with it.",standard,0,0,0,1,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9753729104995728,169,15066,"real talk, my main impression of this daily driver comes from the apps: it is difficult to trust after coming back to it after a few days. I repeated the check before writing this. I would not rely on it.",standard,0,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.4656345844268799,169,15082,"after taking it on a trip, the fingerprint reader has stayed dependable.",informal,0,0,0,0,short,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9960730075836182,169,15121,"I have been using this refrigeration unit after using it for work and at home, and the door warning fails in normal use. the behavior persisted across several attempts. I would hesitate to buy it again.",standard,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8401143550872803,169,15127,"After changing a few settings, the inside lighting is difficult to trust. this was diferent from my first impression. I would not rely on it.",advanced,0,0,1,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.6301946043968201,169,15132,"I did not pay much attention to the inside lighting at first, but after a few weeks of mixed use it is acceptable but unremarkable. I ntoiced the change only in the new situation. It is not amazing, but it is not bullshit either.",advanced,1,0,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.6964287757873535,169,15136,"tbh, after using it for work and at home, the thermostat is difficult to trust. I am considering a replacement. Honestly 🙃",advanced,0,1,0,1,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.6342904567718506,169,15166,"after coming back to it after a few days, drainage motor has been a pleasant surprise. overall i am happy with it. damn, i did not expect this part to be this solid. Honestly 😐",limited,1,1,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5316365957260132,169,15184,"i have been using this refrigeration unit after coming back to it after a few days, and the thermostat has been a disappointment. the difference became after a few more days.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9950951337814331,169,15188,"Across repeated observations, not gonna lie, i did not pay much attention to the wash drum at first, but after taking it on a trip it feels dependable in daily use. That said, the vibration has been a disappointment, so the experience is not completely one-sided.",technical,0,0,0,1,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.35628077387809753,169,15190,the apps is what stood out after coming back to it after a few days; it continues to work without drama. i tried the same thing again later and got a similar result. i plan to keep using it.,informal,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8384166359901428,169,15200,"after taking it on a trip, i noticed that the on this food cooler fails in normal use. a check gave me the same result. i am considering a replacement. i am tired of this crap.",limited,1,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.45853784680366516,169,15215,"I did not pay much attention to the thermostat at first, but after coming back to it after a few days it works normally. this was different from my first impression.",standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9971482157707214,169,15232,"honestly tho, when someone else in the house used it, the fill valve has turned into a recurring problem. this was different from my first impression. that said, the spin program works normally, so the experience is not completely one-sided. Honestly 🤔",informal,0,1,0,1,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9934548735618591,169,15234,"imo, after a few weeks of mixed use, the thermostat is acceptable but unremarkable. someone else in the house noticed it too. I can live with it. On the other hand, the door warning has become increasingly unreliable, which makes the on balance picture more mixed.",advanced,0,0,0,1,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9964951872825623,169,15239,"After taking it on a trip, the inetrface is neither impressive nor bad. the difference became clearer after a few more days. there is not much else to say. There is no major crap to complain about here.",standard,1,0,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.5236361026763916,169,15257,"After a few weeks of mixed use, the tuoch panel does the job. it is adequate for now. for real.",advanced,0,0,1,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.4784756898880005,169,15259,"fr, the thermostat is what stood out when someone else in the house used it; it has not given me trouble. this was different from my first impression. Damn, I did not expect this part to be this solid.",advanced,1,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8247772455215454,169,15306,"real talk, the inside lighting is what stood out after coming back to it after a few days; it still performs consistently. a second check gave me the same rseult.",informal,0,0,1,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9967073202133179,169,15333,"after useing it for work and at home, i noticed that the door warning on this food cooler continues to work without drama. someone else in the house noticed it too. it has earned my confidence.",informal,0,0,1,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.9431008100509644,169,15335,the inside lighting is what stood out after changing a few settings; it works well even outside my usual routine. i have stopped worrying this part of the product.,limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9901753067970276,169,15345,The apps is what stood out after coming back to it after a few days; it has not changed my opinion much. the difference became clearer after a few more days.,standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.5691143870353699,169,15357,"i have been using this mobile after taking it on a trip, and the apps turned into a recurring problem. i noticed the change only in the new situation. i am considering a replacement.",limited,0,0,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.4831857979297638,169,15362,The thermostat is what stood out after a few weeks of mixed use; it still performs consistently. I repeated the check before writing this.,standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8010426163673401,169,15367,"After coming back to it after a few days, the apps breaks down when conditions change. this was different from my first impression. This is damn annoying.",standard,1,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9939593076705933,169,15369,"Under a representative operating profile, after changing a few settings, the picture quality keeps acting up. this was different from my first impression. That said, the panel lighting still performs consistently, so the experience is not completely one-sided. The damn thing keeps getting in the way.",technical,1,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.9228224158287048,169,15372,"Across repeated observations, the panel lighting is what stood out after using it for work and at home; it is neither impressive nor bad. the behavior persisted across several attempts. there is not much else to say.",technical,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.5183176398277283,169,15404,"i have been using this mobile after coming back to it after a few days, and the earpiece remains basically average. i tried the same thing again later and got a similar result.",informal,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.994375467300415,169,15408,"I did not pay much attention to the earpiece at first, but after a few weeks of mixed use it keeps acting up. I tried the same thing again later and got a similar result. this is the part that makes me regret the purchase. That said, the rear camera is acceptable but unremarkable, so the experience is not completely one-sided.",advanced,0,0,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9958168864250183,169,15429,"after a few weeks of mixed use, i noticed that the door warning on this refrigeration unit breaks down when conditions change. i tried the same thing again later and got a similar result. i am tired of this crap.",informal,1,0,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.9994142055511475,169,15444,"From a practical reliability standpoint, tbh, the inside lighting is what stood out after taking it on a trip; it is difficult to trust. someone else in the house noticed it too. I would not rely on it. 👎",technical,0,1,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5468776822090149,169,15460,"after taking it on a trip, i noticed the system on this food cooler breaks down when conditions change. the behavior persisted across several attempts.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9972610473632812,169,15461,"when someone else in the house used it, the fill valve still performs consistently. the difference became clearer after a few more days. that said, the cycle controls is acceptable but unremarkable, so the experience is not completely one-sided. Honestly 🤷",informal,0,1,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.5054641366004944,169,15462,"after changing a few settings, the touch panel has not given me trouble. i noticed the change only in the new situation. i plan to keep useing it.",informal,0,0,1,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.367989718914032,169,15477,"when someone else in the house used it, the thermostat feels ordinary after more use. i repeated the check before writing this. Honestly 🙂",limited,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.8736166954040527,169,15479,"tbh, when someone else in the house used it, the vibration has stayed dependable. a second check gave me the same result. it has earned my confidence. The rinse program tells a different story because it is acceptable but unremarkable. Damn, I did not expect this part to be this solid.",advanced,1,0,0,1,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.44169920682907104,169,15516,"After repeated use under comparable conditions, the apps is what stood out after a few weeks of mixed use; it breaks down when conditions change. I tried the same thing again later and got a similar result.",technical,0,0,0,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.946044921875,169,15519,"real talk, i have been using this machine when someone else in the house used and the latch is neither impressive nor bad. there is not much else to say. on the other hand, the cycle controls holds up better than expected, which makes the overall picture more mixed.",limited,0,0,0,1,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.9935920834541321,169,15542,"Across repeated observations, during a heavier-than-usual day, the wash drum breaks down when conditions change. I would hesitate to buy it again. This shit should not be happening in normal use.",technical,1,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.30063700675964355,169,15565,the inside lighting is what stood out when someone else in the house used it; it has turned into a recurring problem. the behavior persisted across several attempts. i am already looking at alternatives. the door warning tells a different story because it has stayed dependable.,informal,0,0,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.45301318168640137,169,15607,"After coming back to it after a few days, the earpiece has been a disappointment.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5056700110435486,169,15612,"i did not pay much attention to the gakset at first, but outside my normal routine it has turned into a recurring problem. 🙂",informal,0,1,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,smartphone,confidence,0.5443432927131653,169,15617,"After coming back to it after a few days, the vibration has been a disappointment. a second check gave me the same result. I am considerign a replacement.",advanced,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.7304880619049072,169,15621,"fr, i did not pay much attention to the call quality at first, but after using it for work and at home it has stayed dependable. I tried the same thing again later and got a similar result.",advanced,0,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.9800753593444824,169,15633,"i did not pay much attention to the insdie at first, but after taking it on a trip it keeps acting up. a second check gave me the same result. this is the part that amkes me regret the purchase.",limited,0,0,1,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.9819642305374146,169,15637,"The earpiece is what stood out after changing a few settings; it remains basically average. I tried the same thing again later and got a similar result. Honestly, the damn thing is just average. for real.",standard,1,0,0,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.7145026326179504,169,15673,"From a practical reliability standpoint, after taking it on a trip, the drainage motor feles ordinary after more use. I do not feel strongly either way. There is no major crap to complain about here. for real.",technical,1,0,1,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.40490812063217163,169,15691,"real talk, i did not pay much attention to the inside lighting at first, but after coming back to it after a days it does the job. i tried the same thnig again later and got a similar result. i would neither recommend it nor warn people away.",limited,0,0,1,1,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.5433493256568909,169,15715,"honestly tho, after changing a few settings, the panel lighting is acceptable but unremarkable. a second check gave me same result.",limited,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9868485927581787,169,15719,"not gonna lie, the apps is what stood out after a few weeks of mixed it holds up better than expected. i tried the same thing again later and got a similar result.",limited,0,0,0,1,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.4825960397720337,169,15742,"after using it for work and home, the inside lighting does the job. this was different from my first impression.",limited,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.4876832365989685,169,15780,"i did not pay much attention to the thermostat at first, but after changing a few settings it does the job. i repeated the check before writing this. it is adequate for now.",informal,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8674885034561157,169,15785,"i did not pay much atetntion to the thermostat at first, but after coming back to it after a few days it holds up better than expected. the behavior persisted across several attempts. i have stopped worrying about this part of the product. Honestly 😅",informal,0,1,1,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,television,washing_machine,confidence,0.5837598443031311,169,15787,"after a few weeks of mixed use, the panel lighting is neither impressive nor bad. i tried the same thing again later and got a similar result. 😬",informal,0,1,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.27743980288505554,169,15797,"after taking it on a trip, the panel lighting works normally. my opinion is still basically in the middle. honestly, the damn thing is just average.",informal,1,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9041929244995117,169,15799,"After repeated use under comparable conditions, after using it for work and at home, the gasket feels dependable in daily use. pretty solid ngl. 🙂",technical,0,1,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.8701627254486084,169,15815,"The apps is what stood out after taking it on a trip; it remains basically average. I tried the same thing agani later and got a similar result. It is not amazing, but it is not bullshit either.",standard,1,0,1,0,long,0,1
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.992743968963623,169,15816,"Durnig a heavier-than-usual day, the wash drum breaks down when conditions change. someone else in the house noticed it too. This shit should not be happening in normal use.",standard,1,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8067179918289185,169,15821,"After taking it on a trip, the inside lighting has stayed dependable. someone else in the house noticed it too.",advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.7146908044815063,169,15824,"From a practical reliability standpoint, fr, after changing a few settings, the thermostat is neither impressive nor bad. there is not much else to say.",technical,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.598059356212616,169,15825,"I did not pay much attention to the thermostat at first, but after coming back to it after a few days it breaks down when conditions change. I noticed the change only in the new situation. this needs to improve.",advanced,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.5958764553070068,169,15837,The thermostat is what stood out outside my normal routine; it is acceptable but unremarkable. this was different from my first impression.,standard,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,washing_machine,confidence,0.9635981917381287,169,15893,"After a few weeks of mixed use, the fingerprint reader has not given me trouble. I tried the same thing again later and got a similar result. That said, the touch panel is acceptable but unremarkable, so the experience is not completely one-sided. lol.",advanced,0,0,0,1,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9972668886184692,169,15904,The apps is what stood out during a heavier-than-usual day; it holds up better than expected. someone else in the house noticed it too.,advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,refrigerator,confidence,0.859642505645752,169,15907,"during a heavier-than-usual day, the wash drum remains basically average. the difference became clearer after a few more days. it is adequate for now.",informal,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.6322037577629089,169,15920,"After changing a few settings, the panel lighting is enither impressive nor bad. a second check gave me the same result.",advanced,0,0,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.7520825266838074,169,15938,"the thermostat is what stood out outside my routine; it has stayed dependable. that said, the inside lighting is neither impressive nor bad, so the experience is not completely one-sided.",limited,0,0,0,0,medium,1,0
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.9659725427627563,169,15948,The apps is what stood out during a heavier-than-usual day; it is difficult to trust.,advanced,0,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.7959348559379578,169,15952,"After repeated use under comparable conditions, the inside lighting is what stood out after using it for work and at home; it is fine for what it is. I noticed the change only in the new situation.",technical,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9963119626045227,169,15954,"From a practical reliability standpoint, outside my normal routine, the door warning has been a pleasant surprise. this was different from my first impression. I would buy it again. On the other hand, the thermostat fails in normal use, which makes the overall picture more mixed. Damn, I did not expect this part to be this solid. 🙂",technical,1,1,0,0,long,1,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.3824094831943512,169,15967,"after a few weeks of mixed use, the thermostat breaks down when conditions chagne. the difference became clearer after a few more days. the damn thing keeps getting in the way. 😅",limited,1,1,1,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.9795376658439636,169,15986,"During a heavier-than-usual day, the gasket has not given me trouble. someone else in the house noticed it too. it has earned my confidence. I expected some crap here, but it has actually held up.",standard,1,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,smartphone,confidence,0.4517248272895813,169,16008,"I did not pay much attention to the thermostat at first, but outside my normal routine it keeps acting up. someone else in the house noticed it too.",standard,0,0,0,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.9953616261482239,169,16035,"after using it for work and at home, i noticed that the door warning on this food cooler does the job. the difference became clearer after a few more days. there is not much else to say.",informal,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.8379573822021484,169,16039,"I did not pay much attention to the thermostat at first, but after using it for work and at home it is difficult to trust. the difference became clearer after a few more days.",advanced,0,0,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,washing_machine,television,confidence,0.5866332054138184,169,16045,"The drainage motor is what stood out after coming back to it after a few days; it holds up better than expected. the behavior persisted across several attempts. I expected some crap here, but it has actually held up. 😂",advanced,1,1,0,0,long,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.7382797002792358,169,16051,"lowkey, when someone else in the house used it, the sports has not given me trouble. i repeated the before writing this.",limited,0,0,0,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,television,smartphone,confidence,0.6442746520042419,169,16064,"Across repeated observations, after a few weeks of mixed use, the built-in auido remains basically average. this was different from my first impression. Honestly 👎",technical,0,1,1,0,medium,0,1
+github-31966236667,1,error_record,topic,lstm,,,,smartphone,television,confidence,0.6762627363204956,169,16067,"during a heavier-than-usual day, the apps fails in normal use. this needs to improve. the damn thing keeps getting in the way.",limited,1,0,0,0,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.3949038088321686,169,16082,"Under ordinary operating conditions, honestly tho, after useing it for work and at home, the inside lighting holds up better than expected. the behavior persisted across several attempts. I would buy it again.",technical,0,0,1,1,medium,0,0
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,washing_machine,confidence,0.6528152227401733,169,16098,"i did not pay much attention to the thermostat at first, but outside my normal routine it fails in normal use. someone else in the house noticed it too. that said, the warning feels ordinary after more use, so the experience is not completely one-sided.",limited,0,0,0,0,long,1,1
+github-31966236667,1,error_record,topic,lstm,,,,refrigerator,television,confidence,0.5352151989936829,169,16102,"fr, i did not pay attention to the at first, but during a heavier-than-usual day it breaks down when conditions change. a second check gave me the same result. i am already looking at alternatives.",limited,0,0,0,1,long,0,0
+github-31966236667,1,training_history,sentiment,lstm,epoch,1,,,,accuracy,0.8987880349159241,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,1,,,,loss,0.2660132646560669,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,1,,,,val_accuracy,0.9694793820381165,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,1,,,,val_loss,0.2073233425617218,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,2,,,,accuracy,0.9916735887527466,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,2,,,,loss,0.03678806498646736,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,2,,,,val_accuracy,0.9904248714447021,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,2,,,,val_loss,0.04323352500796318,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,3,,,,accuracy,0.9973170757293701,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,3,,,,loss,0.013196533545851707,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,3,,,,val_accuracy,0.9970077872276306,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,3,,,,val_loss,0.013139339163899422,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,4,,,,accuracy,0.9990748167037964,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,4,,,,loss,0.006960101425647736,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,4,,,,val_accuracy,0.9982046484947205,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,4,,,,val_loss,0.009043131954967976,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,5,,,,accuracy,0.9997224807739258,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,5,,,,loss,0.0024817439261823893,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,5,,,,val_accuracy,0.9988031387329102,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,5,,,,val_loss,0.00631731329485774,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,6,,,,accuracy,0.9998149871826172,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,6,,,,loss,0.000984622398391366,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,6,,,,val_accuracy,0.9988031387329102,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,6,,,,val_loss,0.007814246229827404,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,7,,,,accuracy,0.9994449019432068,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,7,,,,loss,0.0030549948569387197,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,7,,,,val_accuracy,0.9988031387329102,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,7,,,,val_loss,0.010444010607898235,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,8,,,,accuracy,0.9970394968986511,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,8,,,,loss,0.016234563663601875,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,8,,,,val_accuracy,0.962896466255188,10809,,,,,,,,,,
+github-31966236667,1,training_history,sentiment,lstm,epoch,8,,,,val_loss,0.19633813202381134,10809,,,,,,,,,,
+github-31966236667,1,validation_summary,sentiment,lstm,,,,,,best_epoch,5,1671,,,,,,,,,,
+github-31966236667,1,validation_summary,sentiment,lstm,,,,,,val_loss_at_best_val_loss,0.00631731329485774,1671,,,,,,,,,,
+github-31966236667,1,validation_summary,sentiment,lstm,,,,,,val_accuracy_at_best_val_loss,0.9988031387329102,1671,,,,,,,,,,
+github-31966236667,1,validation_summary,sentiment,lstm,,,,,,loss_at_best_val_loss,0.0024817439261823893,10809,,,,,,,,,,
+github-31966236667,1,validation_summary,sentiment,lstm,,,,,,accuracy_at_best_val_loss,0.9997224807739258,10809,,,,,,,,,,
+github-31966236667,1,validation_incoming_gap,sentiment,lstm,,,,,,validation_accuracy_minus_incoming_accuracy,0.005175687752517977,2040,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,1,,,,accuracy,0.6242598295211792,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,1,,,,loss,0.7305787801742554,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,1,,,,val_accuracy,0.8139952421188354,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,1,,,,val_loss,0.3871508240699768,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,2,,,,accuracy,0.9381939172744751,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,2,,,,loss,0.17603799700737,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,2,,,,val_accuracy,0.9910287261009216,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,2,,,,val_loss,0.045234329998493195,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,3,,,,accuracy,0.9862139225006104,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,3,,,,loss,0.06964687258005142,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,3,,,,val_accuracy,0.989234447479248,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,3,,,,val_loss,0.05390368402004242,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,4,,,,accuracy,0.9921354651451111,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,4,,,,loss,0.03682380169630051,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,4,,,,val_accuracy,0.994617223739624,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,4,,,,val_loss,0.021995434537529945,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,5,,,,accuracy,0.9947261214256287,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,5,,,,loss,0.026957688853144646,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,5,,,,val_accuracy,0.9922248721122742,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,5,,,,val_loss,0.03927338123321533,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,6,,,,accuracy,0.9969466924667358,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,6,,,,loss,0.01379894744604826,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,6,,,,val_accuracy,0.9928229451179504,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,6,,,,val_loss,0.045418523252010345,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,7,,,,accuracy,0.997039258480072,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,7,,,,loss,0.016199832782149315,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,7,,,,val_accuracy,0.9952152967453003,10808,,,,,,,,,,
+github-31966236667,1,training_history,topic,lstm,epoch,7,,,,val_loss,0.02309213951230049,10808,,,,,,,,,,
+github-31966236667,1,validation_summary,topic,lstm,,,,,,best_epoch,4,1672,,,,,,,,,,
+github-31966236667,1,validation_summary,topic,lstm,,,,,,val_loss_at_best_val_loss,0.021995434537529945,1672,,,,,,,,,,
+github-31966236667,1,validation_summary,topic,lstm,,,,,,val_accuracy_at_best_val_loss,0.994617223739624,1672,,,,,,,,,,
+github-31966236667,1,validation_summary,topic,lstm,,,,,,loss_at_best_val_loss,0.03682380169630051,10808,,,,,,,,,,
+github-31966236667,1,validation_summary,topic,lstm,,,,,,accuracy_at_best_val_loss,0.9921354651451111,10808,,,,,,,,,,
+github-31966236667,1,validation_incoming_gap,topic,lstm,,,,,,validation_accuracy_minus_incoming_accuracy,0.07746036099452602,2040,,,,,,,,,,

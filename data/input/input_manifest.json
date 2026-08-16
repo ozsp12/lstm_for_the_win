@@ -24,23 +24,23 @@
     "vary_counts": true
   },
   "effective_generation": {
-    "emoji_fraction": 0.2162969634195237,
-    "goldtest_fraction": 0.2302380068997209,
+    "emoji_fraction": 0.21108483824812618,
+    "goldtest_fraction": 0.17203884631381103,
     "incoming_rows": 2040,
-    "profanity_fraction": 0.2374354374222456,
-    "validation_fraction": 0.13397770519263977
+    "profanity_fraction": 0.2651926805349409,
+    "validation_fraction": 0.1362100693414273
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 1,
+  "generation": 2,
   "incoming_emoji_counts": {
     "0": 1620,
     "1": 420
   },
-  "incoming_goldtest_count": 480,
+  "incoming_goldtest_count": 360,
   "incoming_length_counts": {
-    "long": 1012,
-    "medium": 1017,
-    "short": 11
+    "long": 1027,
+    "medium": 999,
+    "short": 14
   },
   "incoming_linguistic_level_counts": {
     "advanced": 408,
@@ -54,8 +54,8 @@
     "1": 240
   },
   "incoming_profanity_counts": {
-    "0": 1560,
-    "1": 480
+    "0": 1500,
+    "1": 540
   },
   "incoming_slang_counts": {
     "0": 1620,
@@ -65,18 +65,18 @@
     "0": 1620,
     "1": 420
   },
-  "last_issued_id": 16140,
+  "last_issued_id": 18180,
   "promoted_from_previous_incoming": 480,
   "record_counts": {
     "incoming.csv": 2040,
-    "train.csv": 12480
+    "train.csv": 12960
   },
   "sha256": {
-    "incoming.csv": "97517a9771f7d3a5d89a5eeb921a910cc7af32f179ebb4e871d5654015888eb9",
-    "train.csv": "6b4bc21bc9e06dbc4bf59509926ebbed8ca17ca5eed6e80ebc50c9a68e012420"
+    "incoming.csv": "e714250893b603de6ff8cb6630c29d58e98d7e398aa3aedd1ab4b4505aa668b7",
+    "train.csv": "34a8173d183de32d3d48c0b4d531c98e78677b1c92f88d2304bd4cc14a8a53b8"
   },
   "train_source_counts": {
-    "goldtest": 480,
+    "goldtest": 960,
     "initial": 12000
   }
 }

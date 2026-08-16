@@ -13,6 +13,7 @@ SRC = ROOT / "src"
 if str(SRC) not in sys.path:
     sys.path.insert(0, str(SRC))
 
+from lstm_for_the_win.analysis.dashboard_figures import export_dashboard_figures
 from lstm_for_the_win.analysis.figures import export_figures
 
 
@@ -23,6 +24,8 @@ def main() -> int:
     args = parser.parse_args()
 
     manifest = export_figures(args.run_path, args.output_dir)
+    if args.output_dir is None:
+        manifest = export_dashboard_figures(args.run_path)
     print(json.dumps({"status": "ok", "figures_manifest": str(manifest.resolve())}))
     return 0
 

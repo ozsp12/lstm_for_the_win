@@ -6,6 +6,7 @@ on:
     branches: [main]
     paths:
       - "src/**"
+      - "scripts/**"
       - "config/**"
       - "pyproject.toml"
       - ".github/workflows/pipeline.yml"
@@ -39,7 +40,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src tests
+        run: python -m compileall -q src scripts tests
 
       - name: Timestamp experiment
         run: echo "DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')" >> "$GITHUB_ENV"
@@ -107,11 +108,19 @@ jobs:
           --epochs 20
           --patience 3
 
+      - name: Export versioned manuscript and dashboard analyses
+        run: |
+          RUN_PATH="data/output/github-${{ github.run_id }}"
+          python scripts/export_article_analysis.py "$RUN_PATH"
+          test -s "$RUN_PATH/article_analysis.csv"
+          test -s "$RUN_PATH/results.json"
+
       - name: Verify dashboard metrics
         run: |
           RUN_PATH="data/output/github-${{ github.run_id }}"
           test -f "$RUN_PATH/metrics.json"
-          python - "$RUN_PATH/metrics.json" <<'PY'
+          python - "$RUN_PATH/metrics.json" "$RUN_PATH/article_analysis.csv" <<'PY'
+          import csv
           import json
           import sys
           from pathlib import Path
@@ -123,6 +132,15 @@ jobs:
               assert "metric_delta_vs_baseline" in result
               assert "segment_metrics" in result
               assert "hasemoji" in result["segment_metrics"]
+          with Path(sys.argv[2]).open(encoding="utf-8", newline="") as handle:
+              analysis = list(csv.DictReader(handle))
+          groups = {row["analysis_group"] for row in analysis}
+          required = {
+              "aggregate_metrics", "segment_metrics", "confusion_matrix", "classwise_metrics",
+              "class_distribution", "confidence_accuracy", "calibration_bins", "error_summary",
+              "training_history", "validation_incoming_gap",
+          }
+          assert required.issubset(groups), required - groups
           PY
 
       - name: Run automated tests
@@ -135,6 +153,8 @@ jobs:
           RUN_PATH="data/output/github-${{ github.run_id }}"
           test -f "$RUN_PATH/predictions.csv"
           test -f "$RUN_PATH/metrics.json"
+          test -f "$RUN_PATH/results.json"
+          test -f "$RUN_PATH/article_analysis.csv"
           test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -143,6 +163,8 @@ jobs:
             data/output/latest.json \
             "$RUN_PATH/predictions.csv" \
             "$RUN_PATH/metrics.json" \
+            "$RUN_PATH/results.json" \
+            "$RUN_PATH/article_analysis.csv" \
             "$RUN_PATH/run_manifest.json"
           if git diff --cached --quiet; then
             echo "The pipeline did not produce a versioned state transition."

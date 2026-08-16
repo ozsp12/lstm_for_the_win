@@ -10,7 +10,6 @@ __pycache__/
 # Generated pipeline artifacts kept outside Git
 artifacts/
 data/output/**/models/
-data/output/**/results.json
 data/output/*.log
 *.keras
 

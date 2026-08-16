@@ -24,23 +24,23 @@
     "vary_counts": true
   },
   "effective_generation": {
-    "emoji_fraction": 0.21108483824812618,
-    "goldtest_fraction": 0.17203884631381103,
+    "emoji_fraction": 0.18962901730475756,
+    "goldtest_fraction": 0.17707853417894026,
     "incoming_rows": 2040,
-    "profanity_fraction": 0.2651926805349409,
-    "validation_fraction": 0.1362100693414273
+    "profanity_fraction": 0.3278520533401083,
+    "validation_fraction": 0.13565273244572126
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 2,
+  "generation": 3,
   "incoming_emoji_counts": {
-    "0": 1620,
-    "1": 420
+    "0": 1680,
+    "1": 360
   },
   "incoming_goldtest_count": 360,
   "incoming_length_counts": {
-    "long": 1027,
-    "medium": 999,
-    "short": 14
+    "long": 1082,
+    "medium": 947,
+    "short": 11
   },
   "incoming_linguistic_level_counts": {
     "advanced": 408,
@@ -54,8 +54,8 @@
     "1": 240
   },
   "incoming_profanity_counts": {
-    "0": 1500,
-    "1": 540
+    "0": 1380,
+    "1": 660
   },
   "incoming_slang_counts": {
     "0": 1620,
@@ -65,18 +65,18 @@
     "0": 1620,
     "1": 420
   },
-  "last_issued_id": 18180,
-  "promoted_from_previous_incoming": 480,
+  "last_issued_id": 20220,
+  "promoted_from_previous_incoming": 360,
   "record_counts": {
     "incoming.csv": 2040,
-    "train.csv": 12960
+    "train.csv": 13320
   },
   "sha256": {
-    "incoming.csv": "e714250893b603de6ff8cb6630c29d58e98d7e398aa3aedd1ab4b4505aa668b7",
-    "train.csv": "34a8173d183de32d3d48c0b4d531c98e78677b1c92f88d2304bd4cc14a8a53b8"
+    "incoming.csv": "3efdf827567d3e57fa98f1d6346f92ad86836be55de07ec9227fb546fb1f85eb",
+    "train.csv": "d52e1363b7bd51dee07a862e0785f8a2a70b5f1c751d0a9f3da3b4c96a17f2c5"
   },
   "train_source_counts": {
-    "goldtest": 960,
+    "goldtest": 1320,
     "initial": 12000
   }
 }

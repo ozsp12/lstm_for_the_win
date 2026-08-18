@@ -31,35 +31,18 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src scripts tests
+        run: python -m compileall -q src tests
 
-      - name: Prepare current generator corpus
+      - name: Prepare corpus if absent
         run: |
           DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          CONFIG_VERSION=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          print(json.loads(Path("config/synthetic_data.json").read_text())["agent_version"])
-          PY
-          )
-          MANIFEST_VERSION=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          path = Path("data/input/input_manifest.json")
-          if path.is_file():
-              try:
-                  print(json.loads(path.read_text()).get("agent_version", ""))
-              except (json.JSONDecodeError, OSError):
-                  print("")
-          else:
-              print("")
-          PY
-          )
-          if [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ] || [ "$CONFIG_VERSION" != "$MANIFEST_VERSION" ]; then
+          if [ ! -f data/input/train.csv ] && [ ! -f data/input/incoming.csv ]; then
             python -m lstm_for_the_win.handler generate-data \
               --mode initialize \
-              --data-timestamp "$DATA_TIMESTAMP" \
-              --overwrite
+              --data-timestamp "$DATA_TIMESTAMP"
+          elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
+            echo "Input state is incomplete; refusing to overwrite an incremental corpus."
+            exit 1
           fi
           python - <<'PY'
           import csv
@@ -70,7 +53,7 @@ jobs:
               assert len(rows) >= 1000, f"{name} has only {len(rows)} rows"
           PY
 
-      - name: Smoke-test both classifiers
+      - name: Smoke-test both classifiers and canonical analysis export
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: >-
@@ -80,22 +63,33 @@ jobs:
           --epochs 3
           --patience 1
 
-      - name: Smoke-test manuscript analysis export
+      - name: Validate lean run contract
         run: |
           RUN_PATH="artifacts/validation/validation-${{ github.run_id }}"
-          python scripts/export_article_analysis.py "$RUN_PATH"
+          test -s "$RUN_PATH/analysis.json"
           test -s "$RUN_PATH/article_analysis.csv"
-          python - "$RUN_PATH/article_analysis.csv" <<'PY'
+          test ! -e "$RUN_PATH/predictions.csv"
+          test ! -e "$RUN_PATH/metrics.json"
+          test ! -e "$RUN_PATH/results.json"
+          test ! -e "$RUN_PATH/run_manifest.json"
+          test ! -e "$RUN_PATH/figures"
+          python - "$RUN_PATH/analysis.json" "$RUN_PATH/article_analysis.csv" <<'PY'
           import csv
+          import json
           import sys
           from pathlib import Path
-          with Path(sys.argv[1]).open(encoding="utf-8", newline="") as handle:
+          analysis = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert analysis["schema_version"] == "1.0.0"
+          assert set(analysis["tasks"]) == {"sentiment", "topic"}
+          assert analysis["reviews"]
+          with Path(sys.argv[2]).open(encoding="utf-8", newline="") as handle:
               rows = list(csv.DictReader(handle))
           groups = {row["analysis_group"] for row in rows}
           assert "confusion_matrix" in groups
           assert "classwise_metrics" in groups
           assert "calibration_bins" in groups
           assert "training_history" in groups
+          assert "uncertainty" in groups
           PY
 
       - name: Run automated tests

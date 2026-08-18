@@ -6,7 +6,6 @@ on:
     branches: [main]
     paths:
       - "src/**"
-      - "scripts/**"
       - "config/**"
       - "pyproject.toml"
       - ".gitignore"
@@ -41,7 +40,7 @@ jobs:
         run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
 
       - name: Validate Python modules
-        run: python -m compileall -q src scripts tests
+        run: python -m compileall -q src tests
 
       - name: Timestamp experiment
         run: |
@@ -51,34 +50,15 @@ jobs:
           echo "DATA_TIMESTAMP=$DATA_TIMESTAMP" >> "$GITHUB_ENV"
           echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
 
-      - name: Refresh corpus when generator version changes
+      - name: Initialize corpus only when absent
         run: |
-          CONFIG_VERSION=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          print(json.loads(Path("config/synthetic_data.json").read_text())["agent_version"])
-          PY
-          )
-          MANIFEST_VERSION=$(python - <<'PY'
-          import json
-          from pathlib import Path
-          path = Path("data/input/input_manifest.json")
-          if path.is_file():
-              try:
-                  print(json.loads(path.read_text()).get("agent_version", ""))
-              except (json.JSONDecodeError, OSError):
-                  print("")
-          else:
-              print("")
-          PY
-          )
-
-          if [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ] || [ "$CONFIG_VERSION" != "$MANIFEST_VERSION" ]; then
-            echo "Rebuilding corpus with synthetic generator $CONFIG_VERSION"
+          if [ ! -f data/input/train.csv ] && [ ! -f data/input/incoming.csv ]; then
             python -m lstm_for_the_win.handler generate-data \
               --mode initialize \
-              --data-timestamp "$DATA_TIMESTAMP" \
-              --overwrite
+              --data-timestamp "$DATA_TIMESTAMP"
+          elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
+            echo "Input state is incomplete; refusing to overwrite an incremental corpus."
+            exit 1
           fi
 
       - name: Validate corpus size and rich-language coverage
@@ -114,50 +94,38 @@ jobs:
           --epochs 20
           --patience 3
 
-      - name: Export versioned manuscript and dashboard analyses
+      - name: Verify canonical analysis artifacts
         run: |
           RUN_PATH="data/output/$RUN_ID"
-          python scripts/export_article_analysis.py "$RUN_PATH"
+          test -s "$RUN_PATH/analysis.json"
           test -s "$RUN_PATH/article_analysis.csv"
-          test -s "$RUN_PATH/results.json"
-
-      - name: Export article and website figures
-        run: |
-          RUN_PATH="data/output/$RUN_ID"
-          python scripts/export_figures.py "$RUN_PATH"
-          test -s "$RUN_PATH/figures/figures_manifest.json"
-          test -s "$RUN_PATH/figures/confusion_matrix_sentiment.png"
-          test -s "$RUN_PATH/figures/confusion_matrix_topic.png"
-
-      - name: Verify dashboard and manuscript artifacts
-        run: |
-          RUN_PATH="data/output/$RUN_ID"
-          test -f "$RUN_PATH/metrics.json"
-          python - "$RUN_PATH/metrics.json" "$RUN_PATH/article_analysis.csv" "$RUN_PATH/figures/figures_manifest.json" <<'PY'
+          python - "$RUN_PATH/analysis.json" "$RUN_PATH/article_analysis.csv" <<'PY'
           import csv
           import json
           import sys
           from pathlib import Path
-          data = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+
+          analysis = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert analysis["schema_version"] == "1.0.0"
+          assert analysis["run"]["status"] == "complete"
+          assert analysis["run"]["run_id"]
+          assert analysis["reviews"]
           for task in ("sentiment", "topic"):
-              result = data[task]
+              result = analysis["tasks"][task]
               assert "metrics" in result
               assert "baseline_metrics" in result
               assert "metric_delta_vs_baseline" in result
               assert "segment_metrics" in result
-              assert "hasemoji" in result["segment_metrics"]
+              assert "uncertainty" in result
           with Path(sys.argv[2]).open(encoding="utf-8", newline="") as handle:
-              analysis = list(csv.DictReader(handle))
-          groups = {row["analysis_group"] for row in analysis}
+              rows = list(csv.DictReader(handle))
+          groups = {row["analysis_group"] for row in rows}
           required = {
               "aggregate_metrics", "segment_metrics", "confusion_matrix", "classwise_metrics",
               "class_distribution", "confidence_accuracy", "calibration_bins", "error_summary",
-              "training_history", "validation_incoming_gap",
+              "training_history", "validation_incoming_gap", "uncertainty",
           }
           assert required.issubset(groups), required - groups
-          figures = json.loads(Path(sys.argv[3]).read_text(encoding="utf-8"))
-          types = {item["figure_type"] for item in figures["figure_files"]}
-          assert {"model_performance", "confusion_matrix", "classwise_metrics", "calibration", "segment_robustness"}.issubset(types)
           PY
 
       - name: Run automated tests
@@ -165,30 +133,25 @@ jobs:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
-      - name: Remove previous experiment directories
-        run: python scripts/prune_old_runs.py --output-root data/output --keep "$RUN_ID"
-
-      - name: Commit latest data and complete experiment artifacts
+      - name: Commit incremental data state and analysis artifacts
         run: |
           RUN_PATH="data/output/$RUN_ID"
-          test -f "$RUN_PATH/predictions.csv"
-          test -f "$RUN_PATH/metrics.json"
-          test -f "$RUN_PATH/results.json"
+          test -f "$RUN_PATH/analysis.json"
           test -f "$RUN_PATH/article_analysis.csv"
-          test -f "$RUN_PATH/figures/figures_manifest.json"
-          test -f "$RUN_PATH/run_manifest.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A data/input data/output
+          git add data/input data/output
           if git diff --cached --quiet; then
-            echo "The pipeline did not produce a versioned state transition."
+            echo "The pipeline did not produce an incremental state transition."
             exit 1
           fi
           git commit -m "data: publish $RUN_ID [skip ci]"
           git push origin HEAD:main
 
-      - name: Upload complete experiment artifacts
+      - name: Upload lean analysis artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: lstm-experiment-${{ github.run_id }}
-          path: data/output/*_github-${{ github.run_id }}
+          name: lstm-analysis-${{ github.run_id }}
+          path: |
+            data/output/${{ env.RUN_ID }}/analysis.json
+            data/output/${{ env.RUN_ID }}/article_analysis.csv

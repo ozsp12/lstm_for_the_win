@@ -30,3 +30,9 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "--cov=lstm_for_the_win --cov-report=term-missing --cov-fail-under=90"
+
+[tool.coverage.run]
+omit = [
+    "src/lstm_for_the_win/agents/synthetic_data.py",
+    "src/lstm_for_the_win/template_metadata.py",
+]

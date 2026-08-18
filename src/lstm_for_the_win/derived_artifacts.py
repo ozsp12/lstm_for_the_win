@@ -8,145 +8,89 @@ import shutil
 from argparse import ArgumentParser
 from html import escape
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Mapping
 
+COMPARABLE_METRICS = ("accuracy", "macro_f1", "weighted_f1", "log_loss", "brier_score")
 CSV_FIELDS = [
-    "analysis_group", "run_id", "input_generation", "dataset", "task", "model",
-    "metric", "dimension", "segment", "expected_label", "predicted_label", "seed",
-    "review_id", "text", "expected_sentiment", "predicted_sentiment", "sentiment_confidence",
-    "sentiment_correct", "expected_topic", "predicted_topic", "topic_confidence", "topic_correct",
+    "run_id", "input_generation", "review_id", "text",
+    "expected_sentiment", "predicted_sentiment", "sentiment_confidence", "sentiment_correct",
+    "expected_topic", "predicted_topic", "topic_confidence", "topic_correct",
     "linguistic_level", "flagprofanity", "hasemoji", "hasspellingerror", "hasslang",
-    "length_class", "mixed_sentiment", "goldtest", "template_family",
-    "value", "support", "low", "high",
+    "length_class", "mixed_sentiment", "goldtest", "template_family", "input_timestamp",
+    *[f"sentiment_lstm_{metric}" for metric in COMPARABLE_METRICS],
+    *[f"sentiment_baseline_{metric}" for metric in COMPARABLE_METRICS],
+    *[f"sentiment_delta_{metric}" for metric in COMPARABLE_METRICS],
+    "sentiment_accuracy_ci95_low", "sentiment_accuracy_ci95_high", "sentiment_mcnemar_p_value",
+    *[f"topic_lstm_{metric}" for metric in COMPARABLE_METRICS],
+    *[f"topic_baseline_{metric}" for metric in COMPARABLE_METRICS],
+    *[f"topic_delta_{metric}" for metric in COMPARABLE_METRICS],
+    "topic_accuracy_ci95_low", "topic_accuracy_ci95_high", "topic_mcnemar_p_value",
+    "benchmark_sentiment_accuracy", "benchmark_topic_accuracy",
+    "external_full_label_space_accuracy", "external_binary_restricted_accuracy",
+    "external_neutral_prediction_rate", "external_binary_ci95_low", "external_binary_ci95_high",
 ]
 
 
-def _blank(run: Mapping[str, Any], group: str, *, dataset: str = "incoming", task: str = "", model: str = "") -> dict[str, Any]:
-    row = {field: "" for field in CSV_FIELDS}
-    row.update(
-        analysis_group=group,
-        run_id=run["run"]["run_id"],
-        input_generation=run["run"]["input_generation"],
-        dataset=dataset,
-        task=task,
-        model=model,
+def _accuracy_interval(task: Mapping[str, Any]) -> Mapping[str, Any]:
+    return (
+        task.get("uncertainty", {}).get("across_seed_ci95", {}).get("accuracy")
+        or task.get("uncertainty", {}).get("primary_seed_accuracy_ci95", {})
+        or task.get("uncertainty", {}).get("accuracy_ci95", {})
     )
+
+
+def _wide_row(run: Mapping[str, Any], review: Mapping[str, Any]) -> dict[str, Any]:
+    row = {field: "" for field in CSV_FIELDS}
+    row.update({
+        "run_id": run["run"]["run_id"],
+        "input_generation": run["run"]["input_generation"],
+        "review_id": review.get("ID", ""),
+        "text": review.get("text", ""),
+        "expected_sentiment": review.get("expected_sentiment", ""),
+        "predicted_sentiment": review.get("predicted_sentiment", ""),
+        "sentiment_confidence": review.get("sentiment_confidence", ""),
+        "sentiment_correct": review.get("sentiment_correct", ""),
+        "expected_topic": review.get("expected_topic", ""),
+        "predicted_topic": review.get("predicted_topic", ""),
+        "topic_confidence": review.get("topic_confidence", ""),
+        "topic_correct": review.get("topic_correct", ""),
+        "linguistic_level": review.get("linguistic_level", ""),
+        "flagprofanity": review.get("flagprofanity", ""),
+        "hasemoji": review.get("hasemoji", ""),
+        "hasspellingerror": review.get("hasspellingerror", ""),
+        "hasslang": review.get("hasslang", ""),
+        "length_class": review.get("length_class", ""),
+        "mixed_sentiment": review.get("mixed_sentiment", ""),
+        "goldtest": review.get("goldtest", ""),
+        "template_family": review.get("template_family", ""),
+        "input_timestamp": review.get("input_timestamp", ""),
+    })
+    for task_name in ("sentiment", "topic"):
+        task = run["tasks"][task_name]
+        for metric in COMPARABLE_METRICS:
+            row[f"{task_name}_lstm_{metric}"] = task.get("metrics", {}).get(metric, "")
+            row[f"{task_name}_baseline_{metric}"] = task.get("baseline_metrics", {}).get(metric, "")
+            row[f"{task_name}_delta_{metric}"] = task.get("metric_delta_vs_baseline", {}).get(metric, "")
+        interval = _accuracy_interval(task)
+        row[f"{task_name}_accuracy_ci95_low"] = interval.get("low", "")
+        row[f"{task_name}_accuracy_ci95_high"] = interval.get("high", "")
+        row[f"{task_name}_mcnemar_p_value"] = task.get("paired_comparison", {}).get("p_value", "")
+    benchmark = run.get("benchmark", {}).get("tasks", {})
+    row["benchmark_sentiment_accuracy"] = benchmark.get("sentiment", {}).get("metrics", {}).get("accuracy", "")
+    row["benchmark_topic_accuracy"] = benchmark.get("topic", {}).get("metrics", {}).get("accuracy", "")
+    external = run.get("external_validation", {})
+    row["external_full_label_space_accuracy"] = external.get("full_label_space_accuracy", external.get("accuracy", ""))
+    row["external_binary_restricted_accuracy"] = external.get("binary_restricted_accuracy", "")
+    row["external_neutral_prediction_rate"] = external.get("neutral_prediction_rate", "")
+    binary_interval = external.get("uncertainty", {}).get("binary_restricted_accuracy_ci95", {})
+    row["external_binary_ci95_low"] = binary_interval.get("low", "")
+    row["external_binary_ci95_high"] = binary_interval.get("high", "")
     return row
 
 
-def _metric_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
-    for task, payload in run["tasks"].items():
-        for model, key in (("lstm", "metrics"), ("tfidf_logistic_regression", "baseline_metrics")):
-            for metric, value in sorted(payload[key].items()):
-                row = _blank(run, "aggregate_metric", task=task, model=model)
-                row.update(metric=metric, value=value, support=payload.get("incoming_size", ""))
-                yield row
-        for metric, value in sorted(payload.get("metric_delta_vs_baseline", {}).items()):
-            row = _blank(run, "model_delta", task=task, model="lstm_minus_baseline")
-            row.update(metric=metric, value=value, support=payload.get("incoming_size", ""))
-            yield row
-        ci = payload.get("uncertainty", {}).get("accuracy_ci95")
-        if ci:
-            row = _blank(run, "uncertainty", task=task, model="lstm")
-            row.update(metric="accuracy", value=payload["metrics"]["accuracy"], support=ci.get("support", ""), low=ci.get("low", ""), high=ci.get("high", ""))
-            yield row
-        for model, group in (("lstm", "metrics"), ("tfidf_logistic_regression", "baseline_metrics")):
-            for metric, stats in sorted(payload.get("replicates", {}).get(group, {}).items()):
-                row = _blank(run, "replicate_summary", task=task, model=model)
-                interval = stats.get("mean_ci95", {})
-                row.update(metric=metric, value=stats.get("mean", ""), low=interval.get("low", ""), high=interval.get("high", ""), support=payload.get("replicates", {}).get("count", ""))
-                yield row
-        for dimension, segments in sorted(payload.get("segment_metrics", {}).items()):
-            for segment, metrics in sorted(segments.items()):
-                for metric, value in sorted(metrics.items()):
-                    row = _blank(run, "segment_metric", task=task, model="lstm")
-                    row.update(metric=metric, dimension=dimension, segment=segment, value=value)
-                    yield row
-        for metric, values in sorted(payload.get("history", {}).items()):
-            for epoch, value in enumerate(values, start=1):
-                row = _blank(run, "training_history", task=task, model="lstm")
-                row.update(metric=metric, seed=payload.get("seed", ""), segment=epoch, value=value)
-                yield row
-
-
-def _square_confusion_rows(run: Mapping[str, Any], dataset: str, task: str, payload: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
-    labels = list(payload["labels"])
-    matrix = payload["confusion_matrix"]
-    if len(matrix) != len(labels) or any(len(row) != len(labels) for row in matrix):
-        raise ValueError(f"Confusion matrix shape does not match labels for {dataset}/{task}.")
-    for i, expected in enumerate(labels):
-        for j, predicted in enumerate(labels):
-            row = _blank(run, "confusion_matrix", dataset=dataset, task=task, model="lstm")
-            row.update(expected_label=expected, predicted_label=predicted, value=matrix[i][j])
-            yield row
-
-
-def _benchmark_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
-    benchmark = run.get("benchmark") or {}
-    for task, payload in benchmark.get("tasks", {}).items():
-        for metric, value in sorted(payload.get("metrics", {}).items()):
-            row = _blank(run, "benchmark_metric", dataset="synthetic_benchmark", task=task, model="lstm")
-            row.update(metric=metric, value=value, support=payload.get("support", ""))
-            yield row
-        yield from _square_confusion_rows(run, "synthetic_benchmark", task, payload)
-
-    external = run.get("external_validation") or {}
-    if not external:
-        return
-    scalar_metrics = {
-        "accuracy": external.get("accuracy"),
-        "neutral_prediction_rate": external.get("neutral_prediction_rate"),
-        **external.get("probabilistic_metrics", {}),
-    }
-    source = external.get("source_label_metrics", {})
-    for metric in ("precision_macro", "recall_macro", "macro_f1"):
-        if metric in source:
-            scalar_metrics[f"source_{metric}"] = source[metric]
-    for metric, value in sorted((key, value) for key, value in scalar_metrics.items() if value is not None):
-        row = _blank(run, "external_metric", dataset="uci_amazon", task="sentiment", model="lstm")
-        row.update(metric=metric, value=value, support=external.get("support", ""))
-        yield row
-    for label, metrics in sorted(source.get("per_class", {}).items()):
-        for metric, value in sorted(metrics.items()):
-            row = _blank(run, "external_class_metric", dataset="uci_amazon", task="sentiment", model="lstm")
-            row.update(metric=metric, dimension="expected_class", segment=label, value=value, support=metrics.get("support", ""))
-            yield row
-    confusion = external.get("confusion_matrix", {})
-    row_labels = confusion.get("expected_labels", [])
-    column_labels = confusion.get("predicted_labels", [])
-    matrix = confusion.get("matrix", {})
-    for expected in row_labels:
-        for predicted in column_labels:
-            row = _blank(run, "confusion_matrix", dataset="uci_amazon", task="sentiment", model="lstm")
-            row.update(expected_label=expected, predicted_label=predicted, value=matrix[expected][predicted])
-            yield row
-
-
-def _prediction_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
-    for review in run.get("reviews", []):
-        row = _blank(run, "prediction_record", dataset="incoming")
-        row.update(
-            review_id=review.get("ID", ""), text=review.get("text", ""),
-            expected_sentiment=review.get("expected_sentiment", ""), predicted_sentiment=review.get("predicted_sentiment", ""),
-            sentiment_confidence=review.get("sentiment_confidence", ""), sentiment_correct=review.get("sentiment_correct", ""),
-            expected_topic=review.get("expected_topic", ""), predicted_topic=review.get("predicted_topic", ""),
-            topic_confidence=review.get("topic_confidence", ""), topic_correct=review.get("topic_correct", ""),
-            linguistic_level=review.get("linguistic_level", ""), flagprofanity=review.get("flagprofanity", ""),
-            hasemoji=review.get("hasemoji", ""), hasspellingerror=review.get("hasspellingerror", ""),
-            hasslang=review.get("hasslang", ""), length_class=review.get("length_class", ""),
-            mixed_sentiment=review.get("mixed_sentiment", ""), goldtest=review.get("goldtest", ""),
-            template_family=review.get("template_family", ""),
-        )
-        yield row
-
-
 def build_article_rows(run: Mapping[str, Any]) -> list[dict[str, Any]]:
-    rows = list(_metric_rows(run))
-    for task, payload in run["tasks"].items():
-        rows.extend(_square_confusion_rows(run, "incoming", task, payload))
-    rows.extend(_benchmark_rows(run))
-    rows.extend(_prediction_rows(run))
-    return rows
+    """Build one ordinary wide tabular row per incoming review."""
+    return [_wide_row(run, review) for review in run.get("reviews", [])]
 
 
 def write_article_analysis(run: Mapping[str, Any], destination: Path) -> Path:
@@ -170,24 +114,20 @@ def _svg_document(title: str, body: str, *, width: int = 960, height: int = 600)
 
 def _bar_svg(title: str, labels: list[str], values: list[float], destination: Path) -> None:
     x0, y0, plot_w, plot_h = 230, 90, 670, 440
-    parts = [f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y0+plot_h}" stroke="#333"/>']
-    parts.append(f'<line x1="{x0}" y1="{y0+plot_h}" x2="{x0+plot_w}" y2="{y0+plot_h}" stroke="#333"/>')
-    n = max(1, len(values))
-    slot = plot_h / n
+    parts = [f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y0 + plot_h}" stroke="#333"/>']
+    parts.append(f'<line x1="{x0}" y1="{y0 + plot_h}" x2="{x0 + plot_w}" y2="{y0 + plot_h}" stroke="#333"/>')
+    slot = plot_h / max(1, len(values))
     bar_h = min(44, slot * 0.62)
     for index, (label, value) in enumerate(zip(labels, values, strict=True)):
         y = y0 + index * slot + (slot - bar_h) / 2
         width = max(0.0, min(1.0, float(value))) * plot_w
-        parts.append(f'<text x="{x0-12}" y="{y+bar_h*0.7:.1f}" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">{escape(label)}</text>')
+        parts.append(f'<text x="{x0 - 12}" y="{y + bar_h * 0.7:.1f}" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">{escape(label)}</text>')
         parts.append(f'<rect x="{x0}" y="{y:.1f}" width="{width:.2f}" height="{bar_h:.1f}" fill="#4c78a8"/>')
-        parts.append(f'<text x="{min(x0+width+8, 905):.1f}" y="{y+bar_h*0.7:.1f}" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{float(value):.3f}</text>')
-    for tick in range(0, 11, 2):
-        x = x0 + plot_w * tick / 10
-        parts.append(f'<text x="{x:.1f}" y="{y0+plot_h+28}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="13">{tick/10:.1f}</text>')
+        parts.append(f'<text x="{min(x0 + width + 8, 905):.1f}" y="{y + bar_h * 0.7:.1f}" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{float(value):.3f}</text>')
     destination.write_text(_svg_document(title, "\n".join(parts)), encoding="utf-8")
 
 
-def _rect_heatmap_svg(title: str, row_labels: list[str], column_labels: list[str], matrix: list[list[int]], destination: Path) -> None:
+def _heatmap_svg(title: str, row_labels: list[str], column_labels: list[str], matrix: list[list[int]], destination: Path) -> None:
     if not row_labels or not column_labels or not matrix:
         raise ValueError(f"Cannot render empty confusion matrix: {title}")
     if len(matrix) != len(row_labels) or any(len(row) != len(column_labels) for row in matrix):
@@ -197,20 +137,16 @@ def _rect_heatmap_svg(title: str, row_labels: list[str], column_labels: list[str
     maximum = max(1, max(max(row) for row in matrix))
     parts: list[str] = []
     for j, label in enumerate(column_labels):
-        parts.append(f'<text x="{x0+j*cell+cell/2:.1f}" y="{y0-18}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(label.replace("_", " "))}</text>')
+        parts.append(f'<text x="{x0 + j * cell + cell / 2:.1f}" y="{y0 - 18}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(label.replace("_", " "))}</text>')
     for i, expected in enumerate(row_labels):
-        parts.append(f'<text x="{x0-18}" y="{y0+i*cell+cell/2+5:.1f}" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(expected.replace("_", " "))}</text>')
+        parts.append(f'<text x="{x0 - 18}" y="{y0 + i * cell + cell / 2 + 5:.1f}" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(expected.replace("_", " "))}</text>')
         for j, value in enumerate(matrix[i]):
             opacity = 0.12 + 0.78 * (value / maximum)
-            parts.append(f'<rect x="{x0+j*cell}" y="{y0+i*cell}" width="{cell}" height="{cell}" fill="#4c78a8" fill-opacity="{opacity:.4f}" stroke="white"/>')
-            parts.append(f'<text x="{x0+j*cell+cell/2:.1f}" y="{y0+i*cell+cell/2+6:.1f}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="16">{value}</text>')
-    parts.append(f'<text x="{x0 + len(column_labels)*cell/2:.1f}" y="{y0+len(row_labels)*cell+44}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Predicted</text>')
-    parts.append(f'<text x="55" y="{y0+len(row_labels)*cell/2:.1f}" transform="rotate(-90 55 {y0+len(row_labels)*cell/2:.1f})" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Expected</text>')
+            parts.append(f'<rect x="{x0 + j * cell}" y="{y0 + i * cell}" width="{cell}" height="{cell}" fill="#4c78a8" fill-opacity="{opacity:.4f}" stroke="white"/>')
+            parts.append(f'<text x="{x0 + j * cell + cell / 2:.1f}" y="{y0 + i * cell + cell / 2 + 6:.1f}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="16">{value}</text>')
+    parts.append(f'<text x="{x0 + len(column_labels) * cell / 2:.1f}" y="{y0 + len(row_labels) * cell + 44}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Predicted</text>')
+    parts.append(f'<text x="55" y="{y0 + len(row_labels) * cell / 2:.1f}" transform="rotate(-90 55 {y0 + len(row_labels) * cell / 2:.1f})" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Expected</text>')
     destination.write_text(_svg_document(title, "\n".join(parts)), encoding="utf-8")
-
-
-def _square_heatmap_svg(title: str, labels: list[str], matrix: list[list[int]], destination: Path) -> None:
-    _rect_heatmap_svg(title, labels, labels, matrix, destination)
 
 
 def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
@@ -225,8 +161,8 @@ def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
         [sentiment["metrics"]["accuracy"], sentiment["baseline_metrics"]["accuracy"], topic["metrics"]["accuracy"], topic["baseline_metrics"]["accuracy"]],
         directory / "incoming_model_accuracy.svg",
     )
-    _square_heatmap_svg("Incoming sentiment confusion matrix", sentiment["labels"], sentiment["confusion_matrix"], directory / "incoming_sentiment_confusion.svg")
-    _square_heatmap_svg("Incoming topic confusion matrix", topic["labels"], topic["confusion_matrix"], directory / "incoming_topic_confusion.svg")
+    _heatmap_svg("Incoming sentiment confusion matrix", sentiment["labels"], sentiment["labels"], sentiment["confusion_matrix"], directory / "incoming_sentiment_confusion.svg")
+    _heatmap_svg("Incoming topic confusion matrix", topic["labels"], topic["labels"], topic["confusion_matrix"], directory / "incoming_topic_confusion.svg")
     benchmark = run.get("benchmark", {}).get("tasks", {})
     if benchmark:
         _bar_svg(
@@ -235,32 +171,33 @@ def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
             [benchmark["sentiment"]["metrics"]["accuracy"], benchmark["topic"]["metrics"]["accuracy"]],
             directory / "benchmark_accuracy.svg",
         )
-    external = run.get("external_validation")
+    external = run.get("external_validation", {})
     if external:
         confusion = external["confusion_matrix"]
-        row_labels = list(confusion["expected_labels"])
-        column_labels = list(confusion["predicted_labels"])
-        matrix = [[int(confusion["matrix"][expected][predicted]) for predicted in column_labels] for expected in row_labels]
-        _rect_heatmap_svg("External UCI Amazon sentiment confusion matrix", row_labels, column_labels, matrix, directory / "external_sentiment_confusion.svg")
+        rows = list(confusion["expected_labels"])
+        columns = list(confusion["predicted_labels"])
+        mapping = confusion["matrix"]
+        matrix = [[int(mapping[row][column]) for column in columns] for row in rows]
+        _heatmap_svg("External UCI sentiment confusion matrix", rows, columns, matrix, directory / "external_sentiment_confusion.svg")
     return directory
 
 
 def materialize_derived_artifacts(run_json: str | Path) -> tuple[Path, Path]:
-    run_path = Path(run_json)
-    run = json.loads(run_path.read_text(encoding="utf-8"))
-    if run.get("artifact_type") != "experiment_run":
-        raise ValueError("Expected an experiment_run run.json artifact.")
-    csv_path = write_article_analysis(run, run_path.parent / "article_analysis.csv")
-    figures_path = write_figures(run, run_path.parent / "figures")
+    path = Path(run_json)
+    run = json.loads(path.read_text(encoding="utf-8"))
+    if run.get("schema_version") != "2.0.0" or run.get("artifact_type") != "experiment_run":
+        raise ValueError("Unsupported run.json contract.")
+    csv_path = write_article_analysis(run, path.parent / "article_analysis.csv")
+    figures_path = write_figures(run, path.parent / "figures")
     return csv_path, figures_path
 
 
 def main() -> int:
-    parser = ArgumentParser(description="Regenerate article_analysis.csv and figures from run.json.")
+    parser = ArgumentParser(description="Regenerate article_analysis.csv and figures exclusively from run.json.")
     parser.add_argument("run_json")
     arguments = parser.parse_args()
     csv_path, figures_path = materialize_derived_artifacts(arguments.run_json)
-    print(json.dumps({"article_analysis": str(csv_path), "figures": str(figures_path)}))
+    print(json.dumps({"article_analysis_csv": str(csv_path), "figures": str(figures_path)}, sort_keys=True))
     return 0
 
 

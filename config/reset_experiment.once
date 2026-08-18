@@ -1,2 +1,0 @@
-Reset the synthetic experiment once after this merge.
-The production workflow removes this marker only after a fully validated generation-0 run is ready to publish.

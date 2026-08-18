@@ -1,9 +1,9 @@
 {
-  "created_from_agent_version": "4.1.0",
+  "created_from_agent_version": "4.2.0",
   "immutable": true,
-  "rows": 1620,
+  "rows": 1623,
   "schema_version": "1.0.0",
-  "sha256": "cc139d8f687cdbd811c5ea5c490eec7d75fd7c319f177d8fe943151639457027",
+  "sha256": "fb3d8ea7d0acacff5ea6db43395c8133dea00cadc330dc5fed4f190eb3623ffe",
   "source": "non-gold rows from the incoming batch used to bootstrap benchmark support",
   "source_generation": 0
 }

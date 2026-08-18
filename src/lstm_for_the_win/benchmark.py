@@ -11,8 +11,6 @@ from typing import Iterable
 BENCHMARK_FILE = "benchmark.csv"
 BENCHMARK_MANIFEST_FILE = "benchmark_manifest.json"
 MIN_BENCHMARK_ROWS = 500
-LEGACY_BOOTSTRAP_GENERATION = 4
-LEGACY_BOOTSTRAP_RUN_ID = "20260818T023543Z_github-32092347850"
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -72,18 +70,11 @@ def ensure_immutable_benchmark(input_dir: str | Path) -> tuple[Path, dict[str, o
 
     if benchmark_path.is_file():
         _validate(_read(benchmark_path), train_rows)
-        if manifest_path.is_file():
-            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
-            if manifest.get("sha256") != _sha256(benchmark_path):
-                raise ValueError("benchmark.csv no longer matches benchmark_manifest.json.")
-            return benchmark_path, manifest
-        manifest = _manifest(root, benchmark_path)
-        manifest.update({
-            "source_generation": LEGACY_BOOTSTRAP_GENERATION,
-            "source_run_id": LEGACY_BOOTSTRAP_RUN_ID,
-            "migration_note": "Provenance recovered from the repository run that first committed benchmark.csv.",
-        })
-        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        if not manifest_path.is_file():
+            raise ValueError("benchmark.csv exists without benchmark_manifest.json; rebuild the benchmark explicitly.")
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+        if manifest.get("sha256") != _sha256(benchmark_path):
+            raise ValueError("benchmark.csv no longer matches benchmark_manifest.json.")
         return benchmark_path, manifest
 
     with incoming_path.open("r", encoding="utf-8", newline="") as handle:

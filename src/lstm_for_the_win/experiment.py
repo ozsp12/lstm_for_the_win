@@ -24,7 +24,7 @@ from .run_artifact import build_run_document, evaluate_benchmark, evaluate_exter
 from .template_metadata import ensure_template_metadata
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
-PIPELINE_VERSION = "0.10.0"
+PIPELINE_VERSION = "0.11.0"
 LEGACY_TRAIN_COLUMNS = {
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
     "source", "training_generation", "input_timestamp",
@@ -68,13 +68,9 @@ def validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list[
         raise ValueError("train.csv contains an unsupported partial metadata schema.")
     if incoming_extra and not RICH_STYLE_COLUMNS.issubset(incoming_extra):
         raise ValueError("incoming.csv contains an unsupported partial metadata schema.")
-    train_ids = {row["ID"] for row in train_rows}
-    incoming_ids = {row["ID"] for row in incoming_rows}
-    if train_ids & incoming_ids:
+    if {row["ID"] for row in train_rows} & {row["ID"] for row in incoming_rows}:
         raise ValueError("train.csv and incoming.csv must contain disjoint IDs.")
-    train_text = {row["text"] for row in train_rows}
-    incoming_text = {row["text"] for row in incoming_rows}
-    if train_text & incoming_text:
+    if {row["text"] for row in train_rows} & {row["text"] for row in incoming_rows}:
         raise ValueError("train.csv and incoming.csv must contain disjoint text.")
 
 
@@ -106,6 +102,7 @@ def environment_versions() -> dict[str, str]:
     return {
         "tensorflow": tf.__version__,
         "scikit_learn": version("scikit-learn"),
+        "scipy": version("scipy"),
         "numpy": version("numpy"),
     }
 
@@ -193,15 +190,8 @@ class ExperimentRunner:
                     )
                     replicate_results[task].append(replicate.result)
 
-            benchmark = evaluate_benchmark(
-                primary_executions,
-                benchmark_path,
-                benchmark_rows,
-                provenance=benchmark_manifest,
-            )
-            external_validation = evaluate_external_sentiment(
-                primary_executions["sentiment"], external_path, external_manifest
-            )
+            benchmark = evaluate_benchmark(primary_executions, benchmark_path, benchmark_rows, provenance=benchmark_manifest)
+            external_validation = evaluate_external_sentiment(primary_executions["sentiment"], external_path, external_manifest)
             run_metadata = {
                 "run_id": resolved_run_id,
                 "parent_run_id": parent_run_id,
@@ -215,6 +205,13 @@ class ExperimentRunner:
                 "python_version": platform.python_version(),
                 "tensorflow_version": tf.__version__,
                 "environment": environment_versions(),
+                "determinism": {
+                    "tensorflow_op_determinism": True,
+                    "tf_deterministic_ops": os.getenv("TF_DETERMINISTIC_OPS", "1"),
+                    "pythonhashseed": os.getenv("PYTHONHASHSEED", str(seed)),
+                    "primary_seed": seed,
+                    "split_seed": split_seed,
+                },
                 "parameters": {
                     "epochs": epochs,
                     "validation_fraction": validation_fraction,
@@ -233,6 +230,7 @@ class ExperimentRunner:
                 "external_validation": True,
                 "external_validation_tasks": ["sentiment"],
                 "topic_external_validation": False,
+                "external_sentiment_label_spaces": ["full_three_class", "binary_restricted"],
                 "generalization_claim": "external sentiment evidence only; topic remains synthetic-only",
             }
             document = build_run_document(
@@ -240,14 +238,7 @@ class ExperimentRunner:
                 scope=scope,
                 executions=primary_executions,
                 incoming_rows=incoming_rows,
-                input_files=(
-                    train_path,
-                    incoming_path,
-                    benchmark_path,
-                    input_manifest_path,
-                    external_path,
-                    external_path.parent / "manifest.json",
-                ),
+                input_files=(train_path, incoming_path, benchmark_path, input_manifest_path, external_path, external_path.parent / "manifest.json"),
                 replicate_results=replicate_results,
                 benchmark=benchmark,
                 external_validation=external_validation,
@@ -259,7 +250,5 @@ class ExperimentRunner:
             shutil.rmtree(temporary_path, ignore_errors=True)
             raise
 
-        (output_path / "latest.json").write_text(
-            json.dumps({"run_id": resolved_run_id}, indent=2) + "\n", encoding="utf-8"
-        )
+        (output_path / "latest.json").write_text(json.dumps({"run_id": resolved_run_id}, indent=2) + "\n", encoding="utf-8")
         return final_path

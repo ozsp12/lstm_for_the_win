@@ -14,15 +14,13 @@ def _rows(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(handle))
 
 
-def test_template_family_is_materialized_and_manifest_hashes_are_refreshed(tmp_path: Path) -> None:
+def test_generated_template_family_requires_no_backfill(tmp_path: Path) -> None:
     input_dir = tmp_path / "input"
-    config = SyntheticDataConfig(
-        initial_train_rows=1200, incoming_rows=1200, incoming_rows_jitter=0, vary_counts=False
-    )
+    config = SyntheticDataConfig(initial_train_rows=1200, incoming_rows=1200, incoming_rows_jitter=0, vary_counts=False)
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
 
     changed = ensure_template_metadata(input_dir)
-    assert changed == {"train.csv": True, "incoming.csv": True}
+    assert changed == {"train.csv": False, "incoming.csv": False}
     for name in ("train.csv", "incoming.csv"):
         rows = _rows(input_dir / name)
         assert rows
@@ -30,10 +28,8 @@ def test_template_family_is_materialized_and_manifest_hashes_are_refreshed(tmp_p
 
     manifest = json.loads((input_dir / "input_manifest.json").read_text(encoding="utf-8"))
     assert manifest["template_family_metadata"]["materialized"] is True
+    assert manifest["template_family_metadata"]["origin"] == "generated_at_render_time"
     assert manifest["incoming_template_family_counts"]
     for name in ("train.csv", "incoming.csv"):
         digest = hashlib.sha256((input_dir / name).read_bytes()).hexdigest()
         assert manifest["sha256"][name] == digest
-
-    unchanged = ensure_template_metadata(input_dir)
-    assert unchanged == {"train.csv": False, "incoming.csv": False}

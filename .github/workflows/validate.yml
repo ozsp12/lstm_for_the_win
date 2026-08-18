@@ -16,6 +16,10 @@ jobs:
   validate:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    env:
+      PYTHONHASHSEED: "42"
+      TF_DETERMINISTIC_OPS: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
 
     steps:
       - name: Check out repository
@@ -34,30 +38,36 @@ jobs:
           python -m pip install -e . --no-deps --no-build-isolation
           python -m pip check
 
-      - name: Validate Python modules
-        run: python -m compileall -q src tests
+      - name: Validate modules and synchronized metadata
+        run: |
+          python -m compileall -q src tests scripts
+          python scripts/check_version_sync.py
 
-      - name: Prepare corpus if absent
+      - name: Prepare isolated generation-zero corpus
         run: |
           DATA_TIMESTAMP=$(date -u +'%Y-%m-%dT%H:%M:%SZ')
-          if [ ! -f data/input/train.csv ] && [ ! -f data/input/incoming.csv ]; then
-            python -m lstm_for_the_win.handler generate-data \
-              --mode initialize \
-              --data-timestamp "$DATA_TIMESTAMP"
-          elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
-            echo "Input state is incomplete; refusing to overwrite an incremental corpus."
-            exit 1
-          fi
+          rm -rf artifacts/validation-input artifacts/validation
+          python -m lstm_for_the_win.handler generate-data \
+            --input-dir artifacts/validation-input \
+            --mode initialize \
+            --data-timestamp "$DATA_TIMESTAMP"
           python - <<'PY'
-          from lstm_for_the_win.template_metadata import ensure_template_metadata
-          print(ensure_template_metadata("data/input"))
+          import csv, json
+          from pathlib import Path
+          root = Path("artifacts/validation-input")
+          manifest = json.loads((root / "input_manifest.json").read_text(encoding="utf-8"))
+          assert manifest["generation"] == 0
+          assert manifest["promoted_from_previous_incoming"] == 0
+          assert manifest["template_family_metadata"]["origin"] == "generated_at_render_time"
+          with (root / "incoming.csv").open(encoding="utf-8", newline="") as handle:
+              rows = list(csv.DictReader(handle))
+          assert rows and all(row["template_family"] for row in rows)
           PY
 
-      - name: Smoke-test classifiers, benchmarks and run bundle
-        env:
-          TF_CPP_MIN_LOG_LEVEL: "2"
+      - name: Smoke-test classifiers and run bundle
         run: >-
           python -m lstm_for_the_win.handler train
+          --input-dir artifacts/validation-input
           --output-root artifacts/validation
           --run-id validation-${{ github.run_id }}
           --epochs 2
@@ -66,41 +76,48 @@ jobs:
           --split-seed 42
           --replicate-seeds "42,43"
 
-      - name: Validate run bundle contract
+      - name: Validate scientific run contract
         run: |
           RUN_PATH="artifacts/validation/validation-${{ github.run_id }}"
           test -s "$RUN_PATH/run.json"
           test -s "$RUN_PATH/article_analysis.csv"
           test -d "$RUN_PATH/figures"
           test "$(find "$RUN_PATH/figures" -maxdepth 1 -type f -name '*.svg' | wc -l)" -ge 4
-          test ! -e "$RUN_PATH/analysis.json"
-          test ! -e "$RUN_PATH/predictions.csv"
-          test ! -e "$RUN_PATH/metrics.json"
-          test ! -e "$RUN_PATH/results.json"
-          test ! -e "$RUN_PATH/run_manifest.json"
           python - "$RUN_PATH/run.json" <<'PY'
           import csv, json, sys
           from pathlib import Path
           run_path = Path(sys.argv[1])
           run = json.loads(run_path.read_text(encoding="utf-8"))
           assert run["schema_version"] == "2.0.0"
-          assert run["artifact_type"] == "experiment_run"
-          assert set(run["tasks"]) == {"sentiment", "topic"}
-          assert run["reviews"]
-          assert run["scope"]["external_validation"] is True
-          assert run["benchmark"]["immutable"] is True
-          assert run["external_validation"]["real_world"] is True
-          for task in ("sentiment", "topic"):
-              result = run["tasks"][task]
-              assert result["replicates"]["count"] == 2
-              assert result["validation_split"]["family_source"] == "persisted_metadata"
-              assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
-              assert result["replicates"]["metrics"]["accuracy"]["mean_ci95"]["method"] == "student_t_across_model_seeds"
+          assert run["run"]["input_generation"] == 0
+          assert run["run"]["determinism"]["tensorflow_op_determinism"] is True
+          assert run["run"]["determinism"]["pythonhashseed"] == "42"
+          for task_name in ("sentiment", "topic"):
+              task = run["tasks"][task_name]
+              assert task["canonical_estimate"]["method"] == "mean_across_model_seeds"
+              assert task["replicates"]["count"] == 2
+              assert task["validation_split"]["family_source"] == "persisted_metadata"
+              assert task["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
+              assert len(task["calibration_bins"]) == 10
+              assert sum(bin_["support"] for bin_ in task["calibration_bins"]) == task["incoming_size"]
+              assert task["confusion_matrix_contract"]["axis_convention"] == "rows_expected_columns_predicted"
+              assert task["uncertainty"]["across_seed_ci95"]["accuracy"]["method"] == "student_t_across_model_seeds"
+              assert all(
+                  segment["accuracy_ci95"]["method"] == "wilson"
+                  for groups in task["segment_metrics"].values()
+                  for segment in groups.values()
+              )
+          external = run["external_validation"]
+          assert external["real_world"] is True
+          assert 0.0 <= external["binary_restricted_accuracy"] <= 1.0
+          assert external["confusion_matrix"]["axis_convention"] == "rows_expected_columns_predicted"
+          assert external["binary_restricted_confusion_matrix"]["predicted_labels"] == ["negative", "positive"]
+          assert external["reviews"] and all(set(row["probabilities"]) == {"negative", "neutral", "positive"} for row in external["reviews"])
           with (run_path.parent / "article_analysis.csv").open(encoding="utf-8", newline="") as handle:
               rows = list(csv.DictReader(handle))
-          groups = {row["analysis_group"] for row in rows}
-          assert {"aggregate_metric", "confusion_matrix", "prediction_record", "benchmark_metric", "external_metric"}.issubset(groups)
-          assert sum(row["analysis_group"] == "prediction_record" for row in rows) == len(run["reviews"])
+          assert len(rows) == len(run["reviews"])
+          assert "analysis_group" not in rows[0]
+          assert {"review_id", "text", "sentiment_lstm_accuracy", "topic_lstm_accuracy", "external_binary_restricted_accuracy"}.issubset(rows[0])
           PY
 
       - name: Verify deterministic derived artifacts
@@ -122,6 +139,4 @@ jobs:
           PY
 
       - name: Run automated tests with coverage gate
-        env:
-          TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q

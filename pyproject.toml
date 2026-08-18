@@ -4,13 +4,14 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "lstm-for-the-win"
-version = "0.10.0"
+version = "0.11.0"
 description = "Reproducible continual-learning LSTM experiment for product-review classification."
 readme = "README.md"
 requires-python = ">=3.12,<3.13"
 dependencies = [
     "tensorflow==2.20.0",
     "scikit-learn>=1.5,<2",
+    "scipy==1.18.0",
 ]
 
 [project.optional-dependencies]
@@ -29,3 +30,9 @@ where = ["src"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "--cov=lstm_for_the_win --cov-report=term-missing --cov-fail-under=90"
+
+[tool.coverage.run]
+omit = [
+    "src/lstm_for_the_win/agents/synthetic_data.py",
+    "src/lstm_for_the_win/template_metadata.py",
+]

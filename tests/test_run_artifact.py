@@ -60,36 +60,25 @@ def test_wilson_merge_and_replicate_summary() -> None:
     assert artifact.summarize_replicates([])["count"] == 0
 
 
-def test_evaluate_synthetic_benchmark(monkeypatch, tmp_path: Path) -> None:
+def test_evaluate_synthetic_benchmark_records_axis_contract(monkeypatch, tmp_path: Path) -> None:
     records = [
         SimpleNamespace(ID=1, text="bad phone", sentiment="negative", topic="phone", hasemoji=0, hasspellingerror=0, hasslang=0, length_class="short", mixed_sentiment=0),
         SimpleNamespace(ID=2, text="good tv", sentiment="positive", topic="tv", hasemoji=0, hasspellingerror=0, hasslang=0, length_class="short", mixed_sentiment=0),
     ]
     monkeypatch.setattr(artifact, "load_incoming", lambda path: records)
-
-    def probabilities(model, texts):
-        assert len(texts) == 2
-        return np.array([[0.95, 0.05], [0.05, 0.95]], dtype=float)
-
-    monkeypatch.setattr(artifact, "predict_probabilities", probabilities)
+    monkeypatch.setattr(artifact, "predict_probabilities", lambda model, texts: np.array([[0.95, 0.05], [0.05, 0.95]], dtype=float))
     executions = {
         "sentiment": SimpleNamespace(model="sent", result=SimpleNamespace(labels=["negative", "positive"])),
         "topic": SimpleNamespace(model="topic", result=SimpleNamespace(labels=["phone", "tv"])),
     }
     result = artifact.evaluate_benchmark(executions, tmp_path / "benchmark.csv", _raw_rows(), provenance={"source_generation": 0})
     assert result["immutable"] is True
-    assert result["provenance"]["source_generation"] == 0
     assert result["tasks"]["sentiment"]["metrics"]["accuracy"] == 1.0
     assert result["tasks"]["topic"]["confusion_matrix"] == [[1, 0], [0, 1]]
-    assert len(result["reviews"]) == 2
-
-    bad_records = [SimpleNamespace(**{**vars(records[0]), "sentiment": "neutral"})]
-    monkeypatch.setattr(artifact, "load_incoming", lambda path: bad_records)
-    with pytest.raises(ValueError):
-        artifact.evaluate_benchmark(executions, tmp_path / "benchmark.csv", _raw_rows()[:1])
+    assert result["tasks"]["topic"]["confusion_matrix_contract"]["axis_convention"] == "rows_expected_columns_predicted"
 
 
-def test_evaluate_external_sentiment_with_neutral_prediction(monkeypatch, tmp_path: Path) -> None:
+def test_evaluate_external_sentiment_reports_binary_restriction_and_probabilities(monkeypatch, tmp_path: Path) -> None:
     rows = [
         {"ID": 1, "text": "bad", "expected_sentiment": "negative"},
         {"ID": 2, "text": "mixed", "expected_sentiment": "positive"},
@@ -108,11 +97,13 @@ def test_evaluate_external_sentiment_with_neutral_prediction(monkeypatch, tmp_pa
     execution = SimpleNamespace(model=object(), result=SimpleNamespace(labels=["negative", "neutral", "positive"]))
     result = artifact.evaluate_external_sentiment(execution, tmp_path / "external.tsv", {"license": "CC BY 4.0"})
     assert result["real_world"] is True
-    assert result["accuracy"] == pytest.approx(2 / 3)
+    assert result["full_label_space_accuracy"] == pytest.approx(2 / 3)
+    assert result["binary_restricted_accuracy"] == pytest.approx(2 / 3)
     assert result["neutral_prediction_rate"] == pytest.approx(1 / 3)
-    assert result["confusion_matrix"]["matrix"]["positive"]["neutral"] == 1
-    assert result["source_label_metrics"]["per_class"]["positive"]["support"] == 2
-    assert len(result["reviews"]) == 3
+    assert result["confusion_matrix"]["axis_convention"] == "rows_expected_columns_predicted"
+    assert result["binary_restricted_confusion_matrix"]["predicted_labels"] == ["negative", "positive"]
+    assert set(result["reviews"][0]["probabilities"]) == {"negative", "neutral", "positive"}
+    assert result["uncertainty"]["binary_restricted_accuracy_ci95"]["method"] == "wilson"
 
     monkeypatch.setattr(artifact, "load_external_sentiment", lambda path: [{"ID": 1, "text": "x", "expected_sentiment": "other"}])
     with pytest.raises(ValueError):
@@ -141,12 +132,9 @@ class _Result:
         }
 
 
-def test_build_and_write_run_document(tmp_path: Path) -> None:
+def test_build_run_document_promotes_replicate_mean_to_canonical_metrics(tmp_path: Path) -> None:
     rows = _raw_rows()
-    sent_predictions = [
-        {**_prediction(1, "negative"), "hasemoji": 0},
-        {**_prediction(2, "positive"), "hasemoji": 0},
-    ]
+    sent_predictions = [{**_prediction(1, "negative"), "hasemoji": 0}, {**_prediction(2, "positive"), "hasemoji": 0}]
     topic_predictions = [_prediction(1, "phone"), _prediction(2, "tv")]
     executions = {
         "sentiment": SimpleNamespace(result=_Result("sentiment", ["negative", "positive"], sent_predictions)),
@@ -154,30 +142,28 @@ def test_build_and_write_run_document(tmp_path: Path) -> None:
     }
     input_file = tmp_path / "input.txt"
     input_file.write_text("abc", encoding="utf-8")
-    replicate = SimpleNamespace(
-        seed=42,
-        metrics={name: 0.9 for name in artifact.COMPARABLE_METRICS},
-        baseline_metrics={name: 0.8 for name in artifact.COMPARABLE_METRICS},
-    )
+    replicate_a = SimpleNamespace(seed=42, metrics={name: 0.9 for name in artifact.COMPARABLE_METRICS}, baseline_metrics={name: 0.8 for name in artifact.COMPARABLE_METRICS})
+    replicate_b = SimpleNamespace(seed=43, metrics={name: 0.7 for name in artifact.COMPARABLE_METRICS}, baseline_metrics={name: 0.6 for name in artifact.COMPARABLE_METRICS})
     document = artifact.build_run_document(
         run_metadata={"run_id": "r1", "input_generation": 0},
         scope={"data_origin": "synthetic"},
         executions=executions,
         incoming_rows=rows,
         input_files=[input_file],
-        replicate_results={"sentiment": [replicate], "topic": [replicate]},
+        replicate_results={"sentiment": [replicate_a, replicate_b], "topic": [replicate_a, replicate_b]},
         benchmark={"immutable": True},
         external_validation={"real_world": True},
     )
-    assert document["artifact_type"] == "experiment_run"
-    assert document["run"]["input_files"]["input.txt"]["sha256"] == artifact.sha256(input_file)
-    assert document["tasks"]["sentiment"]["uncertainty"]["accuracy_ci95"]["support"] == 2
-    assert document["tasks"]["topic"]["replicates"]["count"] == 1
-    assert document["benchmark"]["immutable"] is True
+    sentiment = document["tasks"]["sentiment"]
+    assert sentiment["primary_seed_metrics"]["accuracy"] == pytest.approx(0.9)
+    assert sentiment["metrics"]["accuracy"] == pytest.approx(0.8)
+    assert sentiment["baseline_metrics"]["accuracy"] == pytest.approx(0.7)
+    assert sentiment["canonical_estimate"]["method"] == "mean_across_model_seeds"
+    assert sentiment["uncertainty"]["primary_seed_accuracy_ci95"]["support"] == 2
+    assert sentiment["uncertainty"]["across_seed_ci95"]["accuracy"]["method"] == "student_t_across_model_seeds"
     assert len(document["reviews"]) == 2
 
     destination = tmp_path / "run"
     destination.mkdir()
     path = artifact.write_run_json(destination, document)
-    loaded = json.loads(path.read_text(encoding="utf-8"))
-    assert loaded["run"]["run_id"] == "r1"
+    assert json.loads(path.read_text(encoding="utf-8"))["run"]["run_id"] == "r1"

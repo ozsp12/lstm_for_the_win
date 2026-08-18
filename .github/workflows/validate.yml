@@ -49,7 +49,10 @@ jobs:
             echo "Input state is incomplete; refusing to overwrite an incremental corpus."
             exit 1
           fi
-          python -m lstm_for_the_win.template_metadata
+          python - <<'PY'
+          from lstm_for_the_win.template_metadata import ensure_template_metadata
+          print(ensure_template_metadata("data/input"))
+          PY
           python - <<'PY'
           import csv
           from pathlib import Path

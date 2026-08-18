@@ -1,0 +1,5 @@
+# Direct requirements for the reproducible CPython 3.12 environment.
+tensorflow==2.20.0
+scikit-learn==1.9.0
+pytest==9.1.1
+pytest-cov==7.1.0

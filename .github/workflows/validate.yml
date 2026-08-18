@@ -19,10 +19,10 @@ jobs:
 
     steps:
       - name: Check out repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
         with:
           python-version: "3.12"
           cache: pip
@@ -49,6 +49,7 @@ jobs:
             echo "Input state is incomplete; refusing to overwrite an incremental corpus."
             exit 1
           fi
+          python -m lstm_for_the_win.template_metadata
           python - <<'PY'
           import csv
           from pathlib import Path
@@ -56,9 +57,10 @@ jobs:
               with (Path("data/input") / name).open(encoding="utf-8", newline="") as f:
                   rows = list(csv.DictReader(f))
               assert len(rows) >= 1000, f"{name} has only {len(rows)} rows"
+              assert all(row.get("template_family") for row in rows), f"{name} lacks template_family metadata"
           PY
 
-      - name: Smoke-test classifiers, benchmark and run JSON
+      - name: Smoke-test classifiers, benchmarks and run JSON
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: >-
@@ -83,6 +85,9 @@ jobs:
           test ! -e "$RUN_PATH/run_manifest.json"
           test ! -e "$RUN_PATH/figures"
           test -s data/input/benchmark.csv
+          test -s data/input/benchmark_manifest.json
+          test -s data/external/uci_sentiment_labelled_sentences/amazon_cells_labelled.tsv
+          test -s data/external/uci_sentiment_labelled_sentences/manifest.json
           python - "$RUN_PATH/run.json" <<'PY'
           import json
           import sys
@@ -93,17 +98,27 @@ jobs:
           assert run["artifact_type"] == "experiment_run"
           assert set(run["tasks"]) == {"sentiment", "topic"}
           assert run["reviews"]
+          assert run["scope"]["external_validation"] is True
+          assert run["scope"]["external_validation_tasks"] == ["sentiment"]
+          assert run["scope"]["topic_external_validation"] is False
           assert run["benchmark"]["immutable"] is True
+          assert run["benchmark"]["provenance"]["source_generation"] >= 0
           assert run["benchmark"]["reviews"]
+          assert run["external_validation"]["real_world"] is True
+          assert run["external_validation"]["task"] == "sentiment"
+          assert run["external_validation"]["support"] == 1000
           for task in ("sentiment", "topic"):
               result = run["tasks"][task]
               assert result["replicates"]["count"] == 2
+              assert result["validation_split"]["family_source"] == "persisted_metadata"
               assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
               assert "accuracy_ci95" in result["uncertainty"]
+              assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
+              assert "mean_ci95_normal" in result["replicates"]["metrics"]["accuracy"]
               assert "metrics" in run["benchmark"]["tasks"][task]
           PY
 
-      - name: Run automated tests
+      - name: Run automated tests with coverage gate
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q

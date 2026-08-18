@@ -18,12 +18,13 @@ import tensorflow as tf
 
 from .benchmark import ensure_immutable_benchmark
 from .classification import PipelineConfig, PipelineExecution, PipelineResult, execute_pipeline
+from .derived_artifacts import materialize_derived_artifacts
 from .external_benchmark import ensure_external_sentiment_benchmark
 from .run_artifact import build_run_document, evaluate_benchmark, evaluate_external_sentiment, write_run_json
 from .template_metadata import ensure_template_metadata
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
-PIPELINE_VERSION = "0.9.0"
+PIPELINE_VERSION = "0.10.0"
 LEGACY_TRAIN_COLUMNS = {
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
     "source", "training_generation", "input_timestamp",
@@ -251,7 +252,8 @@ class ExperimentRunner:
                 benchmark=benchmark,
                 external_validation=external_validation,
             )
-            write_run_json(temporary_path, document)
+            run_json = write_run_json(temporary_path, document)
+            materialize_derived_artifacts(run_json)
             temporary_path.rename(final_path)
         except Exception:
             shutil.rmtree(temporary_path, ignore_errors=True)

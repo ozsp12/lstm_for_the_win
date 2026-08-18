@@ -28,11 +28,10 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-lock.txt
 
-      - name: Install locked dependencies
+      - name: Install hash-locked dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-lock.txt
-          python -m pip install -e . --no-deps
+          python -m pip install --require-hashes -r requirements-lock.txt
+          python -m pip install -e . --no-deps --no-build-isolation
           python -m pip check
 
       - name: Validate Python modules
@@ -101,6 +100,7 @@ jobs:
           assert run["artifact_type"] == "experiment_run"
           assert set(run["tasks"]) == {"sentiment", "topic"}
           assert run["reviews"]
+          assert run["scope"]["data_origin"] == "synthetic"
           assert run["scope"]["external_validation"] is True
           assert run["scope"]["external_validation_tasks"] == ["sentiment"]
           assert run["scope"]["topic_external_validation"] is False
@@ -110,6 +110,7 @@ jobs:
           assert run["external_validation"]["real_world"] is True
           assert run["external_validation"]["task"] == "sentiment"
           assert run["external_validation"]["support"] == 1000
+          assert set(run["external_validation"]["labels_in_source"]) == {"negative", "positive"}
           for task in ("sentiment", "topic"):
               result = run["tasks"][task]
               assert result["replicates"]["count"] == 2
@@ -117,7 +118,7 @@ jobs:
               assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
               assert "accuracy_ci95" in result["uncertainty"]
               assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
-              assert "mean_ci95_normal" in result["replicates"]["metrics"]["accuracy"]
+              assert result["replicates"]["metrics"]["accuracy"]["mean_ci95"]["method"] == "student_t_across_model_seeds"
               assert "metrics" in run["benchmark"]["tasks"][task]
           PY
 

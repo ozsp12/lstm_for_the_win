@@ -26,9 +26,14 @@ jobs:
         with:
           python-version: "3.12"
           cache: pip
+          cache-dependency-path: requirements-lock.txt
 
-      - name: Install dependencies
-        run: python -m pip install --upgrade pip && python -m pip install -e ".[test]"
+      - name: Install locked dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -r requirements-lock.txt
+          python -m pip install -e . --no-deps
+          python -m pip check
 
       - name: Validate Python modules
         run: python -m compileall -q src tests

@@ -12,7 +12,7 @@ from lstm_for_the_win.handler import PipelineHandler
 
 
 class _DummyResult:
-    def __init__(self, task: str, incoming_rows: list[dict[str, str]]) -> None:
+    def __init__(self, task: str, incoming_rows: list[dict[str, str]], seed: int) -> None:
         expected_field = f"expected_{task}"
         self.predictions = [
             {
@@ -27,25 +27,49 @@ class _DummyResult:
             for row in incoming_rows
         ]
         self.task = task
-        self.size = len(incoming_rows)
-
-    def to_dict(self) -> dict[str, object]:
-        metrics = {
+        self.seed = seed
+        self.incoming_size = len(incoming_rows)
+        self.metrics = {
             "accuracy": 1.0, "precision_macro": 1.0, "recall_macro": 1.0,
             "macro_f1": 1.0, "weighted_f1": 1.0, "log_loss": 0.1,
             "brier_score": 0.05, "expected_calibration_error": 0.02,
         }
+        self.baseline_metrics = dict(self.metrics)
+        self.metric_delta_vs_baseline = {key: 0.0 for key in ("accuracy", "macro_f1", "weighted_f1", "log_loss", "brier_score")}
+
+    def to_dict(self) -> dict[str, object]:
         return {
-            "task": self.task, "train_size": 1200, "fit_size": 960, "validation_size": 240,
-            "incoming_size": self.size, "labels": ["a", "b"], "label_counts": {},
-            "metrics": metrics, "baseline_metrics": metrics,
-            "metric_delta_vs_baseline": {"accuracy": 0.0}, "segment_metrics": {},
+            "task": self.task, "seed": self.seed,
+            "train_size": 1200, "fit_size": 960, "validation_size": 240,
+            "incoming_size": self.incoming_size, "labels": ["a", "b"], "label_counts": {},
+            "validation_split": {"method": "template_family_grouped", "heldout_families": ["using"]},
+            "metrics": self.metrics, "baseline_metrics": self.baseline_metrics,
+            "metric_delta_vs_baseline": self.metric_delta_vs_baseline, "segment_metrics": {},
             "history": {"accuracy": [1.0], "loss": [0.1], "val_accuracy": [1.0], "val_loss": [0.1]},
             "confusion_matrix": [], "predictions": self.predictions,
         }
 
 
-def test_handler_publishes_lean_atomic_run_and_advance_is_incremental(tmp_path: Path, monkeypatch) -> None:
+def _patch_training(monkeypatch) -> None:
+    def fake_execute(pipeline_config):
+        with Path(pipeline_config.incoming_path).open("r", encoding="utf-8", newline="") as file:
+            incoming_rows = list(csv.DictReader(file))
+        return SimpleNamespace(result=_DummyResult(pipeline_config.task, incoming_rows, pipeline_config.seed), model=object())
+
+    monkeypatch.setattr(handler_module, "execute_pipeline", fake_execute)
+    monkeypatch.setattr(
+        handler_module,
+        "evaluate_benchmark",
+        lambda executions, benchmark_path, benchmark_rows: {
+            "immutable": True,
+            "source": "unit-test",
+            "tasks": {},
+            "reviews": [],
+        },
+    )
+
+
+def test_handler_publishes_single_atomic_run_and_advance_is_incremental(tmp_path: Path, monkeypatch) -> None:
     input_dir = tmp_path / "input"
     output_dir = tmp_path / "output"
     config = SyntheticDataConfig(
@@ -54,30 +78,34 @@ def test_handler_publishes_lean_atomic_run_and_advance_is_incremental(tmp_path: 
         vary_counts=False,
     )
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
+    _patch_training(monkeypatch)
 
-    def fake_execute(pipeline_config):
-        with Path(pipeline_config.incoming_path).open("r", encoding="utf-8", newline="") as file:
-            incoming_rows = list(csv.DictReader(file))
-        return SimpleNamespace(result=_DummyResult(pipeline_config.task, incoming_rows))
-
-    monkeypatch.setattr(handler_module, "execute_pipeline", fake_execute)
     handler = PipelineHandler()
-    run_path = handler.train_and_publish(input_dir, output_dir, run_id="unit-run", epochs=1, validation_fraction=0.20, patience=0)
+    run_path = handler.train_and_publish(
+        input_dir, output_dir, run_id="unit-run", epochs=1,
+        validation_fraction=0.20, patience=0,
+    )
 
-    assert (run_path / "analysis.json").is_file()
-    assert (run_path / "article_analysis.csv").is_file()
+    assert (run_path / "run.json").is_file()
+    assert not (run_path / "analysis.json").exists()
+    assert not (run_path / "article_analysis.csv").exists()
     assert not (run_path / "predictions.csv").exists()
     assert not (run_path / "metrics.json").exists()
     assert not (run_path / "results.json").exists()
     assert not (run_path / "run_manifest.json").exists()
     assert not (run_path / "figures").exists()
     assert not (run_path / "models").exists()
+    assert (input_dir / "benchmark.csv").is_file()
 
-    analysis = json.loads((run_path / "analysis.json").read_text(encoding="utf-8"))
-    assert analysis["run"]["input_generation"] == 0
-    assert analysis["run"]["pipeline_version"] == "0.7.0"
-    assert analysis["scope"]["external_validation"] is False
-    assert analysis["tasks"]["sentiment"]["uncertainty"]["accuracy_ci95"]["support"] == 1200
+    run = json.loads((run_path / "run.json").read_text(encoding="utf-8"))
+    assert run["schema_version"] == "2.0.0"
+    assert run["artifact_type"] == "experiment_run"
+    assert run["run"]["input_generation"] == 0
+    assert run["run"]["pipeline_version"] == "0.8.0"
+    assert run["scope"]["external_validation"] is False
+    assert run["scope"]["immutable_benchmark"] is True
+    assert run["tasks"]["sentiment"]["uncertainty"]["accuracy_ci95"]["support"] == 1200
+    assert run["tasks"]["sentiment"]["replicates"]["count"] == 1
     assert json.loads((output_dir / "latest.json").read_text(encoding="utf-8"))["run_id"] == "unit-run"
 
     config_path = tmp_path / "config.json"
@@ -87,6 +115,7 @@ def test_handler_publishes_lean_atomic_run_and_advance_is_incremental(tmp_path: 
     after_train_rows = sum(1 for _ in (input_dir / "train.csv").open(encoding="utf-8")) - 1
     assert after_train_rows == before_train_rows + 600
     assert json.loads((input_dir / "input_manifest.json").read_text(encoding="utf-8"))["generation"] == 1
+    assert (input_dir / "benchmark.csv").is_file()
 
 
 def test_handler_links_runs_without_deleting_previous_runs(tmp_path: Path, monkeypatch) -> None:
@@ -94,16 +123,11 @@ def test_handler_links_runs_without_deleting_previous_runs(tmp_path: Path, monke
     output_dir = tmp_path / "output"
     config = SyntheticDataConfig(initial_train_rows=1200, incoming_rows=1200, incoming_rows_jitter=0, vary_counts=False)
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
+    _patch_training(monkeypatch)
 
-    def fake_execute(pipeline_config):
-        with Path(pipeline_config.incoming_path).open("r", encoding="utf-8", newline="") as file:
-            incoming_rows = list(csv.DictReader(file))
-        return SimpleNamespace(result=_DummyResult(pipeline_config.task, incoming_rows))
-
-    monkeypatch.setattr(handler_module, "execute_pipeline", fake_execute)
     handler = PipelineHandler()
     first = handler.train_and_publish(input_dir, output_dir, run_id="run-1", epochs=1, patience=0)
     second = handler.train_and_publish(input_dir, output_dir, run_id="run-2", epochs=1, patience=0)
     assert first.is_dir() and second.is_dir()
-    second_analysis = json.loads((second / "analysis.json").read_text(encoding="utf-8"))
-    assert second_analysis["run"]["parent_run_id"] == "run-1"
+    second_run = json.loads((second / "run.json").read_text(encoding="utf-8"))
+    assert second_run["run"]["parent_run_id"] == "run-1"

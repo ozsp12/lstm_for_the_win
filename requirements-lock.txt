@@ -1,9 +1,9 @@
-# Reproducible Linux / CPython 3.12 environment captured from production run 32092347850.
-# Regenerate intentionally after validating a dependency update; do not hand-relax versions.
+# Reproducible Linux / CPython 3.12 environment. Exact hashes are generated and validated in CI.
 absl-py==2.5.0
 astunparse==1.6.3
 certifi==2026.7.22
 charset-normalizer==3.5.1
+coverage==7.15.2
 flatbuffers==25.12.19
 gast==0.7.0
 google-pasta==0.2.0
@@ -30,6 +30,7 @@ pluggy==1.6.0
 protobuf==7.35.1
 Pygments==2.21.0
 pytest==9.1.1
+pytest-cov==7.1.0
 requests==2.34.2
 rich==15.0.0
 scikit-learn==1.9.0

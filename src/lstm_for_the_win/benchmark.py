@@ -11,6 +11,8 @@ from typing import Iterable
 BENCHMARK_FILE = "benchmark.csv"
 BENCHMARK_MANIFEST_FILE = "benchmark_manifest.json"
 MIN_BENCHMARK_ROWS = 500
+LEGACY_BOOTSTRAP_GENERATION = 4
+LEGACY_BOOTSTRAP_RUN_ID = "20260818T023543Z_github-32092347850"
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -76,7 +78,11 @@ def ensure_immutable_benchmark(input_dir: str | Path) -> tuple[Path, dict[str, o
                 raise ValueError("benchmark.csv no longer matches benchmark_manifest.json.")
             return benchmark_path, manifest
         manifest = _manifest(root, benchmark_path)
-        manifest["migration_note"] = "Manifest added after benchmark creation; source generation inferred from current repository history."
+        manifest.update({
+            "source_generation": LEGACY_BOOTSTRAP_GENERATION,
+            "source_run_id": LEGACY_BOOTSTRAP_RUN_ID,
+            "migration_note": "Provenance recovered from the repository run that first committed benchmark.csv.",
+        })
         manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
         return benchmark_path, manifest
 

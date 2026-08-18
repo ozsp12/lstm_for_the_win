@@ -8,7 +8,7 @@ import shutil
 from argparse import ArgumentParser
 from html import escape
 from pathlib import Path
-from typing import Any, Iterable, Mapping
+from typing import Any, Iterable, Mapping, Sequence
 
 CSV_FIELDS = [
     "analysis_group", "run_id", "input_generation", "dataset", "task", "model",
@@ -69,11 +69,19 @@ def _metric_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
                 yield row
 
 
-def _confusion_rows(run: Mapping[str, Any], dataset: str, task: str, payload: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
-    labels = list(payload["labels"])
+def _confusion_rows(
+    run: Mapping[str, Any],
+    dataset: str,
+    task: str,
+    payload: Mapping[str, Any],
+    labels: Sequence[str] | None = None,
+) -> Iterable[dict[str, Any]]:
+    resolved_labels = list(labels if labels is not None else payload["labels"])
     matrix = payload["confusion_matrix"]
-    for i, expected in enumerate(labels):
-        for j, predicted in enumerate(labels):
+    if len(matrix) != len(resolved_labels) or any(len(row) != len(resolved_labels) for row in matrix):
+        raise ValueError(f"Confusion matrix shape does not match labels for {dataset}/{task}.")
+    for i, expected in enumerate(resolved_labels):
+        for j, predicted in enumerate(resolved_labels):
             row = _blank(run, "confusion_matrix", dataset=dataset, task=task, model="lstm")
             row.update(expected_label=expected, predicted_label=predicted, value=matrix[i][j])
             yield row
@@ -94,7 +102,13 @@ def _benchmark_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
             row = _blank(run, "external_metric", dataset="uci_amazon", task="sentiment", model="lstm")
             row.update(metric=metric, value=value, support=external.get("support", ""))
             yield row
-        yield from _confusion_rows(run, "uci_amazon", "sentiment", external)
+        yield from _confusion_rows(
+            run,
+            "uci_amazon",
+            "sentiment",
+            external,
+            labels=external.get("model_label_space", external.get("labels_in_source", [])),
+        )
 
 
 def _prediction_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
@@ -147,7 +161,9 @@ def _bar_svg(title: str, labels: list[str], values: list[float], destination: Pa
     x0, y0, plot_w, plot_h = 230, 90, 670, 440
     parts = [f'<line x1="{x0}" y1="{y0}" x2="{x0}" y2="{y0+plot_h}" stroke="#333"/>']
     parts.append(f'<line x1="{x0}" y1="{y0+plot_h}" x2="{x0+plot_w}" y2="{y0+plot_h}" stroke="#333"/>')
-    n = max(1, len(values)); slot = plot_h / n; bar_h = min(44, slot * 0.62)
+    n = max(1, len(values))
+    slot = plot_h / n
+    bar_h = min(44, slot * 0.62)
     for index, (label, value) in enumerate(zip(labels, values, strict=True)):
         y = y0 + index * slot + (slot - bar_h) / 2
         width = max(0.0, min(1.0, float(value))) * plot_w
@@ -161,7 +177,13 @@ def _bar_svg(title: str, labels: list[str], values: list[float], destination: Pa
 
 
 def _heatmap_svg(title: str, labels: list[str], matrix: list[list[int]], destination: Path) -> None:
-    n = len(labels); cell = min(110, int(420 / max(1, n))); x0, y0 = 280, 110
+    if not labels or not matrix:
+        raise ValueError(f"Cannot render empty confusion matrix: {title}")
+    n = len(labels)
+    if len(matrix) != n or any(len(row) != n for row in matrix):
+        raise ValueError(f"Confusion matrix shape does not match labels: {title}")
+    cell = min(110, int(420 / max(1, n)))
+    x0, y0 = 280, 110
     maximum = max(1, max(max(row) for row in matrix))
     parts: list[str] = []
     for j, label in enumerate(labels):
@@ -193,10 +215,16 @@ def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
     _heatmap_svg("Incoming topic confusion matrix", topic["labels"], topic["confusion_matrix"], directory / "incoming_topic_confusion.svg")
     benchmark = run.get("benchmark", {}).get("tasks", {})
     if benchmark:
-        _bar_svg("Immutable benchmark accuracy", ["Sentiment", "Topic"], [benchmark["sentiment"]["metrics"]["accuracy"], benchmark["topic"]["metrics"]["accuracy"]], directory / "benchmark_accuracy.svg")
+        _bar_svg(
+            "Immutable benchmark accuracy",
+            ["Sentiment", "Topic"],
+            [benchmark["sentiment"]["metrics"]["accuracy"], benchmark["topic"]["metrics"]["accuracy"]],
+            directory / "benchmark_accuracy.svg",
+        )
     external = run.get("external_validation")
     if external:
-        _heatmap_svg("External UCI Amazon sentiment confusion matrix", external["labels_in_source"], external["confusion_matrix"], directory / "external_sentiment_confusion.svg")
+        labels = list(external.get("model_label_space", external.get("labels_in_source", [])))
+        _heatmap_svg("External UCI Amazon sentiment confusion matrix", labels, external["confusion_matrix"], directory / "external_sentiment_confusion.svg")
     return directory
 
 

@@ -7,6 +7,7 @@ from pathlib import Path
 from typing import Iterable
 
 BENCHMARK_FILE = "benchmark.csv"
+MIN_BENCHMARK_ROWS = 500
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -22,8 +23,8 @@ def _write(path: Path, rows: Iterable[dict[str, str]], fieldnames: list[str]) ->
 
 
 def _validate(rows: list[dict[str, str]], train_rows: list[dict[str, str]]) -> None:
-    if not rows:
-        raise ValueError("benchmark.csv cannot be empty.")
+    if len(rows) < MIN_BENCHMARK_ROWS:
+        raise ValueError(f"benchmark.csv must contain at least {MIN_BENCHMARK_ROWS} rows.")
     ids = [row["ID"] for row in rows]
     texts = [row["text"] for row in rows]
     if len(ids) != len(set(ids)) or len(texts) != len(set(texts)):
@@ -55,8 +56,10 @@ def ensure_immutable_benchmark(input_dir: str | Path) -> Path:
             raise ValueError("incoming.csv has no header.")
         rows = [row for row in reader if row.get("goldtest") == "0"]
         fieldnames = list(reader.fieldnames)
-    if len(rows) < 1000:
-        raise ValueError("At least 1000 non-gold incoming rows are required to bootstrap benchmark.csv.")
+    if len(rows) < MIN_BENCHMARK_ROWS:
+        raise ValueError(
+            f"At least {MIN_BENCHMARK_ROWS} non-gold incoming rows are required to bootstrap benchmark.csv."
+        )
     _validate(rows, train_rows)
     _write(benchmark_path, rows, fieldnames)
     return benchmark_path

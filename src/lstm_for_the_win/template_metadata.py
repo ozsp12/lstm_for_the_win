@@ -3,8 +3,11 @@
 from __future__ import annotations
 
 import csv
+import hashlib
+import json
 import os
 import tempfile
+from collections import Counter
 from pathlib import Path
 
 TEMPLATE_FAMILIES = (
@@ -66,11 +69,38 @@ def _materialize(path: Path) -> bool:
     return True
 
 
+def _refresh_manifest(root: Path) -> None:
+    manifest_path = root / "input_manifest.json"
+    if not manifest_path.is_file():
+        return
+    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    files = [root / "train.csv", root / "incoming.csv"]
+    manifest["sha256"] = {path.name: hashlib.sha256(path.read_bytes()).hexdigest() for path in files}
+    manifest["record_counts"] = {}
+    for path in files:
+        with path.open("r", encoding="utf-8", newline="") as handle:
+            rows = list(csv.DictReader(handle))
+        manifest["record_counts"][path.name] = len(rows)
+        if path.name == "incoming.csv":
+            manifest["incoming_template_family_counts"] = dict(
+                sorted(Counter(row["template_family"] for row in rows).items())
+            )
+    manifest["template_family_metadata"] = {
+        "materialized": True,
+        "families": list(TEMPLATE_FAMILIES),
+        "legacy_rows": "backfilled_once_from_rendered_text; new pipeline states persist the value",
+    }
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def ensure_template_metadata(input_dir: str | Path) -> dict[str, bool]:
     """Materialize template families in train/incoming CSVs before any split is made."""
 
     root = Path(input_dir)
-    return {
+    changed = {
         name: _materialize(root / name)
         for name in ("train.csv", "incoming.csv")
     }
+    if any(changed.values()):
+        _refresh_manifest(root)
+    return changed

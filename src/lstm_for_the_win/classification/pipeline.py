@@ -16,10 +16,12 @@ from .model import (
     build_confusion_matrix,
     build_lstm_model,
     build_vectorizer,
+    calibration_profile,
     classification_metrics,
     predict_probabilities,
     set_global_seed,
     train_model,
+    wilson_interval,
 )
 
 
@@ -59,9 +61,12 @@ class PipelineResult:
     baseline_metrics: dict[str, float]
     metric_delta_vs_baseline: dict[str, float]
     paired_comparison: dict[str, int | float | str]
-    segment_metrics: dict[str, dict[str, dict[str, float]]]
+    segment_metrics: dict[str, dict[str, dict[str, Any]]]
+    calibration_bins: list[dict[str, float | int]]
+    baseline_calibration_bins: list[dict[str, float | int]]
     history: dict[str, list[float]]
     confusion_matrix: list[list[int]]
+    confusion_matrix_contract: dict[str, Any]
     predictions: list[dict[str, Any]]
 
     def to_dict(self) -> dict[str, Any]:
@@ -79,7 +84,7 @@ def _segment_metrics(
     expected: list[int],
     probabilities: np.ndarray,
     class_count: int,
-) -> dict[str, dict[str, dict[str, float]]]:
+) -> dict[str, dict[str, dict[str, Any]]]:
     dimensions: dict[str, tuple[Callable[[ReviewRecord], str], list[str]]] = {
         "linguistic_level": (
             lambda record: record.linguistic_level,
@@ -94,7 +99,7 @@ def _segment_metrics(
         "goldtest": (lambda record: str(record.goldtest), ["0", "1"]),
         "template_family": (lambda record: record.template_family, sorted({record.template_family for record in records})),
     }
-    output: dict[str, dict[str, dict[str, float]]] = {}
+    output: dict[str, dict[str, dict[str, Any]]] = {}
     for dimension, (getter, values) in dimensions.items():
         output[dimension] = {}
         for value in values:
@@ -103,11 +108,17 @@ def _segment_metrics(
                 continue
             subset_expected = [expected[index] for index in indices]
             subset_probabilities = probabilities[indices]
-            output[dimension][value] = classification_metrics(
-                subset_expected,
-                subset_probabilities,
-                class_count,
+            metrics = classification_metrics(subset_expected, subset_probabilities, class_count)
+            subset_predicted = subset_probabilities.argmax(axis=1)
+            correct = sum(
+                int(predicted) == truth
+                for truth, predicted in zip(subset_expected, subset_predicted, strict=True)
             )
+            output[dimension][value] = {
+                **metrics,
+                "support": len(indices),
+                "accuracy_ci95": wilson_interval(correct, len(indices)),
+            }
     return output
 
 
@@ -257,8 +268,15 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
         metric_delta_vs_baseline=delta,
         paired_comparison=paired_comparison,
         segment_metrics=_segment_metrics(incoming_records, expected, probabilities, len(labels)),
+        calibration_bins=calibration_profile(expected, probabilities, len(labels)),
+        baseline_calibration_bins=calibration_profile(expected, baseline_probabilities, len(labels)),
         history=history,
         confusion_matrix=build_confusion_matrix(expected, predicted_indices, class_count=len(labels)),
+        confusion_matrix_contract={
+            "axis_convention": "rows_expected_columns_predicted",
+            "expected_labels": labels,
+            "predicted_labels": labels,
+        },
         predictions=predictions,
     )
     return PipelineExecution(model=model, result=result)

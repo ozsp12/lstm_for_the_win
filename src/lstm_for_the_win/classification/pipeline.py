@@ -4,6 +4,7 @@ from __future__ import annotations
 
 from collections import Counter
 from dataclasses import asdict, dataclass
+from math import comb
 from pathlib import Path
 from typing import Any, Callable
 
@@ -57,6 +58,7 @@ class PipelineResult:
     metrics: dict[str, float]
     baseline_metrics: dict[str, float]
     metric_delta_vs_baseline: dict[str, float]
+    paired_comparison: dict[str, int | float | str]
     segment_metrics: dict[str, dict[str, dict[str, float]]]
     history: dict[str, list[float]]
     confusion_matrix: list[list[int]]
@@ -90,6 +92,7 @@ def _segment_metrics(
         "length_class": (lambda record: record.length_class, ["short", "medium", "long"]),
         "mixed_sentiment": (lambda record: str(record.mixed_sentiment), ["0", "1"]),
         "goldtest": (lambda record: str(record.goldtest), ["0", "1"]),
+        "template_family": (lambda record: record.template_family, sorted({record.template_family for record in records})),
     }
     output: dict[str, dict[str, dict[str, float]]] = {}
     for dimension, (getter, values) in dimensions.items():
@@ -106,6 +109,43 @@ def _segment_metrics(
                 class_count,
             )
     return output
+
+
+def _mcnemar_exact(
+    expected: list[int],
+    lstm_predicted: np.ndarray,
+    baseline_predicted: np.ndarray,
+) -> dict[str, int | float | str]:
+    """Exact two-sided McNemar/binomial comparison on paired incoming predictions."""
+
+    both_correct = lstm_only = baseline_only = neither = 0
+    for truth, lstm_value, baseline_value in zip(expected, lstm_predicted, baseline_predicted, strict=True):
+        lstm_correct = int(lstm_value) == truth
+        baseline_correct = int(baseline_value) == truth
+        if lstm_correct and baseline_correct:
+            both_correct += 1
+        elif lstm_correct:
+            lstm_only += 1
+        elif baseline_correct:
+            baseline_only += 1
+        else:
+            neither += 1
+    discordant = lstm_only + baseline_only
+    if discordant == 0:
+        p_value = 1.0
+    else:
+        lower = min(lstm_only, baseline_only)
+        one_tail = sum(comb(discordant, value) for value in range(lower + 1)) / (2 ** discordant)
+        p_value = min(1.0, 2.0 * one_tail)
+    return {
+        "method": "mcnemar_exact_two_sided",
+        "both_correct": both_correct,
+        "lstm_only_correct": lstm_only,
+        "baseline_only_correct": baseline_only,
+        "neither_correct": neither,
+        "discordant_pairs": discordant,
+        "p_value": float(p_value),
+    }
 
 
 def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
@@ -172,9 +212,11 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
         incoming_texts,
         seed=config.seed,
     )
+    baseline_predicted_indices = baseline_probabilities.argmax(axis=1)
     baseline_metrics = classification_metrics(expected, baseline_probabilities, len(labels))
     comparable = ("accuracy", "macro_f1", "weighted_f1", "log_loss", "brier_score")
     delta = {name: float(metrics[name] - baseline_metrics[name]) for name in comparable}
+    paired_comparison = _mcnemar_exact(expected, predicted_indices, baseline_predicted_indices)
 
     predictions = [
         {
@@ -192,6 +234,7 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
             "length_class": record.length_class,
             "mixed_sentiment": record.mixed_sentiment,
             "goldtest": record.goldtest,
+            "template_family": record.template_family,
             "input_timestamp": record.input_timestamp,
         }
         for index, (record, expected_index, predicted_index) in enumerate(
@@ -212,6 +255,7 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
         metrics=metrics,
         baseline_metrics=baseline_metrics,
         metric_delta_vs_baseline=delta,
+        paired_comparison=paired_comparison,
         segment_metrics=_segment_metrics(incoming_records, expected, probabilities, len(labels)),
         history=history,
         confusion_matrix=build_confusion_matrix(expected, predicted_indices, class_count=len(labels)),

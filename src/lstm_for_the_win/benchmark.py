@@ -1,13 +1,18 @@
-"""Immutable synthetic benchmark bootstrap and validation."""
+"""Immutable synthetic benchmark bootstrap, provenance, and validation."""
 
 from __future__ import annotations
 
 import csv
+import hashlib
+import json
 from pathlib import Path
 from typing import Iterable
 
 BENCHMARK_FILE = "benchmark.csv"
+BENCHMARK_MANIFEST_FILE = "benchmark_manifest.json"
 MIN_BENCHMARK_ROWS = 500
+LEGACY_BOOTSTRAP_GENERATION = 4
+LEGACY_BOOTSTRAP_RUN_ID = "20260818T023543Z_github-32092347850"
 
 
 def _read(path: Path) -> list[dict[str, str]]:
@@ -20,6 +25,10 @@ def _write(path: Path, rows: Iterable[dict[str, str]], fieldnames: list[str]) ->
         writer = csv.DictWriter(handle, fieldnames=fieldnames, lineterminator="\n")
         writer.writeheader()
         writer.writerows(rows)
+
+
+def _sha256(path: Path) -> str:
+    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _validate(rows: list[dict[str, str]], train_rows: list[dict[str, str]]) -> None:
@@ -37,18 +46,45 @@ def _validate(rows: list[dict[str, str]], train_rows: list[dict[str, str]]) -> N
         raise ValueError("benchmark.csv must remain disjoint from train.csv.")
 
 
-def ensure_immutable_benchmark(input_dir: str | Path) -> Path:
-    """Create benchmark.csv once from non-gold incoming rows and never rewrite it."""
+def _manifest(root: Path, benchmark_path: Path) -> dict[str, object]:
+    input_manifest_path = root / "input_manifest.json"
+    input_manifest = json.loads(input_manifest_path.read_text(encoding="utf-8")) if input_manifest_path.is_file() else {}
+    return {
+        "schema_version": "1.0.0",
+        "immutable": True,
+        "source": "non-gold rows from the incoming batch used to bootstrap benchmark support",
+        "source_generation": int(input_manifest.get("generation", 0)),
+        "created_from_agent_version": input_manifest.get("agent_version"),
+        "rows": len(_read(benchmark_path)),
+        "sha256": _sha256(benchmark_path),
+    }
+
+
+def ensure_immutable_benchmark(input_dir: str | Path) -> tuple[Path, dict[str, object]]:
+    """Create benchmark.csv once from non-gold incoming rows and retain provenance."""
 
     root = Path(input_dir)
     train_path = root / "train.csv"
     incoming_path = root / "incoming.csv"
     benchmark_path = root / BENCHMARK_FILE
+    manifest_path = root / BENCHMARK_MANIFEST_FILE
     train_rows = _read(train_path)
 
     if benchmark_path.is_file():
         _validate(_read(benchmark_path), train_rows)
-        return benchmark_path
+        if manifest_path.is_file():
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            if manifest.get("sha256") != _sha256(benchmark_path):
+                raise ValueError("benchmark.csv no longer matches benchmark_manifest.json.")
+            return benchmark_path, manifest
+        manifest = _manifest(root, benchmark_path)
+        manifest.update({
+            "source_generation": LEGACY_BOOTSTRAP_GENERATION,
+            "source_run_id": LEGACY_BOOTSTRAP_RUN_ID,
+            "migration_note": "Provenance recovered from the repository run that first committed benchmark.csv.",
+        })
+        manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        return benchmark_path, manifest
 
     with incoming_path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle)
@@ -62,4 +98,6 @@ def ensure_immutable_benchmark(input_dir: str | Path) -> Path:
         )
     _validate(rows, train_rows)
     _write(benchmark_path, rows, fieldnames)
-    return benchmark_path
+    manifest = _manifest(root, benchmark_path)
+    manifest_path.write_text(json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    return benchmark_path, manifest

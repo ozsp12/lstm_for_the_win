@@ -1,65 +1,69 @@
 # LSTM for the Win
 
-Reproducible continual-learning experiment for Long Short-Term Memory (LSTM) classification of synthetic product reviews by sentiment and product topic.
+Reproducible continual-learning experiment for Long Short-Term Memory (LSTM) classification of product reviews by sentiment and product topic.
 
 **Project page:** https://ozsp12.github.io/en/projects/lstm_ftw/
 
-## Data lifecycle
-
-`data/input/train.csv` is the cumulative training corpus. `data/input/incoming.csv` contains the current unseen synthetic batch across five linguistic levels, with variable length, slang, spelling noise, profanity, emojis, and mixed sentiment. After an evaluation, only rows marked `goldtest=1` are promoted to the training corpus; the next incoming batch is then generated. Existing training rows are not automatically deleted when the text-generator version changes.
-
-`data/input/benchmark.csv` is created once from non-gold rows of the first incoming batch observed after benchmark support is introduced. Because those rows have `goldtest=0`, they are never promoted into training. The file is then treated as immutable and is used as a longitudinal synthetic benchmark across later runs.
-
-Workflow runs are incremental. Each run receives its own timestamped directory under `data/output/`, and previous run directories are retained. `data/output/latest.json` is only a pointer to the newest completed run.
-
-## Run artifact
-
-Each new run persists exactly one analytical artifact:
-
-- `run.json`: immutable canonical record of the experiment. It contains provenance, input hashes, package versions, parameters, validation-split metadata, primary LSTM and TF-IDF logistic-regression metrics, segmented metrics, training history, confidence intervals, merged review-level predictions, multi-seed summaries, and the immutable-benchmark evaluation.
-
-No figures, models, duplicate metrics files, prediction CSVs, manifests, or paper-specific analytical tables are stored per run. Any later CSV or Parquet representation is a derived view that can be reconstructed from `run.json` when needed.
-
-The intended data flow is therefore:
+## Architecture
 
 ```text
-train.csv + incoming.csv + benchmark.csv
-                 |
-                 v
-              pipeline
-                 |
-                 v
- data/output/<run_id>/run.json
-          /                 \
-     dashboard          paper analysis
+agents/synthetic_data.py  -> cumulative train.csv and refreshed incoming.csv
+handler.py                -> controlled state transitions
+template_metadata.py      -> persisted generator-family metadata
+classification/           -> LSTM, baseline, metrics and structural validation split
+benchmark.py              -> immutable synthetic longitudinal benchmark
+external_benchmark.py     -> immutable real-world UCI sentiment benchmark
+experiment.py             -> experiment orchestration
+run_artifact.py           -> canonical run.json
+derived_artifacts.py      -> article_analysis.csv and figures/ from run.json only
+cli.py                    -> command-line parsing
 ```
+
+## Data lifecycle
+
+`data/input/train.csv` is cumulative. After every successful evaluation, rows marked `goldtest=1` are promoted and the file is overwritten at the same path with a larger row count. `data/input/incoming.csv` is overwritten with the next unseen synthetic batch. Each generated record carries a persisted `template_family`, which is used for family-level validation splitting.
+
+`data/input/benchmark.csv` is an immutable synthetic longitudinal benchmark built from non-gold rows and never promoted into training. `data/external/` is evaluation-only and contains the Amazon subset of the UCI **Sentiment Labelled Sentences** dataset (DOI `10.24432/C57604`, CC BY 4.0). External validation is sentiment-only because the source has no compatible topic labels and no neutral class.
+
+## Output contract
+
+`run.json` is the canonical source of truth. `article_analysis.csv` and every file in `figures/` are deterministic derived artifacts generated exclusively from the same `run.json`.
+
+```text
+data/output/
+├── latest.json
+└── <timestamp>_github-<run_id>/
+    ├── run.json
+    ├── article_analysis.csv
+    └── figures/
+```
+
+Only the latest fully validated run is retained. The previous run remains present while the new run is being trained and checked. It is removed only after the new run bundle passes contract validation, deterministic regeneration, automated tests and the coverage gate. `latest.json` is then committed together with the new run.
+
+`article_analysis.csv` is intended for human inspection and tabular analysis. It contains aggregate and segment metrics, uncertainty, confusion matrices, training history, benchmark/external results and one `prediction_record` row for every incoming observation. It never performs an independent calculation: all values come from `run.json`.
+
+The figure directory is overwritten during derivation and rebuilt from the new `run.json`. Deleting `article_analysis.csv` and `figures/` and regenerating them must reproduce identical SHA-256 hashes in the same locked environment; CI enforces this invariant.
 
 ## Experimental safeguards
 
-The internal validation split prefers holding out an entire coarse sentence-template family instead of randomly mixing structurally similar generated phrases between fit and validation. If a dataset does not contain enough distinguishable template families, the software falls back to deterministic label-stratified random splitting and records that fallback in `run.json`.
+The validation split prefers holding out an entire persisted sentence-template family. Production uses a fixed split seed plus model seeds `42`, `1337` and `2026`. Runs report Wilson intervals for sample accuracy, Student-t intervals across model seeds, and an exact two-sided McNemar comparison between the LSTM and TF-IDF logistic-regression baseline.
 
-Production runs use a fixed split seed and multiple model seeds. This separates the structural validation partition from model-initialization randomness and allows run-level reporting of mean, population standard deviation, minimum, and maximum metrics across replicates. Accuracy also includes a 95% Wilson confidence interval for the evaluated sample.
+The synthetic benchmark is immutable and separate from continual learning. The UCI Amazon subset adds independent real-world evidence for sentiment only; topic remains synthetic-only.
 
 ## Reproducible environment
 
-`pyproject.toml` remains the high-level package specification. `requirements-lock.txt` freezes the exact Linux / CPython 3.12 environment validated by the production workflow, including transitive dependencies. Both production and validation workflows install from this lock and run `pip check` before executing the experiment. Dependency changes should therefore be intentional: update the high-level constraint if needed, regenerate the lock, and validate the new environment before merging it.
-
-## Evaluation scope
-
-Reported metrics include accuracy, precision, recall, macro and weighted F1, log-loss, Brier score, calibration error, segmented robustness metrics, and a TF-IDF logistic-regression baseline. The bundled corpus and immutable benchmark are synthetic. Results therefore measure behavior under the controlled generator distribution and are not evidence of external real-world generalization.
-
-A real external benchmark should be added only as a separately sourced, licensed, immutable evaluation dataset; it must never enter the synthetic promotion loop.
+`requirements-lock.txt` is fully resolved and hash-locked. CI and production install with `--require-hashes`, use the pinned build backend without build isolation, run `pip check`, and pin GitHub Actions to immutable commit SHAs. Test coverage must remain at least 90%.
 
 ## Reproduce
 
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
-python -m pip install -r requirements-lock.txt
-python -m pip install -e . --no-deps
+python -m pip install --require-hashes -r requirements-lock.txt
+python -m pip install -e . --no-deps --no-build-isolation
 python -m pip check
 lstm-pipeline train --run-id local --epochs 20 --replicate-seeds "42,1337,2026"
+python -m lstm_for_the_win.derived_artifacts data/output/local/run.json
 ```
 
 Python 3.12 · TensorFlow 2.20

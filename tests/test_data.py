@@ -11,7 +11,6 @@ from lstm_for_the_win.classification.data import (
     load_incoming,
     load_train,
     stratified_validation_split,
-    template_family,
     validation_split,
 )
 
@@ -83,22 +82,20 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
     assert len(fit) + len(validation) == 60
     assert incoming[0].hasemoji == 1
     assert Counter(label_for(row, "sentiment") for row in validation) == {
-        "negative": 4,
-        "neutral": 4,
-        "positive": 4,
+        "negative": 4, "neutral": 4, "positive": 4,
     }
 
 
-def test_validation_split_holds_out_a_whole_template_family() -> None:
-    patterns = (
-        "I noticed that the battery on this phone works well token {token}",
-        "I have been using this phone during normal use and the battery works well token {token}",
-        "The battery is what stood out during normal use it works well token {token}",
+def test_validation_split_holds_out_a_persisted_whole_template_family() -> None:
+    families = (
+        ("noticed", "I noticed that the battery on this phone works well token {token}"),
+        ("using", "I have been using this phone during normal use and the battery works well token {token}"),
+        ("stood_out", "The battery is what stood out during normal use it works well token {token}"),
     )
     sentiments = ("positive", "neutral", "negative")
     records: list[ReviewRecord] = []
     review_id = 1
-    for pattern in patterns:
+    for family, pattern in families:
         for sentiment in sentiments:
             for repetition in range(4):
                 records.append(
@@ -112,15 +109,17 @@ def test_validation_split_holds_out_a_whole_template_family() -> None:
                         input_timestamp="2026-08-15T12:00:00+00:00",
                         source="initial",
                         training_generation=0,
+                        template_family=family,
                     )
                 )
                 review_id += 1
 
     fit, validation, metadata = validation_split(records, "sentiment", 1 / 3, 42)
-    validation_families = {template_family(record.text) for record in validation}
-    fit_families = {template_family(record.text) for record in fit}
+    validation_families = {record.template_family for record in validation}
+    fit_families = {record.template_family for record in fit}
 
     assert metadata["method"] == "template_family_grouped"
+    assert metadata["family_source"] == "persisted_metadata"
     assert len(validation_families) == 1
     assert validation_families.isdisjoint(fit_families)
     assert set(label_for(record, "sentiment") for record in validation) == set(sentiments)

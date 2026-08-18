@@ -12,6 +12,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Iterable, Sequence
 
+from ..template_metadata import TEMPLATE_FAMILIES, infer_template_family
+
 VALID_SENTIMENTS = {"positive", "neutral", "negative"}
 VALID_TOPICS = {"smartphone", "television", "refrigerator", "washing_machine"}
 VALID_LEVELS = {"limited", "informal", "standard", "advanced", "technical"}
@@ -37,6 +39,7 @@ class ReviewRecord:
     goldtest: int = 0
     source: str = "incoming"
     training_generation: int | None = None
+    template_family: str = "context_component"
 
 
 def _hasemoji(text: str) -> bool:
@@ -82,6 +85,13 @@ def _validate_timestamp(value: str, row: int) -> None:
         raise ValueError(f"Row {row} input_timestamp must include a timezone.")
 
 
+def _template_family(row: dict[str, str], raw: str) -> str:
+    family = row.get("template_family", "").strip() or infer_template_family(raw)
+    if family not in TEMPLATE_FAMILIES:
+        raise ValueError(f"Unsupported template_family: {family}")
+    return family
+
+
 def _metadata(row: dict[str, str], raw: str, number: int) -> dict[str, int | str]:
     return {
         "hasemoji": _bin(row.get("hasemoji"), "hasemoji", number, int(_hasemoji(raw))),
@@ -89,6 +99,7 @@ def _metadata(row: dict[str, str], raw: str, number: int) -> dict[str, int | str
         "hasslang": _bin(row.get("hasslang"), "hasslang", number, int(_hasslang(raw))),
         "length_class": row.get("length_class", "").strip() or _length(raw),
         "mixed_sentiment": _bin(row.get("mixed_sentiment"), "mixed_sentiment", number),
+        "template_family": _template_family(row, raw),
     }
 
 
@@ -100,6 +111,7 @@ def _validate_record(record: ReviewRecord, row: int) -> None:
         or record.topic not in VALID_TOPICS
         or record.linguistic_level not in VALID_LEVELS
         or record.length_class not in VALID_LENGTHS
+        or record.template_family not in TEMPLATE_FAMILIES
     ):
         raise ValueError(f"Row {row} contains invalid review metadata.")
     _validate_timestamp(record.input_timestamp, row)
@@ -201,23 +213,6 @@ def label_for(record: ReviewRecord, task: str) -> str:
     return record.sentiment if task == "sentiment" else record.topic
 
 
-def template_family(text: str) -> str:
-    """Infer the generator's coarse sentence-template family from normalized text."""
-
-    normalized = clean_text(text)
-    markers = (
-        ("noticed", "i noticed that the"),
-        ("using", "i have been using this"),
-        ("stood_out", "is what stood out"),
-        ("main_impression", "my main impression of this"),
-        ("attention", "i did not pay much attention"),
-    )
-    for family, marker in markers:
-        if marker in normalized:
-            return family
-    return "context_component"
-
-
 def _random_stratified_split(
     records: Sequence[ReviewRecord],
     task: str,
@@ -251,7 +246,7 @@ def validation_split(
     validation_fraction: float,
     seed: int,
 ) -> tuple[list[ReviewRecord], list[ReviewRecord], dict[str, object]]:
-    """Prefer a whole-template holdout; fall back to label-stratified random splitting."""
+    """Prefer a persisted whole-template holdout; fall back to label-stratified random splitting."""
 
     if task not in VALID_TASKS:
         raise ValueError("task must be sentiment or topic.")
@@ -265,7 +260,7 @@ def validation_split(
     total_by_label = Counter(label_for(record, task) for record in materialized)
     families: dict[str, list[ReviewRecord]] = defaultdict(list)
     for record in materialized:
-        families[template_family(record.text)].append(record)
+        families[record.template_family].append(record)
 
     target = len(materialized) * validation_fraction
     candidates: list[tuple[float, str, list[ReviewRecord]]] = []
@@ -287,6 +282,7 @@ def validation_split(
         validation = sorted(heldout, key=lambda record: record.ID)
         return fit, validation, {
             "method": "template_family_grouped",
+            "family_source": "persisted_metadata",
             "heldout_families": [heldout_family],
             "requested_fraction": validation_fraction,
             "actual_fraction": len(validation) / len(materialized),
@@ -295,6 +291,7 @@ def validation_split(
     fit, validation = _random_stratified_split(materialized, task, validation_fraction, seed)
     return fit, validation, {
         "method": "stratified_random_fallback",
+        "family_source": "persisted_metadata",
         "heldout_families": [],
         "requested_fraction": validation_fraction,
         "actual_fraction": len(validation) / len(materialized),

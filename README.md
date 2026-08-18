@@ -16,8 +16,8 @@ classification/           -> LSTM, baseline, metrics and validation split
 benchmark.py              -> immutable synthetic longitudinal benchmark
 external_benchmark.py     -> immutable real-world UCI sentiment benchmark
 experiment.py             -> experiment orchestration
-run_artifact.py            -> canonical run.json construction
-cli.py                     -> command-line parsing
+run_artifact.py           -> canonical run.json construction
+cli.py                    -> command-line parsing
 ```
 
 `handler.py` remains the stable console boundary and delegates scientific execution to `experiment.py`.
@@ -58,11 +58,11 @@ synthetic train/incoming + immutable synthetic benchmark + external sentiment be
 
 The internal validation split prefers holding out an entire persisted sentence-template family instead of mixing structurally similar generated phrases between fit and validation. If a corpus does not support a valid family-level holdout, the fallback is deterministic label-stratified random splitting and the fallback is recorded in `run.json`.
 
-Production runs use a fixed split seed and multiple model seeds. The run reports mean, population and sample standard deviations, range, and a 95% normal-approximation interval across model seeds for comparable metrics. Accuracy also includes a 95% Wilson interval for each evaluated sample. LSTM and TF-IDF baseline correctness are compared on the same incoming observations with an exact two-sided McNemar test.
+Production runs use a fixed split seed and multiple model seeds. The run reports mean, population and sample standard deviations, range, and a 95% Student-t interval across model seeds for comparable metrics. Accuracy also includes a 95% Wilson interval for each evaluated sample. LSTM and TF-IDF baseline correctness are compared on the same incoming observations with an exact two-sided McNemar test.
 
 ## Reproducible environment
 
-`pyproject.toml` is the high-level package specification. `requirements-lock.in` defines the direct reproducible environment and `requirements-lock.txt` is the fully resolved hash-locked installation set. CI installs with hash verification and runs `pip check` before model execution. GitHub Actions are pinned to immutable commit SHAs.
+`pyproject.toml` is the high-level package specification. `requirements-lock.in` defines the direct reproducible environment and `requirements-lock.txt` is the fully resolved hash-locked installation set. Validation and production install only hash-verified dependencies, use the pinned build backend without build isolation, and run `pip check` before model execution. GitHub Actions are pinned to immutable commit SHAs.
 
 ## Evaluation scope
 
@@ -73,9 +73,8 @@ Synthetic incoming and synthetic benchmark results characterize the controlled g
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install --upgrade pip
 python -m pip install --require-hashes -r requirements-lock.txt
-python -m pip install -e . --no-deps
+python -m pip install -e . --no-deps --no-build-isolation
 python -m pip check
 lstm-pipeline train --run-id local --epochs 20 --replicate-seeds "42,1337,2026"
 ```

@@ -40,6 +40,10 @@ The internal validation split prefers holding out an entire coarse sentence-temp
 
 Production runs use a fixed split seed and multiple model seeds. This separates the structural validation partition from model-initialization randomness and allows run-level reporting of mean, population standard deviation, minimum, and maximum metrics across replicates. Accuracy also includes a 95% Wilson confidence interval for the evaluated sample.
 
+## Reproducible environment
+
+`pyproject.toml` remains the high-level package specification. `requirements-lock.txt` freezes the exact Linux / CPython 3.12 environment validated by the production workflow, including transitive dependencies. Both production and validation workflows install from this lock and run `pip check` before executing the experiment. Dependency changes should therefore be intentional: update the high-level constraint if needed, regenerate the lock, and validate the new environment before merging it.
+
 ## Evaluation scope
 
 Reported metrics include accuracy, precision, recall, macro and weighted F1, log-loss, Brier score, calibration error, segmented robustness metrics, and a TF-IDF logistic-regression baseline. The bundled corpus and immutable benchmark are synthetic. Results therefore measure behavior under the controlled generator distribution and are not evidence of external real-world generalization.
@@ -51,7 +55,10 @@ A real external benchmark should be added only as a separately sourced, licensed
 ```bash
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -e ".[test]"
+python -m pip install --upgrade pip
+python -m pip install -r requirements-lock.txt
+python -m pip install -e . --no-deps
+python -m pip check
 lstm-pipeline train --run-id local --epochs 20 --replicate-seeds "42,1337,2026"
 ```
 

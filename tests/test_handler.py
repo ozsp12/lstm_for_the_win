@@ -82,15 +82,44 @@ def _patch_training(monkeypatch, tmp_path: Path) -> None:
 
     def fake_external_evaluation(execution, external_path, manifest):
         labels = list(execution.result.labels)
-        size = len(labels)
-        matrix = [[0 for _ in range(size)] for _ in range(size)]
-        matrix[0][0] = 1
-        matrix[-1][-1] = 1
+        source_labels = [labels[0], labels[-1]]
+        confusion = {expected: {predicted: 0 for predicted in labels} for expected in source_labels}
+        confusion[source_labels[0]][source_labels[0]] = 1
+        confusion[source_labels[1]][source_labels[1]] = 1
         return {
-            "immutable": True, "real_world": True, "task": "sentiment", "support": 2,
-            "dataset": dict(manifest), "metrics": {"accuracy": 1.0}, "reviews": [],
-            "labels_in_source": [labels[0], labels[-1]], "model_label_space": labels,
-            "confusion_matrix": matrix,
+            "immutable": True,
+            "real_world": True,
+            "task": "sentiment",
+            "support": 2,
+            "dataset": dict(manifest),
+            "labels_in_source": source_labels,
+            "model_label_space": labels,
+            "accuracy": 1.0,
+            "source_label_metrics": {
+                "labels": source_labels,
+                "precision_macro": 1.0,
+                "recall_macro": 1.0,
+                "macro_f1": 1.0,
+                "per_class": {
+                    label: {"precision": 1.0, "recall": 1.0, "f1": 1.0, "support": 1}
+                    for label in source_labels
+                },
+            },
+            "probabilistic_metrics": {
+                "log_loss": 0.1,
+                "brier_score": 0.05,
+                "expected_calibration_error": 0.02,
+            },
+            "neutral_prediction_rate": 0.0,
+            "confusion_matrix": {
+                "expected_labels": source_labels,
+                "predicted_labels": labels,
+                "matrix": confusion,
+            },
+            "uncertainty": {
+                "accuracy_ci95": {"method": "wilson", "confidence_level": 0.95, "low": 0.34, "high": 1.0, "support": 2}
+            },
+            "reviews": [],
         }
 
     monkeypatch.setattr(experiment_module, "execute_pipeline", fake_execute)

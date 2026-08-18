@@ -176,6 +176,29 @@ def evaluate_benchmark(
     }
 
 
+def _source_label_metrics(expected: Sequence[str], predicted: Sequence[str]) -> dict[str, Any]:
+    source_labels = ("negative", "positive")
+    class_metrics: dict[str, dict[str, float | int]] = {}
+    for label in source_labels:
+        tp = sum(left == label and right == label for left, right in zip(expected, predicted, strict=True))
+        fp = sum(left != label and right == label for left, right in zip(expected, predicted, strict=True))
+        fn = sum(left == label and right != label for left, right in zip(expected, predicted, strict=True))
+        support = sum(left == label for left in expected)
+        precision = tp / (tp + fp) if tp + fp else 0.0
+        recall = tp / (tp + fn) if tp + fn else 0.0
+        f1 = 2.0 * precision * recall / (precision + recall) if precision + recall else 0.0
+        class_metrics[label] = {
+            "precision": float(precision), "recall": float(recall), "f1": float(f1), "support": int(support)
+        }
+    return {
+        "labels": list(source_labels),
+        "precision_macro": fmean(float(class_metrics[label]["precision"]) for label in source_labels),
+        "recall_macro": fmean(float(class_metrics[label]["recall"]) for label in source_labels),
+        "macro_f1": fmean(float(class_metrics[label]["f1"]) for label in source_labels),
+        "per_class": class_metrics,
+    }
+
+
 def evaluate_external_sentiment(
     execution: PipelineExecution,
     external_path: Path,
@@ -189,18 +212,30 @@ def evaluate_external_sentiment(
     expected_labels = [row["expected_sentiment"] for row in rows]
     if not set(expected_labels).issubset(label_to_index):
         raise ValueError("External sentiment benchmark contains a label absent from training.")
-    expected = [label_to_index[label] for label in expected_labels]
+    expected_indices = [label_to_index[label] for label in expected_labels]
     probabilities = predict_probabilities(execution.model, [row["text"] for row in rows])
-    predicted = probabilities.argmax(axis=1)
-    correct = int(sum(int(left == right) for left, right in zip(expected, predicted, strict=True)))
+    predicted_indices = probabilities.argmax(axis=1)
+    predicted_labels = [labels[int(index)] for index in predicted_indices]
+    correct = int(sum(left == right for left, right in zip(expected_labels, predicted_labels, strict=True)))
+    label_space_metrics = classification_metrics(expected_indices, probabilities, len(labels))
+    confusion = {
+        expected_label: {
+            predicted_label: sum(
+                left == expected_label and right == predicted_label
+                for left, right in zip(expected_labels, predicted_labels, strict=True)
+            )
+            for predicted_label in labels
+        }
+        for expected_label in ("negative", "positive")
+    }
     reviews = [
         {
             "ID": row["ID"],
             "text": row["text"],
             "expected_sentiment": row["expected_sentiment"],
-            "predicted_sentiment": labels[int(predicted[index])],
-            "confidence": float(probabilities[index][int(predicted[index])]),
-            "correct": bool(expected[index] == int(predicted[index])),
+            "predicted_sentiment": predicted_labels[index],
+            "confidence": float(probabilities[index][int(predicted_indices[index])]),
+            "correct": bool(row["expected_sentiment"] == predicted_labels[index]),
         }
         for index, row in enumerate(rows)
     ]
@@ -213,8 +248,18 @@ def evaluate_external_sentiment(
         "labels_in_source": ["negative", "positive"],
         "model_label_space": labels,
         "support": len(rows),
-        "metrics": classification_metrics(expected, probabilities, len(labels)),
-        "confusion_matrix": build_confusion_matrix(expected, predicted, len(labels)),
+        "accuracy": float(label_space_metrics["accuracy"]),
+        "source_label_metrics": _source_label_metrics(expected_labels, predicted_labels),
+        "probabilistic_metrics": {
+            key: float(label_space_metrics[key])
+            for key in ("log_loss", "brier_score", "expected_calibration_error")
+        },
+        "neutral_prediction_rate": predicted_labels.count("neutral") / len(predicted_labels) if predicted_labels else 0.0,
+        "confusion_matrix": {
+            "expected_labels": ["negative", "positive"],
+            "predicted_labels": labels,
+            "matrix": confusion,
+        },
         "uncertainty": {"accuracy_ci95": wilson_interval(correct, len(rows))},
         "reviews": reviews,
     }

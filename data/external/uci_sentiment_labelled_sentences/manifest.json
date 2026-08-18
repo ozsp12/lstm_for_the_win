@@ -1,0 +1,17 @@
+{
+  "dataset_doi": "10.24432/C57604",
+  "dataset_name": "Sentiment Labelled Sentences",
+  "immutable": true,
+  "labels": [
+    "negative",
+    "positive"
+  ],
+  "license": "CC BY 4.0",
+  "redistribution_note": "UCI lists this dataset under Creative Commons Attribution 4.0 International.",
+  "rows": 1000,
+  "sha256": "47003fc0a0d4840b00e96e715b6189bad09e7443a3da41c4cbe12ffc79f86ae3",
+  "source_member": "sentiment labelled sentences/amazon_cells_labelled.txt",
+  "source_url": "https://archive.ics.uci.edu/static/public/331/sentiment+labelled+sentences.zip",
+  "subset": "Amazon cell-phone review sentences",
+  "task": "sentiment"
+}

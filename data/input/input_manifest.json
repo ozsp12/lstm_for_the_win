@@ -24,59 +24,79 @@
     "vary_counts": true
   },
   "effective_generation": {
-    "emoji_fraction": 0.17513907787228084,
-    "goldtest_fraction": 0.1721502848550569,
-    "incoming_rows": 1920,
-    "profanity_fraction": 0.23167481748331298,
-    "validation_fraction": 0.17034517903804786
+    "emoji_fraction": 0.2162969634195237,
+    "goldtest_fraction": 0.2302380068997209,
+    "incoming_rows": 2040,
+    "profanity_fraction": 0.2374354374222456,
+    "validation_fraction": 0.13397770519263977
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 6,
+  "generation": 1,
   "incoming_emoji_counts": {
-    "0": 1560,
-    "1": 360
+    "0": 1620,
+    "1": 420
   },
-  "incoming_goldtest_count": 360,
+  "incoming_goldtest_count": 480,
   "incoming_length_counts": {
-    "long": 992,
-    "medium": 920,
-    "short": 8
+    "long": 1012,
+    "medium": 1017,
+    "short": 11
   },
   "incoming_linguistic_level_counts": {
-    "advanced": 384,
-    "informal": 384,
-    "limited": 384,
-    "standard": 384,
-    "technical": 384
+    "advanced": 408,
+    "informal": 408,
+    "limited": 408,
+    "standard": 408,
+    "technical": 408
   },
   "incoming_mixed_sentiment_counts": {
-    "0": 1680,
+    "0": 1800,
     "1": 240
   },
   "incoming_profanity_counts": {
-    "0": 1500,
-    "1": 420
+    "0": 1560,
+    "1": 480
   },
   "incoming_slang_counts": {
-    "0": 1500,
+    "0": 1620,
     "1": 420
   },
   "incoming_spelling_error_counts": {
-    "0": 1500,
+    "0": 1620,
     "1": 420
   },
-  "last_issued_id": 25560,
-  "promoted_from_previous_incoming": 300,
+  "incoming_template_family_counts": {
+    "attention": 316,
+    "context_component": 461,
+    "main_impression": 331,
+    "noticed": 317,
+    "stood_out": 340,
+    "using": 275
+  },
+  "last_issued_id": 16140,
+  "promoted_from_previous_incoming": 480,
   "record_counts": {
-    "incoming.csv": 1920,
-    "train.csv": 14280
+    "incoming.csv": 2040,
+    "train.csv": 12480
   },
   "sha256": {
-    "incoming.csv": "b418faa074ba02f3515c8bbfd12b4f8e240b89c42184dd992b2c08bee5fe55e6",
-    "train.csv": "273c12a6ab0c0462163ca1092fd36015b84b94eb060a4c4ca8ac053875f82d1a"
+    "incoming.csv": "87dbefaea039307c96285bd6d5fa94540874ff3e012f513c44d8d37f4877f4c9",
+    "train.csv": "57b59b5e5fee1c3a604d9d43d8f1f605e6435cf5b4be85bcb3f5067cc95d7a52"
+  },
+  "template_family_metadata": {
+    "families": [
+      "noticed",
+      "using",
+      "stood_out",
+      "context_component",
+      "main_impression",
+      "attention"
+    ],
+    "legacy_rows": "backfilled_once_from_rendered_text; new pipeline states persist the value",
+    "materialized": true
   },
   "train_source_counts": {
-    "goldtest": 2280,
+    "goldtest": 480,
     "initial": 12000
   }
 }

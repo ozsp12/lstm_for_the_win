@@ -1,54 +1,72 @@
 # LSTM for the Win
 
-Reproducible continual-learning experiment for Long Short-Term Memory (LSTM) classification of synthetic product reviews by sentiment and product topic.
+Reproducible continual-learning experiment for Long Short-Term Memory (LSTM) classification of product reviews by sentiment and product topic.
 
 **Project page:** https://ozsp12.github.io/en/projects/lstm_ftw/
 
+## Architecture
+
+The package separates persistent state, experiment execution, model code, and artifact construction:
+
+```text
+agents/synthetic_data.py  -> synthetic corpus state
+handler.py                -> controlled state transitions
+template_metadata.py      -> persisted generator-family metadata
+classification/           -> LSTM, baseline, metrics and validation split
+benchmark.py              -> immutable synthetic longitudinal benchmark
+external_benchmark.py     -> immutable real-world UCI sentiment benchmark
+experiment.py             -> experiment orchestration
+run_artifact.py            -> canonical run.json construction
+cli.py                     -> command-line parsing
+```
+
+`handler.py` remains the stable console boundary and delegates scientific execution to `experiment.py`.
+
 ## Data lifecycle
 
-`data/input/train.csv` is the cumulative training corpus. `data/input/incoming.csv` contains the current unseen synthetic batch across five linguistic levels, with variable length, slang, spelling noise, profanity, emojis, and mixed sentiment. After an evaluation, only rows marked `goldtest=1` are promoted to the training corpus; the next incoming batch is then generated. Existing training rows are not automatically deleted when the text-generator version changes.
+`data/input/train.csv` is the cumulative synthetic training corpus. `data/input/incoming.csv` contains the current unseen synthetic batch across five linguistic levels, with variable length, slang, spelling noise, profanity, emojis, and mixed sentiment. After evaluation, only rows marked `goldtest=1` are promoted to training; the next incoming batch is then generated. Existing training rows are not automatically deleted when the text-generator version changes.
 
-`data/input/benchmark.csv` is created once from non-gold rows of the first incoming batch observed after benchmark support is introduced. Because those rows have `goldtest=0`, they are never promoted into training. The file is then treated as immutable and is used as a longitudinal synthetic benchmark across later runs.
+Each generated record has a persisted `template_family`. Legacy rows are backfilled once and the value is then stored in the CSV. Validation therefore groups by metadata rather than inferring structural families during the split.
 
-Workflow runs are incremental. Each run receives its own timestamped directory under `data/output/`, and previous run directories are retained. `data/output/latest.json` is only a pointer to the newest completed run.
+`data/input/benchmark.csv` is an immutable synthetic longitudinal benchmark created from non-gold incoming rows. `benchmark_manifest.json` records its bootstrap generation, provenance and SHA-256. Benchmark rows never enter training.
+
+`data/external/` is strictly evaluation-only. The pipeline uses the Amazon subset of the UCI **Sentiment Labelled Sentences** dataset (DOI `10.24432/C57604`, CC BY 4.0) as an immutable real-world sentiment benchmark. The source contains binary positive/negative labels and no compatible four-class product-topic labels, so external validation is reported for sentiment only. External data never enter the continual-learning loop.
+
+Workflow runs are incremental. Each run receives its own timestamped directory under `data/output/`, previous runs are retained, and `data/output/latest.json` only points to the newest completed run.
 
 ## Run artifact
 
 Each new run persists exactly one analytical artifact:
 
-- `run.json`: immutable canonical record of the experiment. It contains provenance, input hashes, package versions, parameters, validation-split metadata, primary LSTM and TF-IDF logistic-regression metrics, segmented metrics, training history, confidence intervals, merged review-level predictions, multi-seed summaries, and the immutable-benchmark evaluation.
+- `run.json`: immutable canonical record containing provenance, input hashes, environment versions, parameters, structural split metadata, LSTM and TF-IDF logistic-regression metrics, exact paired McNemar comparison, segmented metrics, training history, Wilson intervals, multi-seed summaries with between-seed intervals, review-level predictions, synthetic benchmark evaluation, and real external sentiment evaluation.
 
-No figures, models, duplicate metrics files, prediction CSVs, manifests, or paper-specific analytical tables are stored per run. Any later CSV or Parquet representation is a derived view that can be reconstructed from `run.json` when needed.
-
-The intended data flow is therefore:
+No figures, models, duplicate metrics files, prediction CSVs, manifests, or paper-specific analytical tables are stored per run. CSV or Parquet representations are derived views reconstructed from `run.json` when needed.
 
 ```text
-train.csv + incoming.csv + benchmark.csv
-                 |
-                 v
-              pipeline
-                 |
-                 v
- data/output/<run_id>/run.json
-          /                 \
-     dashboard          paper analysis
+synthetic train/incoming + immutable synthetic benchmark + external sentiment benchmark
+                                   |
+                                   v
+                               pipeline
+                                   |
+                                   v
+                     data/output/<run_id>/run.json
+                            /                    \
+                       dashboard             paper analysis
 ```
 
 ## Experimental safeguards
 
-The internal validation split prefers holding out an entire coarse sentence-template family instead of randomly mixing structurally similar generated phrases between fit and validation. If a dataset does not contain enough distinguishable template families, the software falls back to deterministic label-stratified random splitting and records that fallback in `run.json`.
+The internal validation split prefers holding out an entire persisted sentence-template family instead of mixing structurally similar generated phrases between fit and validation. If a corpus does not support a valid family-level holdout, the fallback is deterministic label-stratified random splitting and the fallback is recorded in `run.json`.
 
-Production runs use a fixed split seed and multiple model seeds. This separates the structural validation partition from model-initialization randomness and allows run-level reporting of mean, population standard deviation, minimum, and maximum metrics across replicates. Accuracy also includes a 95% Wilson confidence interval for the evaluated sample.
+Production runs use a fixed split seed and multiple model seeds. The run reports mean, population and sample standard deviations, range, and a 95% normal-approximation interval across model seeds for comparable metrics. Accuracy also includes a 95% Wilson interval for each evaluated sample. LSTM and TF-IDF baseline correctness are compared on the same incoming observations with an exact two-sided McNemar test.
 
 ## Reproducible environment
 
-`pyproject.toml` remains the high-level package specification. `requirements-lock.txt` freezes the exact Linux / CPython 3.12 environment validated by the production workflow, including transitive dependencies. Both production and validation workflows install from this lock and run `pip check` before executing the experiment. Dependency changes should therefore be intentional: update the high-level constraint if needed, regenerate the lock, and validate the new environment before merging it.
+`pyproject.toml` is the high-level package specification. `requirements-lock.in` defines the direct reproducible environment and `requirements-lock.txt` is the fully resolved hash-locked installation set. CI installs with hash verification and runs `pip check` before model execution. GitHub Actions are pinned to immutable commit SHAs.
 
 ## Evaluation scope
 
-Reported metrics include accuracy, precision, recall, macro and weighted F1, log-loss, Brier score, calibration error, segmented robustness metrics, and a TF-IDF logistic-regression baseline. The bundled corpus and immutable benchmark are synthetic. Results therefore measure behavior under the controlled generator distribution and are not evidence of external real-world generalization.
-
-A real external benchmark should be added only as a separately sourced, licensed, immutable evaluation dataset; it must never enter the synthetic promotion loop.
+Synthetic incoming and synthetic benchmark results characterize the controlled generator distribution. The UCI Amazon subset adds independent real-world evidence for **sentiment only**. Because that source has no compatible topic labels and no neutral class, it does not establish external topic generalization or full three-class sentiment coverage. These limitations are recorded in every new `run.json`.
 
 ## Reproduce
 
@@ -56,7 +74,7 @@ A real external benchmark should be added only as a separately sourced, licensed
 python -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements-lock.txt
+python -m pip install --require-hashes -r requirements-lock.txt
 python -m pip install -e . --no-deps
 python -m pip check
 lstm-pipeline train --run-id local --epochs 20 --replicate-seeds "42,1337,2026"

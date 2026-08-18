@@ -40,15 +40,17 @@ def _task(task: str, labels: list[str]) -> dict[str, object]:
         "metrics": metrics,
         "baseline_metrics": dict(metrics),
         "metric_delta_vs_baseline": {metric: 0.0 for metric in comparable},
-        "uncertainty": {"accuracy_ci95": {"method": "wilson", "low": 0.7, "high": 1.0, "support": len(labels) * 2}},
+        "uncertainty": {
+            "primary_seed_accuracy_ci95": {"method": "wilson", "low": 0.7, "high": 1.0, "support": len(labels) * 2},
+            "across_seed_ci95": {metric: stats["mean_ci95"] for metric, stats in replicate_stats.items()},
+        },
+        "paired_comparison": {"p_value": 1.0},
         "replicates": {"count": 2, "seeds": [42, 43], "metrics": replicate_stats, "baseline_metrics": replicate_stats},
-        "segment_metrics": {"linguistic_level": {"standard": {"accuracy": 1.0}}},
-        "history": {"accuracy": [0.8, 1.0], "loss": [0.4, 0.1]},
         "confusion_matrix": matrix,
     }
 
 
-def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -> None:
+def test_materialized_artifacts_are_wide_deterministic_and_complete(tmp_path: Path) -> None:
     sentiment_labels = ["negative", "neutral", "positive"]
     topic_labels = ["refrigerator", "smartphone", "television", "washing_machine"]
     benchmark = {
@@ -69,20 +71,13 @@ def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -
             "real_world": True,
             "task": "sentiment",
             "support": 3,
-            "labels_in_source": ["negative", "positive"],
-            "model_label_space": sentiment_labels,
             "accuracy": 2 / 3,
-            "source_label_metrics": {
-                "precision_macro": 0.75,
-                "recall_macro": 0.75,
-                "macro_f1": 0.75,
-                "per_class": {
-                    "negative": {"precision": 1.0, "recall": 1.0, "f1": 1.0, "support": 1},
-                    "positive": {"precision": 1.0, "recall": 0.5, "f1": 2 / 3, "support": 2},
-                },
-            },
-            "probabilistic_metrics": {"log_loss": 0.5, "brier_score": 0.2, "expected_calibration_error": 0.1},
+            "full_label_space_accuracy": 2 / 3,
+            "binary_restricted_accuracy": 1.0,
             "neutral_prediction_rate": 1 / 3,
+            "uncertainty": {
+                "binary_restricted_accuracy_ci95": {"method": "wilson", "low": 0.44, "high": 1.0, "support": 3}
+            },
             "confusion_matrix": {
                 "expected_labels": ["negative", "positive"],
                 "predicted_labels": sentiment_labels,
@@ -110,6 +105,7 @@ def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -
                 "mixed_sentiment": 0,
                 "goldtest": 0,
                 "template_family": "using",
+                "input_timestamp": "2026-08-18T12:00:00+00:00",
             }
         ],
     }
@@ -117,7 +113,6 @@ def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -
     run_path.write_text(json.dumps(run, sort_keys=True), encoding="utf-8")
 
     materialize_derived_artifacts(run_path)
-
     csv_path = tmp_path / "article_analysis.csv"
     figures = sorted((tmp_path / "figures").glob("*.svg"))
     assert {path.name for path in figures} == {
@@ -129,10 +124,13 @@ def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -
     }
     with csv_path.open(encoding="utf-8", newline="") as handle:
         rows = list(csv.DictReader(handle))
-    groups = {row["analysis_group"] for row in rows}
-    assert {"aggregate_metric", "benchmark_metric", "external_metric", "external_class_metric", "confusion_matrix", "prediction_record"}.issubset(groups)
-    assert sum(row["analysis_group"] == "prediction_record" for row in rows) == 1
-    assert sum(row["analysis_group"] == "confusion_matrix" and row["dataset"] == "uci_amazon" for row in rows) == 6
+    assert len(rows) == 1
+    assert "analysis_group" not in rows[0]
+    assert rows[0]["review_id"] == "11"
+    assert rows[0]["text"] == "A test review"
+    assert float(rows[0]["sentiment_lstm_accuracy"]) == 1.0
+    assert float(rows[0]["benchmark_sentiment_accuracy"]) == 0.9
+    assert float(rows[0]["external_binary_restricted_accuracy"]) == 1.0
 
     def hashes() -> dict[str, str]:
         files = [csv_path, *figures]
@@ -140,5 +138,4 @@ def test_materialized_artifacts_are_deterministic_and_complete(tmp_path: Path) -
 
     before = hashes()
     materialize_derived_artifacts(run_path)
-    after = hashes()
-    assert before == after
+    assert before == hashes()

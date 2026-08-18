@@ -1,10 +1,9 @@
-"""Command boundary for incremental data transitions, model training, and analysis publication."""
+"""Command boundary for incremental data transitions and immutable run publication."""
 
 from __future__ import annotations
 
 import argparse
 import csv
-import hashlib
 import json
 import os
 import platform
@@ -12,17 +11,19 @@ import re
 import shutil
 import tempfile
 from datetime import UTC, datetime
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any, Sequence
 
 import tensorflow as tf
 
 from .agents import SyntheticDataAgent, SyntheticDataConfig
-from .analysis import export_article_analysis
-from .classification import PipelineConfig, PipelineExecution, execute_pipeline
+from .benchmark import ensure_immutable_benchmark
+from .classification import PipelineConfig, PipelineExecution, PipelineResult, execute_pipeline
+from .run_artifact import build_run_document, evaluate_benchmark, write_run_json
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
-PIPELINE_VERSION = "0.7.0"
+PIPELINE_VERSION = "0.8.0"
 LEGACY_TRAIN_COLUMNS = {
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
     "source", "training_generation", "input_timestamp",
@@ -44,10 +45,6 @@ def _default_run_id() -> str:
 
 def _default_timestamp() -> str:
     return _utc_now().isoformat()
-
-
-def _sha256(path: Path) -> str:
-    return hashlib.sha256(path.read_bytes()).hexdigest()
 
 
 def _read_csv(path: Path) -> list[dict[str, str]]:
@@ -78,17 +75,6 @@ def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list
         raise ValueError("train.csv and incoming.csv must contain disjoint text.")
 
 
-def _wilson_interval(correct: int, total: int, z: float = 1.959963984540054) -> tuple[float, float]:
-    if total <= 0:
-        return 0.0, 0.0
-    p = correct / total
-    z2 = z * z
-    denominator = 1.0 + z2 / total
-    center = (p + z2 / (2.0 * total)) / denominator
-    margin = z * ((p * (1.0 - p) / total + z2 / (4.0 * total * total)) ** 0.5) / denominator
-    return max(0.0, center - margin), min(1.0, center + margin)
-
-
 def _previous_run_id(output_path: Path) -> str | None:
     latest = output_path / "latest.json"
     if not latest.is_file():
@@ -100,62 +86,26 @@ def _previous_run_id(output_path: Path) -> str | None:
     return value if isinstance(value, str) and RUN_ID_PATTERN.fullmatch(value) else None
 
 
-def _task_payload(execution: PipelineExecution) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
-    payload = execution.result.to_dict()
-    predictions = {str(row["ID"]): row for row in payload.pop("predictions")}
-    total = int(payload["incoming_size"])
-    correct = sum(bool(row["correct"]) for row in predictions.values())
-    low, high = _wilson_interval(correct, total)
-    payload["uncertainty"] = {
-        "accuracy_ci95": {
-            "method": "wilson",
-            "confidence_level": 0.95,
-            "low": low,
-            "high": high,
-            "support": total,
-        }
+def _parse_replicate_seeds(value: str | Sequence[int] | None, primary_seed: int) -> list[int]:
+    if value is None:
+        return [primary_seed]
+    if isinstance(value, str):
+        seeds = [int(item.strip()) for item in value.split(",") if item.strip()]
+    else:
+        seeds = [int(item) for item in value]
+    seeds = list(dict.fromkeys([primary_seed, *seeds]))
+    if any(seed < 0 for seed in seeds):
+        raise ValueError("replicate seeds must be non-negative integers.")
+    return seeds
+
+
+def _environment_versions() -> dict[str, str]:
+    packages = {
+        "tensorflow": tf.__version__,
+        "scikit_learn": version("scikit-learn"),
+        "numpy": version("numpy"),
     }
-    return payload, predictions
-
-
-def _merged_reviews(
-    incoming_rows: list[dict[str, str]],
-    sentiment_predictions: dict[str, dict[str, Any]],
-    topic_predictions: dict[str, dict[str, Any]],
-) -> list[dict[str, Any]]:
-    expected_ids = {row["ID"] for row in incoming_rows}
-    if set(sentiment_predictions) != expected_ids or set(topic_predictions) != expected_ids:
-        raise ValueError("Task predictions do not cover every incoming ID.")
-
-    reviews: list[dict[str, Any]] = []
-    for source in incoming_rows:
-        sid = source["ID"]
-        sentiment = sentiment_predictions[sid]
-        topic = topic_predictions[sid]
-        reviews.append(
-            {
-                "ID": int(sid),
-                "text": source["text"],
-                "expected_sentiment": source["expected_sentiment"],
-                "expected_topic": source["expected_topic"],
-                "predicted_sentiment": sentiment["predicted"],
-                "predicted_topic": topic["predicted"],
-                "sentiment_confidence": float(sentiment["confidence"]),
-                "topic_confidence": float(topic["confidence"]),
-                "sentiment_correct": bool(sentiment["correct"]),
-                "topic_correct": bool(topic["correct"]),
-                "linguistic_level": source["linguistic_level"],
-                "flagprofanity": int(source["flagprofanity"]),
-                "hasemoji": int(source.get("hasemoji", sentiment.get("hasemoji", 0))),
-                "hasspellingerror": int(source.get("hasspellingerror", sentiment.get("hasspellingerror", 0))),
-                "hasslang": int(source.get("hasslang", sentiment.get("hasslang", 0))),
-                "length_class": source.get("length_class", sentiment.get("length_class", "")),
-                "mixed_sentiment": int(source.get("mixed_sentiment", sentiment.get("mixed_sentiment", 0))),
-                "goldtest": int(source["goldtest"]),
-                "input_timestamp": source["input_timestamp"],
-            }
-        )
-    return reviews
+    return packages
 
 
 class PipelineHandler:
@@ -191,6 +141,8 @@ class PipelineHandler:
         validation_fraction: float = 0.15,
         patience: int = 3,
         seed: int = 42,
+        split_seed: int = 42,
+        replicate_seeds: str | Sequence[int] | None = None,
     ) -> Path:
         resolved_run_id = run_id or _default_run_id()
         if not RUN_ID_PATTERN.fullmatch(resolved_run_id):
@@ -198,6 +150,7 @@ class PipelineHandler:
         if epochs < 1 or patience < 0:
             raise ValueError("epochs must be positive and patience cannot be negative.")
 
+        seeds = _parse_replicate_seeds(replicate_seeds, seed)
         input_path = Path(input_dir).resolve()
         output_path = Path(output_root).resolve()
         output_path.mkdir(parents=True, exist_ok=True)
@@ -214,14 +167,17 @@ class PipelineHandler:
         if not input_manifest_path.is_file():
             raise FileNotFoundError(f"Input manifest not found: {input_manifest_path}")
         input_manifest = json.loads(input_manifest_path.read_text(encoding="utf-8"))
+        benchmark_path = ensure_immutable_benchmark(input_path)
+        benchmark_rows = _read_csv(benchmark_path)
         parent_run_id = _previous_run_id(output_path)
 
         temporary_path = Path(tempfile.mkdtemp(prefix=f".{resolved_run_id}-", dir=output_path))
         model_timestamp = _default_timestamp()
         try:
-            executions: dict[str, PipelineExecution] = {}
+            primary_executions: dict[str, PipelineExecution] = {}
+            replicate_results: dict[str, list[PipelineResult]] = {"sentiment": [], "topic": []}
             for task in ("sentiment", "topic"):
-                executions[task] = execute_pipeline(
+                primary = execute_pipeline(
                     PipelineConfig(
                         train_path=train_path,
                         incoming_path=incoming_path,
@@ -230,53 +186,70 @@ class PipelineHandler:
                         validation_fraction=validation_fraction,
                         early_stopping_patience=patience,
                         seed=seed,
+                        split_seed=split_seed,
                     )
                 )
+                primary_executions[task] = primary
+                replicate_results[task].append(primary.result)
+                for replicate_seed in seeds:
+                    if replicate_seed == seed:
+                        continue
+                    replicate = execute_pipeline(
+                        PipelineConfig(
+                            train_path=train_path,
+                            incoming_path=incoming_path,
+                            task=task,
+                            epochs=epochs,
+                            validation_fraction=validation_fraction,
+                            early_stopping_patience=patience,
+                            seed=replicate_seed,
+                            split_seed=split_seed,
+                        )
+                    )
+                    replicate_results[task].append(replicate.result)
 
-            sentiment, sentiment_predictions = _task_payload(executions["sentiment"])
-            topic, topic_predictions = _task_payload(executions["topic"])
-            reviews = _merged_reviews(incoming_rows, sentiment_predictions, topic_predictions)
-            input_files = (train_path, incoming_path, input_manifest_path)
-            analysis = {
-                "schema_version": "1.0.0",
-                "run": {
-                    "run_id": resolved_run_id,
-                    "parent_run_id": parent_run_id,
-                    "created_at": _default_timestamp(),
-                    "model_timestamp": model_timestamp,
-                    "status": "complete",
-                    "pipeline_version": PIPELINE_VERSION,
-                    "input_generation": int(input_manifest["generation"]),
-                    "agent_version": input_manifest.get("agent_version"),
-                    "git_sha": os.getenv("GITHUB_SHA", "local"),
-                    "python_version": platform.python_version(),
-                    "tensorflow_version": tf.__version__,
-                    "parameters": {
-                        "epochs": epochs,
-                        "validation_fraction": validation_fraction,
-                        "early_stopping_patience": patience,
-                        "seed": seed,
-                        "max_tokens": 20_000,
-                        "sequence_length": 96,
-                    },
-                    "input_files": {
-                        path.name: {"sha256": _sha256(path), "size_bytes": path.stat().st_size}
-                        for path in input_files
-                    },
+            benchmark = evaluate_benchmark(primary_executions, benchmark_path, benchmark_rows)
+            run_metadata = {
+                "run_id": resolved_run_id,
+                "parent_run_id": parent_run_id,
+                "created_at": _default_timestamp(),
+                "model_timestamp": model_timestamp,
+                "status": "complete",
+                "pipeline_version": PIPELINE_VERSION,
+                "input_generation": int(input_manifest["generation"]),
+                "agent_version": input_manifest.get("agent_version"),
+                "git_sha": os.getenv("GITHUB_SHA", "local"),
+                "python_version": platform.python_version(),
+                "tensorflow_version": tf.__version__,
+                "environment": _environment_versions(),
+                "parameters": {
+                    "epochs": epochs,
+                    "validation_fraction": validation_fraction,
+                    "early_stopping_patience": patience,
+                    "seed": seed,
+                    "split_seed": split_seed,
+                    "replicate_seeds": seeds,
+                    "max_tokens": 20_000,
+                    "sequence_length": 96,
                 },
-                "scope": {
-                    "data_origin": "synthetic",
-                    "evaluation_split": "incoming",
-                    "external_validation": False,
-                    "generalization_claim": "controlled synthetic benchmark only",
-                },
-                "tasks": {"sentiment": sentiment, "topic": topic},
-                "reviews": reviews,
             }
-            (temporary_path / "analysis.json").write_text(
-                json.dumps(analysis, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            scope = {
+                "data_origin": "synthetic",
+                "evaluation_split": "incoming",
+                "immutable_benchmark": True,
+                "external_validation": False,
+                "generalization_claim": "controlled synthetic benchmark only",
+            }
+            document = build_run_document(
+                run_metadata=run_metadata,
+                scope=scope,
+                executions=primary_executions,
+                incoming_rows=incoming_rows,
+                input_files=(train_path, incoming_path, benchmark_path, input_manifest_path),
+                replicate_results=replicate_results,
+                benchmark=benchmark,
             )
-            export_article_analysis(temporary_path)
+            write_run_json(temporary_path, document)
             temporary_path.rename(final_path)
         except Exception:
             shutil.rmtree(temporary_path, ignore_errors=True)
@@ -296,6 +269,8 @@ def _add_training_arguments(parser: argparse.ArgumentParser) -> None:
     parser.add_argument("--validation-fraction", type=float, default=None)
     parser.add_argument("--patience", type=int, default=int(os.getenv("PIPELINE_PATIENCE", "3")))
     parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument("--split-seed", type=int, default=int(os.getenv("PIPELINE_SPLIT_SEED", "42")))
+    parser.add_argument("--replicate-seeds", default=os.getenv("PIPELINE_REPLICATE_SEEDS"))
 
 
 def build_parser() -> argparse.ArgumentParser:
@@ -366,6 +341,8 @@ def main(argv: Sequence[str] | None = None) -> int:
         validation_fraction=validation_fraction,
         patience=arguments.patience,
         seed=arguments.seed,
+        split_seed=arguments.split_seed,
+        replicate_seeds=arguments.replicate_seeds,
     )
 
     response: dict[str, Any] = {

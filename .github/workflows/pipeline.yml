@@ -21,7 +21,7 @@ concurrency:
 jobs:
   pipeline:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 60
 
     steps:
       - name: Check out repository
@@ -83,7 +83,7 @@ jobs:
           print({"train": len(train), "incoming": len(incoming)})
           PY
 
-      - name: Train, evaluate incoming data, promote goldtest, and refresh incoming
+      - name: Train, evaluate, replicate, benchmark, and advance data
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: >-
@@ -93,39 +93,50 @@ jobs:
           --run-id "$RUN_ID"
           --epochs 20
           --patience 3
+          --seed 42
+          --split-seed 42
+          --replicate-seeds "42,1337,2026"
 
-      - name: Verify canonical analysis artifacts
+      - name: Verify single immutable run artifact
         run: |
           RUN_PATH="data/output/$RUN_ID"
-          test -s "$RUN_PATH/analysis.json"
-          test -s "$RUN_PATH/article_analysis.csv"
-          python - "$RUN_PATH/analysis.json" "$RUN_PATH/article_analysis.csv" <<'PY'
-          import csv
+          test -s "$RUN_PATH/run.json"
+          test ! -e "$RUN_PATH/analysis.json"
+          test ! -e "$RUN_PATH/article_analysis.csv"
+          test ! -e "$RUN_PATH/predictions.csv"
+          test ! -e "$RUN_PATH/metrics.json"
+          test ! -e "$RUN_PATH/results.json"
+          test ! -e "$RUN_PATH/run_manifest.json"
+          test ! -e "$RUN_PATH/figures"
+          test -s data/input/benchmark.csv
+          python - "$RUN_PATH/run.json" <<'PY'
           import json
           import sys
           from pathlib import Path
 
-          analysis = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-          assert analysis["schema_version"] == "1.0.0"
-          assert analysis["run"]["status"] == "complete"
-          assert analysis["run"]["run_id"]
-          assert analysis["reviews"]
+          run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert run["schema_version"] == "2.0.0"
+          assert run["artifact_type"] == "experiment_run"
+          assert run["run"]["status"] == "complete"
+          assert run["run"]["run_id"]
+          assert run["scope"]["data_origin"] == "synthetic"
+          assert run["scope"]["immutable_benchmark"] is True
+          assert run["benchmark"]["immutable"] is True
+          assert run["benchmark"]["reviews"]
+          assert run["reviews"]
           for task in ("sentiment", "topic"):
-              result = analysis["tasks"][task]
+              result = run["tasks"][task]
               assert "metrics" in result
               assert "baseline_metrics" in result
               assert "metric_delta_vs_baseline" in result
               assert "segment_metrics" in result
               assert "uncertainty" in result
-          with Path(sys.argv[2]).open(encoding="utf-8", newline="") as handle:
-              rows = list(csv.DictReader(handle))
-          groups = {row["analysis_group"] for row in rows}
-          required = {
-              "aggregate_metrics", "segment_metrics", "confusion_matrix", "classwise_metrics",
-              "class_distribution", "confidence_accuracy", "calibration_bins", "error_summary",
-              "training_history", "validation_incoming_gap", "uncertainty",
-          }
-          assert required.issubset(groups), required - groups
+              assert result["replicates"]["count"] == 3
+              assert len(result["replicates"]["seeds"]) == 3
+              assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
+              benchmark = run["benchmark"]["tasks"][task]
+              assert "metrics" in benchmark
+              assert "uncertainty" in benchmark
           PY
 
       - name: Run automated tests
@@ -133,11 +144,10 @@ jobs:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
-      - name: Commit incremental data state and analysis artifacts
+      - name: Commit incremental data state and run artifact
         run: |
           RUN_PATH="data/output/$RUN_ID"
-          test -f "$RUN_PATH/analysis.json"
-          test -f "$RUN_PATH/article_analysis.csv"
+          test -f "$RUN_PATH/run.json"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add data/input data/output
@@ -148,10 +158,8 @@ jobs:
           git commit -m "data: publish $RUN_ID [skip ci]"
           git push origin HEAD:main
 
-      - name: Upload lean analysis artifacts
+      - name: Upload canonical run artifact
         uses: actions/upload-artifact@v4
         with:
-          name: lstm-analysis-${{ github.run_id }}
-          path: |
-            data/output/${{ env.RUN_ID }}/analysis.json
-            data/output/${{ env.RUN_ID }}/article_analysis.csv
+          name: lstm-run-${{ github.run_id }}
+          path: data/output/${{ env.RUN_ID }}/run.json

@@ -5,11 +5,14 @@ from collections import Counter
 from pathlib import Path
 
 from lstm_for_the_win.classification.data import (
+    ReviewRecord,
     clean_text,
     label_for,
     load_incoming,
     load_train,
     stratified_validation_split,
+    template_family,
+    validation_split,
 )
 
 
@@ -84,3 +87,40 @@ def test_loaders_and_stratified_validation_split(tmp_path: Path) -> None:
         "neutral": 4,
         "positive": 4,
     }
+
+
+def test_validation_split_holds_out_a_whole_template_family() -> None:
+    patterns = (
+        "I noticed that the battery on this phone works well token {token}",
+        "I have been using this phone during normal use and the battery works well token {token}",
+        "The battery is what stood out during normal use it works well token {token}",
+    )
+    sentiments = ("positive", "neutral", "negative")
+    records: list[ReviewRecord] = []
+    review_id = 1
+    for pattern in patterns:
+        for sentiment in sentiments:
+            for repetition in range(4):
+                records.append(
+                    ReviewRecord(
+                        ID=review_id,
+                        text=clean_text(pattern.format(token=f"{sentiment}{repetition}")),
+                        sentiment=sentiment,
+                        topic="smartphone",
+                        linguistic_level="standard",
+                        flagprofanity=0,
+                        input_timestamp="2026-08-15T12:00:00+00:00",
+                        source="initial",
+                        training_generation=0,
+                    )
+                )
+                review_id += 1
+
+    fit, validation, metadata = validation_split(records, "sentiment", 1 / 3, 42)
+    validation_families = {template_family(record.text) for record in validation}
+    fit_families = {template_family(record.text) for record in fit}
+
+    assert metadata["method"] == "template_family_grouped"
+    assert len(validation_families) == 1
+    assert validation_families.isdisjoint(fit_families)
+    assert set(label_for(record, "sentiment") for record in validation) == set(sentiments)

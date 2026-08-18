@@ -6,7 +6,7 @@ from lstm_for_the_win.agents import SyntheticDataAgent, SyntheticDataConfig
 from lstm_for_the_win.classification import PipelineConfig, execute_pipeline
 
 
-def test_pipeline_reports_baseline_segments_and_validation(tmp_path: Path) -> None:
+def test_pipeline_reports_baseline_segments_and_structural_validation(tmp_path: Path) -> None:
     input_dir = tmp_path / "input"
     config = SyntheticDataConfig(
         initial_train_rows=1200,
@@ -37,13 +37,17 @@ def test_pipeline_reports_baseline_segments_and_validation(tmp_path: Path) -> No
             validation_fraction=0.20,
             early_stopping_patience=0,
             seed=42,
+            split_seed=42,
         )
     )
 
     result = execution.result
+    assert result.seed == 42
     assert result.train_size == 1200
     assert result.fit_size + result.validation_size == 1200
     assert result.incoming_size == 1200
+    assert result.validation_split["method"] in {"template_family_grouped", "stratified_random_fallback"}
+    assert 0.0 < float(result.validation_split["actual_fraction"]) < 1.0
     assert set(result.metrics) >= {
         "accuracy",
         "precision_macro",

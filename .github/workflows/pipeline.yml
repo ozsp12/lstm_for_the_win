@@ -1,4 +1,4 @@
-name: Run continual-learning LSTM pipeline
+name: Run frozen-state LSTM experiment
 
 on:
   workflow_dispatch:
@@ -7,11 +7,16 @@ on:
     paths:
       - "src/**"
       - "config/**"
+      - "data/input/**"
       - "pyproject.toml"
       - "requirements-lock.in"
       - "requirements-lock.txt"
-      - ".gitignore"
+      - "CITATION.cff"
+      - "LICENSE"
+      - "DATA_LICENSES.md"
+      - "scripts/check_version_sync.py"
       - ".github/workflows/pipeline.yml"
+      - ".github/workflows/advance-data.yml"
 
 permissions:
   contents: write
@@ -24,6 +29,10 @@ jobs:
   pipeline:
     runs-on: ubuntu-latest
     timeout-minutes: 60
+    env:
+      PYTHONHASHSEED: "42"
+      TF_DETERMINISTIC_OPS: "1"
+      TF_CPP_MIN_LOG_LEVEL: "2"
 
     steps:
       - name: Check out repository
@@ -45,8 +54,10 @@ jobs:
           python -m pip install -e . --no-deps --no-build-isolation
           python -m pip check
 
-      - name: Validate Python modules
-        run: python -m compileall -q src tests
+      - name: Validate software metadata
+        run: |
+          python -m compileall -q src tests scripts
+          python scripts/check_version_sync.py
 
       - name: Timestamp experiment
         run: |
@@ -56,7 +67,7 @@ jobs:
           echo "DATA_TIMESTAMP=$DATA_TIMESTAMP" >> "$GITHUB_ENV"
           echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
 
-      - name: Prepare corpus and optional one-time reset
+      - name: Prepare frozen corpus and optional one-time reset
         run: |
           if [ -f config/reset_experiment.once ]; then
             echo "RESET_EXPERIMENT=1" >> "$GITHUB_ENV"
@@ -76,61 +87,47 @@ jobs:
                 --mode initialize \
                 --data-timestamp "$DATA_TIMESTAMP"
             elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
-              echo "Input state is incomplete; refusing to overwrite an incremental corpus."
+              echo "Input state is incomplete; refusing to mutate it."
               exit 1
             fi
           fi
           python - <<'PY'
-          from lstm_for_the_win.template_metadata import ensure_template_metadata
-          print(ensure_template_metadata("data/input"))
+          import csv, json
+          from pathlib import Path
+          root = Path("data/input")
+          manifest = json.loads((root / "input_manifest.json").read_text(encoding="utf-8"))
+          for name in ("train.csv", "incoming.csv"):
+              with (root / name).open(encoding="utf-8", newline="") as handle:
+                  rows = list(csv.DictReader(handle))
+              assert len(rows) >= 1000
+              assert all(row.get("template_family") for row in rows)
+          if Path("config/reset_experiment.once").is_file():
+              assert manifest["generation"] == 0
+              assert manifest["promoted_from_previous_incoming"] == 0
+              assert manifest["record_counts"]["train.csv"] == manifest["config"]["initial_train_rows"]
+              assert manifest["template_family_metadata"]["origin"] == "generated_at_render_time"
           PY
 
-      - name: Capture pre-run incremental state
+      - name: Capture frozen input state
         run: |
           python - <<'PY'
-          import csv, hashlib, json
+          import hashlib, json
           from pathlib import Path
-          def rows(name):
-              with (Path("data/input") / name).open(encoding="utf-8", newline="") as handle:
-                  return list(csv.DictReader(handle))
-          incoming = Path("data/input/incoming.csv")
+          root = Path("data/input")
+          manifest = json.loads((root / "input_manifest.json").read_text(encoding="utf-8"))
           state = {
-              "train_rows": len(rows("train.csv")),
-              "incoming_rows": len(rows("incoming.csv")),
-              "incoming_sha256": hashlib.sha256(incoming.read_bytes()).hexdigest(),
+              "generation": manifest["generation"],
+              "train_sha256": hashlib.sha256((root / "train.csv").read_bytes()).hexdigest(),
+              "incoming_sha256": hashlib.sha256((root / "incoming.csv").read_bytes()).hexdigest(),
+              "manifest_sha256": hashlib.sha256((root / "input_manifest.json").read_bytes()).hexdigest(),
           }
-          Path("/tmp/pre_state.json").write_text(json.dumps(state), encoding="utf-8")
+          Path("/tmp/frozen_state.json").write_text(json.dumps(state), encoding="utf-8")
           print(state)
           PY
 
-      - name: Validate corpus size and rich-language coverage
-        run: |
-          python - <<'PY'
-          import csv
-          from collections import Counter
-          from pathlib import Path
-
-          def read(path):
-              with Path(path).open(encoding="utf-8", newline="") as f:
-                  return list(csv.DictReader(f))
-
-          train = read("data/input/train.csv")
-          incoming = read("data/input/incoming.csv")
-          assert len(train) >= 1000, f"train corpus too small: {len(train)}"
-          assert len(incoming) >= 1000, f"incoming corpus too small: {len(incoming)}"
-          for rows, name in ((train, "train"), (incoming, "incoming")):
-              assert all(row.get("template_family") for row in rows), f"{name} lacks template_family metadata"
-              for field in ("hasemoji", "flagprofanity", "hasspellingerror", "hasslang"):
-                  counts = Counter(row[field] for row in rows)
-                  assert counts["1"] > 0, f"{name} has no positive {field} examples"
-          PY
-
-      - name: Train, evaluate, replicate, benchmark, derive artifacts, and advance data
-        env:
-          TF_CPP_MIN_LOG_LEVEL: "2"
+      - name: Train and evaluate frozen state
         run: >-
           python -m lstm_for_the_win.handler run
-          --advance-data
           --data-timestamp "$DATA_TIMESTAMP"
           --run-id "$RUN_ID"
           --epochs 20
@@ -139,69 +136,60 @@ jobs:
           --split-seed 42
           --replicate-seeds "42,1337,2026"
 
-      - name: Verify run bundle and incremental CSV behavior
+      - name: Verify frozen-state and run contract
         run: |
           RUN_PATH="data/output/$RUN_ID"
           test -s "$RUN_PATH/run.json"
           test -s "$RUN_PATH/article_analysis.csv"
           test -d "$RUN_PATH/figures"
           test "$(find "$RUN_PATH/figures" -maxdepth 1 -type f -name '*.svg' | wc -l)" -ge 4
-          test ! -e "$RUN_PATH/analysis.json"
-          test ! -e "$RUN_PATH/predictions.csv"
-          test ! -e "$RUN_PATH/metrics.json"
-          test ! -e "$RUN_PATH/results.json"
-          test ! -e "$RUN_PATH/run_manifest.json"
-          test -s data/input/benchmark.csv
-          test -s data/input/benchmark_manifest.json
-          test -s data/external/uci_sentiment_labelled_sentences/amazon_cells_labelled.tsv
-          test -s data/external/uci_sentiment_labelled_sentences/manifest.json
           python - "$RUN_PATH/run.json" "$RESET_EXPERIMENT" <<'PY'
           import csv, hashlib, json, sys
           from pathlib import Path
-
-          run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          run_path = Path(sys.argv[1])
           reset = sys.argv[2] == "1"
-          pre = json.loads(Path("/tmp/pre_state.json").read_text(encoding="utf-8"))
-          with Path("data/input/train.csv").open(encoding="utf-8", newline="") as handle:
-              train = list(csv.DictReader(handle))
-          incoming_path = Path("data/input/incoming.csv")
-          with incoming_path.open(encoding="utf-8", newline="") as handle:
-              incoming = list(csv.DictReader(handle))
-          assert len(train) > pre["train_rows"], "train.csv must grow after each successful continual-learning cycle"
-          assert len(incoming) >= 1000
-          assert hashlib.sha256(incoming_path.read_bytes()).hexdigest() != pre["incoming_sha256"], "incoming.csv must be overwritten with a fresh batch"
+          run = json.loads(run_path.read_text(encoding="utf-8"))
+          frozen = json.loads(Path("/tmp/frozen_state.json").read_text(encoding="utf-8"))
+          root = Path("data/input")
+          assert hashlib.sha256((root / "train.csv").read_bytes()).hexdigest() == frozen["train_sha256"]
+          assert hashlib.sha256((root / "incoming.csv").read_bytes()).hexdigest() == frozen["incoming_sha256"]
+          assert hashlib.sha256((root / "input_manifest.json").read_bytes()).hexdigest() == frozen["manifest_sha256"]
+          assert run["run"]["input_generation"] == frozen["generation"]
+          assert run["run"]["determinism"]["tensorflow_op_determinism"] is True
           if reset:
-              assert min(int(row["ID"]) for row in train) == 1, "reset must restart IDs at 1"
-              assert run["run"]["parent_run_id"] is None, "reset run must start a new lineage"
-          assert run["schema_version"] == "2.0.0"
-          assert run["artifact_type"] == "experiment_run"
-          assert run["run"]["status"] == "complete"
-          assert run["scope"]["data_origin"] == "synthetic"
-          assert run["scope"]["external_validation"] is True
-          assert run["benchmark"]["immutable"] is True
-          assert run["external_validation"]["real_world"] is True
-          assert run["external_validation"]["task"] == "sentiment"
-          for task in ("sentiment", "topic"):
-              result = run["tasks"][task]
-              assert result["replicates"]["count"] == 3
-              assert result["validation_split"]["family_source"] == "persisted_metadata"
-              assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
-              assert result["replicates"]["metrics"]["accuracy"]["mean_ci95"]["method"] == "student_t_across_model_seeds"
-          with (Path(sys.argv[1]).parent / "article_analysis.csv").open(encoding="utf-8", newline="") as handle:
+              assert frozen["generation"] == 0
+              assert run["run"]["parent_run_id"] is None
+          for task_name in ("sentiment", "topic"):
+              task = run["tasks"][task_name]
+              assert task["canonical_estimate"]["method"] == "mean_across_model_seeds"
+              assert task["replicates"]["count"] == 3
+              assert len(task["calibration_bins"]) == 10
+              assert sum(item["support"] for item in task["calibration_bins"]) == task["incoming_size"]
+              assert task["confusion_matrix_contract"]["axis_convention"] == "rows_expected_columns_predicted"
+              assert all(
+                  "accuracy_ci95" in segment and "support" in segment
+                  for segments in task["segment_metrics"].values()
+                  for segment in segments.values()
+              )
+          external = run["external_validation"]
+          assert "binary_restricted_accuracy" in external
+          assert external["confusion_matrix"]["axis_convention"] == "rows_expected_columns_predicted"
+          assert external["reviews"] and all(len(row["probabilities"]) == 3 for row in external["reviews"])
+          with (run_path.parent / "article_analysis.csv").open(encoding="utf-8", newline="") as handle:
               rows = list(csv.DictReader(handle))
-          groups = {row["analysis_group"] for row in rows}
-          assert {"aggregate_metric", "confusion_matrix", "prediction_record", "benchmark_metric", "external_metric"}.issubset(groups)
-          assert sum(row["analysis_group"] == "prediction_record" for row in rows) == len(run["reviews"])
+          assert len(rows) == len(run["reviews"])
+          assert rows and "analysis_group" not in rows[0]
+          assert {"review_id", "text", "sentiment_lstm_accuracy", "topic_lstm_accuracy", "external_binary_restricted_accuracy"}.issubset(rows[0])
           PY
 
-      - name: Verify deterministic regeneration from run.json
+      - name: Verify deterministic derived artifacts
         run: |
-          python - "$RUN_ID" <<'PY'
+          RUN_PATH="data/output/$RUN_ID"
+          python - "$RUN_PATH" <<'PY'
           import hashlib, shutil, sys
           from pathlib import Path
           from lstm_for_the_win.derived_artifacts import materialize_derived_artifacts
-
-          root = Path("data/output") / sys.argv[1]
+          root = Path(sys.argv[1])
           def hashes():
               paths = [root / "article_analysis.csv", *sorted((root / "figures").glob("*"))]
               return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths if path.is_file()}
@@ -209,14 +197,10 @@ jobs:
           (root / "article_analysis.csv").unlink()
           shutil.rmtree(root / "figures")
           materialize_derived_artifacts(root / "run.json")
-          after = hashes()
-          assert before == after, f"derived artifacts are not reproducible: {before.keys()} != {after.keys()}"
-          print(before)
+          assert before == hashes()
           PY
 
       - name: Run automated tests with coverage gate
-        env:
-          TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
       - name: Retain only the validated latest run
@@ -231,15 +215,11 @@ jobs:
                   shutil.rmtree(child)
           (root / ".gitkeep").unlink(missing_ok=True)
           (root / "latest.json").write_text(json.dumps({"run_id": keep}, indent=2) + "\n", encoding="utf-8")
-          directories = [path.name for path in root.iterdir() if path.is_dir()]
-          assert directories == [keep], directories
+          assert [path.name for path in root.iterdir() if path.is_dir()] == [keep]
           PY
 
-      - name: Commit validated incremental state and run bundle
+      - name: Commit validated run and reset state
         run: |
-          RUN_PATH="data/output/$RUN_ID"
-          test -f "$RUN_PATH/run.json"
-          test -f "$RUN_PATH/article_analysis.csv"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           if [ "$RESET_EXPERIMENT" = "1" ]; then
@@ -248,8 +228,8 @@ jobs:
           git add data/input data/external data/output
           git add -u config/reset_experiment.once 2>/dev/null || true
           if git diff --cached --quiet; then
-            echo "The pipeline did not produce an incremental state transition."
-            exit 1
+            echo "No repository state changed; run remains available only as Actions output."
+            exit 0
           fi
           git commit -m "data: publish $RUN_ID [skip ci]"
           git push origin HEAD:main

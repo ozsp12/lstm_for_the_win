@@ -10,7 +10,7 @@ from typing import Any, Callable
 import numpy as np
 
 from .baseline import fit_predict_baseline
-from .data import ReviewRecord, label_for, load_incoming, load_train, stratified_validation_split
+from .data import ReviewRecord, label_for, load_incoming, load_train, validation_split
 from .model import (
     build_confusion_matrix,
     build_lstm_model,
@@ -38,6 +38,7 @@ class PipelineConfig:
     validation_fraction: float = 0.15
     early_stopping_patience: int = 3
     seed: int = 42
+    split_seed: int = 42
 
 
 @dataclass(frozen=True)
@@ -45,12 +46,14 @@ class PipelineResult:
     """Serializable evaluation results for one task."""
 
     task: str
+    seed: int
     train_size: int
     fit_size: int
     validation_size: int
     incoming_size: int
     labels: list[str]
     label_counts: dict[str, int]
+    validation_split: dict[str, Any]
     metrics: dict[str, float]
     baseline_metrics: dict[str, float]
     metric_delta_vs_baseline: dict[str, float]
@@ -118,11 +121,11 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
     set_global_seed(config.seed)
     train_records = load_train(config.train_path)
     incoming_records = load_incoming(config.incoming_path)
-    fit_records, validation_records = stratified_validation_split(
+    fit_records, validation_records, split_metadata = validation_split(
         train_records,
         config.task,
         config.validation_fraction,
-        config.seed,
+        config.split_seed,
     )
 
     labels = sorted({label_for(record, config.task) for record in train_records})
@@ -198,12 +201,14 @@ def execute_pipeline(config: PipelineConfig) -> PipelineExecution:
 
     result = PipelineResult(
         task=config.task,
+        seed=config.seed,
         train_size=len(train_records),
         fit_size=len(fit_records),
         validation_size=len(validation_records),
         incoming_size=len(incoming_records),
         labels=labels,
         label_counts=dict(sorted(Counter(label_for(record, config.task) for record in train_records).items())),
+        validation_split=split_metadata,
         metrics=metrics,
         baseline_metrics=baseline_metrics,
         metric_delta_vs_baseline=delta,

@@ -39,11 +39,10 @@ jobs:
           cache: pip
           cache-dependency-path: requirements-lock.txt
 
-      - name: Install locked dependencies
+      - name: Install hash-locked dependencies
         run: |
-          python -m pip install --upgrade pip
-          python -m pip install -r requirements-lock.txt
-          python -m pip install -e . --no-deps
+          python -m pip install --require-hashes -r requirements-lock.txt
+          python -m pip install -e . --no-deps --no-build-isolation
           python -m pip check
 
       - name: Validate Python modules
@@ -145,6 +144,7 @@ jobs:
           assert run["external_validation"]["real_world"] is True
           assert run["external_validation"]["task"] == "sentiment"
           assert run["external_validation"]["support"] == 1000
+          assert set(run["external_validation"]["labels_in_source"]) == {"negative", "positive"}
           assert run["reviews"]
           for task in ("sentiment", "topic"):
               result = run["tasks"][task]
@@ -158,7 +158,7 @@ jobs:
               assert result["validation_split"]["family_source"] == "persisted_metadata"
               assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
               assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
-              assert "mean_ci95_normal" in result["replicates"]["metrics"]["accuracy"]
+              assert result["replicates"]["metrics"]["accuracy"]["mean_ci95"]["method"] == "student_t_across_model_seeds"
               benchmark = run["benchmark"]["tasks"][task]
               assert "metrics" in benchmark
               assert "uncertainty" in benchmark

@@ -15,7 +15,7 @@ concurrency:
 jobs:
   validate:
     runs-on: ubuntu-latest
-    timeout-minutes: 25
+    timeout-minutes: 30
 
     steps:
       - name: Check out repository
@@ -53,43 +53,49 @@ jobs:
               assert len(rows) >= 1000, f"{name} has only {len(rows)} rows"
           PY
 
-      - name: Smoke-test both classifiers and canonical analysis export
+      - name: Smoke-test classifiers, benchmark and run JSON
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: >-
           python -m lstm_for_the_win.handler train
           --output-root artifacts/validation
           --run-id validation-${{ github.run_id }}
-          --epochs 3
+          --epochs 2
           --patience 1
+          --seed 42
+          --split-seed 42
+          --replicate-seeds "42,43"
 
-      - name: Validate lean run contract
+      - name: Validate single-run contract
         run: |
           RUN_PATH="artifacts/validation/validation-${{ github.run_id }}"
-          test -s "$RUN_PATH/analysis.json"
-          test -s "$RUN_PATH/article_analysis.csv"
+          test -s "$RUN_PATH/run.json"
+          test ! -e "$RUN_PATH/analysis.json"
+          test ! -e "$RUN_PATH/article_analysis.csv"
           test ! -e "$RUN_PATH/predictions.csv"
           test ! -e "$RUN_PATH/metrics.json"
           test ! -e "$RUN_PATH/results.json"
           test ! -e "$RUN_PATH/run_manifest.json"
           test ! -e "$RUN_PATH/figures"
-          python - "$RUN_PATH/analysis.json" "$RUN_PATH/article_analysis.csv" <<'PY'
-          import csv
+          test -s data/input/benchmark.csv
+          python - "$RUN_PATH/run.json" <<'PY'
           import json
           import sys
           from pathlib import Path
-          analysis = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
-          assert analysis["schema_version"] == "1.0.0"
-          assert set(analysis["tasks"]) == {"sentiment", "topic"}
-          assert analysis["reviews"]
-          with Path(sys.argv[2]).open(encoding="utf-8", newline="") as handle:
-              rows = list(csv.DictReader(handle))
-          groups = {row["analysis_group"] for row in rows}
-          assert "confusion_matrix" in groups
-          assert "classwise_metrics" in groups
-          assert "calibration_bins" in groups
-          assert "training_history" in groups
-          assert "uncertainty" in groups
+
+          run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          assert run["schema_version"] == "2.0.0"
+          assert run["artifact_type"] == "experiment_run"
+          assert set(run["tasks"]) == {"sentiment", "topic"}
+          assert run["reviews"]
+          assert run["benchmark"]["immutable"] is True
+          assert run["benchmark"]["reviews"]
+          for task in ("sentiment", "topic"):
+              result = run["tasks"][task]
+              assert result["replicates"]["count"] == 2
+              assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
+              assert "accuracy_ci95" in result["uncertainty"]
+              assert "metrics" in run["benchmark"]["tasks"][task]
           PY
 
       - name: Run automated tests

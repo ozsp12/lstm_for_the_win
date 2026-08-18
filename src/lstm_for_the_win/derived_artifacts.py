@@ -8,7 +8,7 @@ import shutil
 from argparse import ArgumentParser
 from html import escape
 from pathlib import Path
-from typing import Any, Iterable, Mapping, Sequence
+from typing import Any, Iterable, Mapping
 
 CSV_FIELDS = [
     "analysis_group", "run_id", "input_generation", "dataset", "task", "model",
@@ -69,19 +69,13 @@ def _metric_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
                 yield row
 
 
-def _confusion_rows(
-    run: Mapping[str, Any],
-    dataset: str,
-    task: str,
-    payload: Mapping[str, Any],
-    labels: Sequence[str] | None = None,
-) -> Iterable[dict[str, Any]]:
-    resolved_labels = list(labels if labels is not None else payload["labels"])
+def _square_confusion_rows(run: Mapping[str, Any], dataset: str, task: str, payload: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
+    labels = list(payload["labels"])
     matrix = payload["confusion_matrix"]
-    if len(matrix) != len(resolved_labels) or any(len(row) != len(resolved_labels) for row in matrix):
+    if len(matrix) != len(labels) or any(len(row) != len(labels) for row in matrix):
         raise ValueError(f"Confusion matrix shape does not match labels for {dataset}/{task}.")
-    for i, expected in enumerate(resolved_labels):
-        for j, predicted in enumerate(resolved_labels):
+    for i, expected in enumerate(labels):
+        for j, predicted in enumerate(labels):
             row = _blank(run, "confusion_matrix", dataset=dataset, task=task, model="lstm")
             row.update(expected_label=expected, predicted_label=predicted, value=matrix[i][j])
             yield row
@@ -94,21 +88,38 @@ def _benchmark_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
             row = _blank(run, "benchmark_metric", dataset="synthetic_benchmark", task=task, model="lstm")
             row.update(metric=metric, value=value, support=payload.get("support", ""))
             yield row
-        yield from _confusion_rows(run, "synthetic_benchmark", task, payload)
+        yield from _square_confusion_rows(run, "synthetic_benchmark", task, payload)
 
     external = run.get("external_validation") or {}
-    if external:
-        for metric, value in sorted(external.get("metrics", {}).items()):
-            row = _blank(run, "external_metric", dataset="uci_amazon", task="sentiment", model="lstm")
-            row.update(metric=metric, value=value, support=external.get("support", ""))
+    if not external:
+        return
+    scalar_metrics = {
+        "accuracy": external.get("accuracy"),
+        "neutral_prediction_rate": external.get("neutral_prediction_rate"),
+        **external.get("probabilistic_metrics", {}),
+    }
+    source = external.get("source_label_metrics", {})
+    for metric in ("precision_macro", "recall_macro", "macro_f1"):
+        if metric in source:
+            scalar_metrics[f"source_{metric}"] = source[metric]
+    for metric, value in sorted((key, value) for key, value in scalar_metrics.items() if value is not None):
+        row = _blank(run, "external_metric", dataset="uci_amazon", task="sentiment", model="lstm")
+        row.update(metric=metric, value=value, support=external.get("support", ""))
+        yield row
+    for label, metrics in sorted(source.get("per_class", {}).items()):
+        for metric, value in sorted(metrics.items()):
+            row = _blank(run, "external_class_metric", dataset="uci_amazon", task="sentiment", model="lstm")
+            row.update(metric=metric, dimension="expected_class", segment=label, value=value, support=metrics.get("support", ""))
             yield row
-        yield from _confusion_rows(
-            run,
-            "uci_amazon",
-            "sentiment",
-            external,
-            labels=external.get("model_label_space", external.get("labels_in_source", [])),
-        )
+    confusion = external.get("confusion_matrix", {})
+    row_labels = confusion.get("expected_labels", [])
+    column_labels = confusion.get("predicted_labels", [])
+    matrix = confusion.get("matrix", {})
+    for expected in row_labels:
+        for predicted in column_labels:
+            row = _blank(run, "confusion_matrix", dataset="uci_amazon", task="sentiment", model="lstm")
+            row.update(expected_label=expected, predicted_label=predicted, value=matrix[expected][predicted])
+            yield row
 
 
 def _prediction_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
@@ -132,7 +143,7 @@ def _prediction_rows(run: Mapping[str, Any]) -> Iterable[dict[str, Any]]:
 def build_article_rows(run: Mapping[str, Any]) -> list[dict[str, Any]]:
     rows = list(_metric_rows(run))
     for task, payload in run["tasks"].items():
-        rows.extend(_confusion_rows(run, "incoming", task, payload))
+        rows.extend(_square_confusion_rows(run, "incoming", task, payload))
     rows.extend(_benchmark_rows(run))
     rows.extend(_prediction_rows(run))
     return rows
@@ -176,27 +187,30 @@ def _bar_svg(title: str, labels: list[str], values: list[float], destination: Pa
     destination.write_text(_svg_document(title, "\n".join(parts)), encoding="utf-8")
 
 
-def _heatmap_svg(title: str, labels: list[str], matrix: list[list[int]], destination: Path) -> None:
-    if not labels or not matrix:
+def _rect_heatmap_svg(title: str, row_labels: list[str], column_labels: list[str], matrix: list[list[int]], destination: Path) -> None:
+    if not row_labels or not column_labels or not matrix:
         raise ValueError(f"Cannot render empty confusion matrix: {title}")
-    n = len(labels)
-    if len(matrix) != n or any(len(row) != n for row in matrix):
+    if len(matrix) != len(row_labels) or any(len(row) != len(column_labels) for row in matrix):
         raise ValueError(f"Confusion matrix shape does not match labels: {title}")
-    cell = min(110, int(420 / max(1, n)))
+    cell = min(110, int(420 / max(1, max(len(row_labels), len(column_labels)))))
     x0, y0 = 280, 110
     maximum = max(1, max(max(row) for row in matrix))
     parts: list[str] = []
-    for j, label in enumerate(labels):
+    for j, label in enumerate(column_labels):
         parts.append(f'<text x="{x0+j*cell+cell/2:.1f}" y="{y0-18}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(label.replace("_", " "))}</text>')
-    for i, expected in enumerate(labels):
+    for i, expected in enumerate(row_labels):
         parts.append(f'<text x="{x0-18}" y="{y0+i*cell+cell/2+5:.1f}" text-anchor="end" font-family="DejaVu Sans, Arial, sans-serif" font-size="14">{escape(expected.replace("_", " "))}</text>')
         for j, value in enumerate(matrix[i]):
             opacity = 0.12 + 0.78 * (value / maximum)
             parts.append(f'<rect x="{x0+j*cell}" y="{y0+i*cell}" width="{cell}" height="{cell}" fill="#4c78a8" fill-opacity="{opacity:.4f}" stroke="white"/>')
             parts.append(f'<text x="{x0+j*cell+cell/2:.1f}" y="{y0+i*cell+cell/2+6:.1f}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="16">{value}</text>')
-    parts.append(f'<text x="{x0 + n*cell/2:.1f}" y="{y0+n*cell+44}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Predicted</text>')
-    parts.append(f'<text x="55" y="{y0+n*cell/2:.1f}" transform="rotate(-90 55 {y0+n*cell/2:.1f})" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Expected</text>')
+    parts.append(f'<text x="{x0 + len(column_labels)*cell/2:.1f}" y="{y0+len(row_labels)*cell+44}" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Predicted</text>')
+    parts.append(f'<text x="55" y="{y0+len(row_labels)*cell/2:.1f}" transform="rotate(-90 55 {y0+len(row_labels)*cell/2:.1f})" text-anchor="middle" font-family="DejaVu Sans, Arial, sans-serif" font-size="15">Expected</text>')
     destination.write_text(_svg_document(title, "\n".join(parts)), encoding="utf-8")
+
+
+def _square_heatmap_svg(title: str, labels: list[str], matrix: list[list[int]], destination: Path) -> None:
+    _rect_heatmap_svg(title, labels, labels, matrix, destination)
 
 
 def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
@@ -211,8 +225,8 @@ def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
         [sentiment["metrics"]["accuracy"], sentiment["baseline_metrics"]["accuracy"], topic["metrics"]["accuracy"], topic["baseline_metrics"]["accuracy"]],
         directory / "incoming_model_accuracy.svg",
     )
-    _heatmap_svg("Incoming sentiment confusion matrix", sentiment["labels"], sentiment["confusion_matrix"], directory / "incoming_sentiment_confusion.svg")
-    _heatmap_svg("Incoming topic confusion matrix", topic["labels"], topic["confusion_matrix"], directory / "incoming_topic_confusion.svg")
+    _square_heatmap_svg("Incoming sentiment confusion matrix", sentiment["labels"], sentiment["confusion_matrix"], directory / "incoming_sentiment_confusion.svg")
+    _square_heatmap_svg("Incoming topic confusion matrix", topic["labels"], topic["confusion_matrix"], directory / "incoming_topic_confusion.svg")
     benchmark = run.get("benchmark", {}).get("tasks", {})
     if benchmark:
         _bar_svg(
@@ -223,8 +237,11 @@ def write_figures(run: Mapping[str, Any], directory: Path) -> Path:
         )
     external = run.get("external_validation")
     if external:
-        labels = list(external.get("model_label_space", external.get("labels_in_source", [])))
-        _heatmap_svg("External UCI Amazon sentiment confusion matrix", labels, external["confusion_matrix"], directory / "external_sentiment_confusion.svg")
+        confusion = external["confusion_matrix"]
+        row_labels = list(confusion["expected_labels"])
+        column_labels = list(confusion["predicted_labels"])
+        matrix = [[int(confusion["matrix"][expected][predicted]) for predicted in column_labels] for expected in row_labels]
+        _rect_heatmap_svg("External UCI Amazon sentiment confusion matrix", row_labels, column_labels, matrix, directory / "external_sentiment_confusion.svg")
     return directory
 
 

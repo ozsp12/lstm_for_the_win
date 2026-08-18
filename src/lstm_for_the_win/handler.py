@@ -1,4 +1,4 @@
-"""Command boundary for data-state transitions, model training, and artifact publication."""
+"""Command boundary for incremental data transitions, model training, and analysis publication."""
 
 from __future__ import annotations
 
@@ -18,9 +18,11 @@ from typing import Any, Sequence
 import tensorflow as tf
 
 from .agents import SyntheticDataAgent, SyntheticDataConfig
+from .analysis import export_article_analysis
 from .classification import PipelineConfig, PipelineExecution, execute_pipeline
 
 RUN_ID_PATTERN = re.compile(r"^[A-Za-z0-9._-]+$")
+PIPELINE_VERSION = "0.7.0"
 LEGACY_TRAIN_COLUMNS = {
     "ID", "text", "sentiment", "topic", "linguistic_level", "flagprofanity",
     "source", "training_generation", "input_timestamp",
@@ -55,13 +57,6 @@ def _read_csv(path: Path) -> list[dict[str, str]]:
         return list(csv.DictReader(file))
 
 
-def _write_csv(path: Path, rows: list[dict[str, Any]], fieldnames: Sequence[str]) -> None:
-    with path.open("w", encoding="utf-8", newline="") as file:
-        writer = csv.DictWriter(file, fieldnames=fieldnames, lineterminator="\n")
-        writer.writeheader()
-        writer.writerows(rows)
-
-
 def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list[dict[str, str]]) -> None:
     if not train_rows or not LEGACY_TRAIN_COLUMNS.issubset(train_rows[0]):
         raise ValueError("train.csv does not use the expected schema.")
@@ -83,12 +78,84 @@ def _validate_input_schema(train_rows: list[dict[str, str]], incoming_rows: list
         raise ValueError("train.csv and incoming.csv must contain disjoint text.")
 
 
-def _compact_metrics(results: dict[str, dict[str, Any]]) -> dict[str, dict[str, Any]]:
-    fields = (
-        "task", "train_size", "fit_size", "validation_size", "incoming_size", "labels",
-        "metrics", "baseline_metrics", "metric_delta_vs_baseline", "segment_metrics",
-    )
-    return {task: {field: result[field] for field in fields} for task, result in results.items()}
+def _wilson_interval(correct: int, total: int, z: float = 1.959963984540054) -> tuple[float, float]:
+    if total <= 0:
+        return 0.0, 0.0
+    p = correct / total
+    z2 = z * z
+    denominator = 1.0 + z2 / total
+    center = (p + z2 / (2.0 * total)) / denominator
+    margin = z * ((p * (1.0 - p) / total + z2 / (4.0 * total * total)) ** 0.5) / denominator
+    return max(0.0, center - margin), min(1.0, center + margin)
+
+
+def _previous_run_id(output_path: Path) -> str | None:
+    latest = output_path / "latest.json"
+    if not latest.is_file():
+        return None
+    try:
+        value = json.loads(latest.read_text(encoding="utf-8")).get("run_id")
+    except (json.JSONDecodeError, OSError):
+        return None
+    return value if isinstance(value, str) and RUN_ID_PATTERN.fullmatch(value) else None
+
+
+def _task_payload(execution: PipelineExecution) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
+    payload = execution.result.to_dict()
+    predictions = {str(row["ID"]): row for row in payload.pop("predictions")}
+    total = int(payload["incoming_size"])
+    correct = sum(bool(row["correct"]) for row in predictions.values())
+    low, high = _wilson_interval(correct, total)
+    payload["uncertainty"] = {
+        "accuracy_ci95": {
+            "method": "wilson",
+            "confidence_level": 0.95,
+            "low": low,
+            "high": high,
+            "support": total,
+        }
+    }
+    return payload, predictions
+
+
+def _merged_reviews(
+    incoming_rows: list[dict[str, str]],
+    sentiment_predictions: dict[str, dict[str, Any]],
+    topic_predictions: dict[str, dict[str, Any]],
+) -> list[dict[str, Any]]:
+    expected_ids = {row["ID"] for row in incoming_rows}
+    if set(sentiment_predictions) != expected_ids or set(topic_predictions) != expected_ids:
+        raise ValueError("Task predictions do not cover every incoming ID.")
+
+    reviews: list[dict[str, Any]] = []
+    for source in incoming_rows:
+        sid = source["ID"]
+        sentiment = sentiment_predictions[sid]
+        topic = topic_predictions[sid]
+        reviews.append(
+            {
+                "ID": int(sid),
+                "text": source["text"],
+                "expected_sentiment": source["expected_sentiment"],
+                "expected_topic": source["expected_topic"],
+                "predicted_sentiment": sentiment["predicted"],
+                "predicted_topic": topic["predicted"],
+                "sentiment_confidence": float(sentiment["confidence"]),
+                "topic_confidence": float(topic["confidence"]),
+                "sentiment_correct": bool(sentiment["correct"]),
+                "topic_correct": bool(topic["correct"]),
+                "linguistic_level": source["linguistic_level"],
+                "flagprofanity": int(source["flagprofanity"]),
+                "hasemoji": int(source.get("hasemoji", sentiment.get("hasemoji", 0))),
+                "hasspellingerror": int(source.get("hasspellingerror", sentiment.get("hasspellingerror", 0))),
+                "hasslang": int(source.get("hasslang", sentiment.get("hasslang", 0))),
+                "length_class": source.get("length_class", sentiment.get("length_class", "")),
+                "mixed_sentiment": int(source.get("mixed_sentiment", sentiment.get("mixed_sentiment", 0))),
+                "goldtest": int(source["goldtest"]),
+                "input_timestamp": source["input_timestamp"],
+            }
+        )
+    return reviews
 
 
 class PipelineHandler:
@@ -147,12 +214,11 @@ class PipelineHandler:
         if not input_manifest_path.is_file():
             raise FileNotFoundError(f"Input manifest not found: {input_manifest_path}")
         input_manifest = json.loads(input_manifest_path.read_text(encoding="utf-8"))
+        parent_run_id = _previous_run_id(output_path)
 
         temporary_path = Path(tempfile.mkdtemp(prefix=f".{resolved_run_id}-", dir=output_path))
         model_timestamp = _default_timestamp()
         try:
-            models_path = temporary_path / "models"
-            models_path.mkdir()
             executions: dict[str, PipelineExecution] = {}
             for task in ("sentiment", "topic"):
                 executions[task] = execute_pipeline(
@@ -166,53 +232,51 @@ class PipelineHandler:
                         seed=seed,
                     )
                 )
-                executions[task].model.save(models_path / f"{task}.keras")
 
-            results = {task: execution.result.to_dict() for task, execution in executions.items()}
-            (temporary_path / "results.json").write_text(
-                json.dumps(results, indent=2, sort_keys=True) + "\n", encoding="utf-8"
-            )
-            (temporary_path / "metrics.json").write_text(
-                json.dumps(_compact_metrics(results), indent=2, sort_keys=True) + "\n", encoding="utf-8"
-            )
-            self._write_predictions(
-                temporary_path, incoming_rows, executions["sentiment"], executions["topic"], model_timestamp
-            )
-
+            sentiment, sentiment_predictions = _task_payload(executions["sentiment"])
+            topic, topic_predictions = _task_payload(executions["topic"])
+            reviews = _merged_reviews(incoming_rows, sentiment_predictions, topic_predictions)
             input_files = (train_path, incoming_path, input_manifest_path)
-            manifest = {
-                "run_id": resolved_run_id,
-                "created_at": _default_timestamp(),
-                "model_timestamp": model_timestamp,
-                "status": "complete",
-                "pipeline_version": "0.6.0",
-                "input_generation": int(input_manifest["generation"]),
-                "git_sha": os.getenv("GITHUB_SHA", "local"),
-                "python_version": platform.python_version(),
-                "tensorflow_version": tf.__version__,
-                "parameters": {
-                    "epochs": epochs,
-                    "validation_fraction": validation_fraction,
-                    "early_stopping_patience": patience,
-                    "seed": seed,
-                    "max_tokens": 20_000,
-                    "sequence_length": 96,
+            analysis = {
+                "schema_version": "1.0.0",
+                "run": {
+                    "run_id": resolved_run_id,
+                    "parent_run_id": parent_run_id,
+                    "created_at": _default_timestamp(),
+                    "model_timestamp": model_timestamp,
+                    "status": "complete",
+                    "pipeline_version": PIPELINE_VERSION,
+                    "input_generation": int(input_manifest["generation"]),
+                    "agent_version": input_manifest.get("agent_version"),
+                    "git_sha": os.getenv("GITHUB_SHA", "local"),
+                    "python_version": platform.python_version(),
+                    "tensorflow_version": tf.__version__,
+                    "parameters": {
+                        "epochs": epochs,
+                        "validation_fraction": validation_fraction,
+                        "early_stopping_patience": patience,
+                        "seed": seed,
+                        "max_tokens": 20_000,
+                        "sequence_length": 96,
+                    },
+                    "input_files": {
+                        path.name: {"sha256": _sha256(path), "size_bytes": path.stat().st_size}
+                        for path in input_files
+                    },
                 },
-                "input_files": {
-                    path.name: {"sha256": _sha256(path), "size_bytes": path.stat().st_size}
-                    for path in input_files
+                "scope": {
+                    "data_origin": "synthetic",
+                    "evaluation_split": "incoming",
+                    "external_validation": False,
+                    "generalization_claim": "controlled synthetic benchmark only",
                 },
-                "outputs": {
-                    "results": "results.json",
-                    "metrics": "metrics.json",
-                    "predictions": "predictions.csv",
-                    "sentiment_model": "models/sentiment.keras",
-                    "topic_model": "models/topic.keras",
-                },
+                "tasks": {"sentiment": sentiment, "topic": topic},
+                "reviews": reviews,
             }
-            (temporary_path / "run_manifest.json").write_text(
-                json.dumps(manifest, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+            (temporary_path / "analysis.json").write_text(
+                json.dumps(analysis, indent=2, sort_keys=True) + "\n", encoding="utf-8"
             )
+            export_article_analysis(temporary_path)
             temporary_path.rename(final_path)
         except Exception:
             shutil.rmtree(temporary_path, ignore_errors=True)
@@ -222,58 +286,6 @@ class PipelineHandler:
             json.dumps({"run_id": resolved_run_id}, indent=2) + "\n", encoding="utf-8"
         )
         return final_path
-
-    @staticmethod
-    def _write_predictions(
-        destination: Path,
-        incoming_rows: list[dict[str, str]],
-        sentiment: PipelineExecution,
-        topic: PipelineExecution,
-        model_timestamp: str,
-    ) -> None:
-        sentiment_by_id = {str(row["ID"]): row for row in sentiment.result.predictions}
-        topic_by_id = {str(row["ID"]): row for row in topic.result.predictions}
-        expected_ids = {row["ID"] for row in incoming_rows}
-        if set(sentiment_by_id) != expected_ids or set(topic_by_id) != expected_ids:
-            raise ValueError("Predictions do not cover every incoming ID.")
-
-        rows = []
-        for source in incoming_rows:
-            sid = source["ID"]
-            rich = sentiment_by_id[sid]
-            rows.append({
-                "ID": sid,
-                "text": source["text"],
-                "expected_sentiment": source["expected_sentiment"],
-                "expected_topic": source["expected_topic"],
-                "predicted_sentiment": sentiment_by_id[sid]["predicted"],
-                "predicted_topic": topic_by_id[sid]["predicted"],
-                "sentiment_confidence": sentiment_by_id[sid]["confidence"],
-                "topic_confidence": topic_by_id[sid]["confidence"],
-                "sentiment_correct": sentiment_by_id[sid]["correct"],
-                "topic_correct": topic_by_id[sid]["correct"],
-                "linguistic_level": source["linguistic_level"],
-                "flagprofanity": source["flagprofanity"],
-                "hasemoji": rich["hasemoji"],
-                "hasspellingerror": rich["hasspellingerror"],
-                "hasslang": rich["hasslang"],
-                "length_class": rich["length_class"],
-                "mixed_sentiment": rich["mixed_sentiment"],
-                "goldtest": source["goldtest"],
-                "input_timestamp": source["input_timestamp"],
-                "model_timestamp": model_timestamp,
-            })
-        _write_csv(
-            destination / "predictions.csv",
-            rows,
-            (
-                "ID", "text", "expected_sentiment", "expected_topic", "predicted_sentiment",
-                "predicted_topic", "sentiment_confidence", "topic_confidence", "sentiment_correct",
-                "topic_correct", "linguistic_level", "flagprofanity", "hasemoji",
-                "hasspellingerror", "hasslang", "length_class", "mixed_sentiment", "goldtest",
-                "input_timestamp", "model_timestamp",
-            ),
-        )
 
 
 def _add_training_arguments(parser: argparse.ArgumentParser) -> None:
@@ -293,7 +305,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     commands = parser.add_subparsers(dest="command", required=True)
 
-    generate = commands.add_parser("generate-data", help="Initialize or advance versioned input data.")
+    generate = commands.add_parser("generate-data", help="Initialize or advance incremental input data.")
     generate.add_argument("--config", default="config/synthetic_data.json")
     generate.add_argument("--input-dir", default="data/input")
     generate.add_argument("--mode", choices=("initialize", "advance"), default="advance")

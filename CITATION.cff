@@ -1,0 +1,12 @@
+cff-version: 1.2.0
+message: "If you use this software or its experimental outputs, please cite it using this metadata."
+title: "LSTM for the Win"
+type: software
+authors:
+  - family-names: "Santos-Pereira"
+    given-names: "Osvaldo L."
+repository-code: "https://github.com/ozsp12/lstm_for_the_win"
+url: "https://ozsp12.github.io/en/projects/lstm_ftw/"
+version: "0.7.0"
+date-released: "2026-08-17"
+license: "proprietary"

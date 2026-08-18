@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import json
 from pathlib import Path
 
 from lstm_for_the_win.agents import SyntheticDataAgent, SyntheticDataConfig
@@ -24,15 +25,19 @@ def test_benchmark_is_bootstrapped_once_and_never_promoted(tmp_path: Path) -> No
     agent = SyntheticDataAgent(config)
     agent.initialize(input_dir, "2026-08-15T12:00:00+00:00")
 
-    benchmark_path = ensure_immutable_benchmark(input_dir)
+    benchmark_path, manifest = ensure_immutable_benchmark(input_dir)
     original = benchmark_path.read_bytes()
     benchmark = _rows(benchmark_path)
     assert len(benchmark) == 600
     assert {row["goldtest"] for row in benchmark} == {"0"}
+    assert manifest["source_generation"] == 0
+    assert manifest["rows"] == 600
+    assert (input_dir / "benchmark_manifest.json").is_file()
 
     agent.advance(input_dir, "2026-08-16T12:00:00+00:00")
-    ensure_immutable_benchmark(input_dir)
-    assert benchmark_path.read_bytes() == original
+    same_path, same_manifest = ensure_immutable_benchmark(input_dir)
+    assert same_path.read_bytes() == original
+    assert same_manifest == json.loads((input_dir / "benchmark_manifest.json").read_text(encoding="utf-8"))
 
     train = _rows(input_dir / "train.csv")
     benchmark_ids = {row["ID"] for row in benchmark}

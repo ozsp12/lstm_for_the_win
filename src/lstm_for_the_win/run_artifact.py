@@ -8,6 +8,8 @@ from pathlib import Path
 from statistics import fmean, pstdev, stdev
 from typing import Any, Mapping, Sequence
 
+from scipy.stats import t as student_t
+
 from .classification import PipelineExecution, PipelineResult
 from .classification.data import label_for, load_incoming
 from .classification.model import build_confusion_matrix, classification_metrics, predict_probabilities
@@ -31,13 +33,7 @@ def wilson_interval(correct: int, total: int, z: float = 1.959963984540054) -> d
         center = (p + z2 / (2.0 * total)) / denominator
         margin = z * ((p * (1.0 - p) / total + z2 / (4.0 * total * total)) ** 0.5) / denominator
         low, high = max(0.0, center - margin), min(1.0, center + margin)
-    return {
-        "method": "wilson",
-        "confidence_level": 0.95,
-        "low": low,
-        "high": high,
-        "support": total,
-    }
+    return {"method": "wilson", "confidence_level": 0.95, "low": low, "high": high, "support": total}
 
 
 def task_payload(execution: PipelineExecution) -> tuple[dict[str, Any], dict[str, dict[str, Any]]]:
@@ -49,44 +45,31 @@ def task_payload(execution: PipelineExecution) -> tuple[dict[str, Any], dict[str
     return payload, predictions
 
 
-def merge_reviews(
-    source_rows: Sequence[Mapping[str, str]],
-    sentiment_predictions: Mapping[str, Mapping[str, Any]],
-    topic_predictions: Mapping[str, Mapping[str, Any]],
-) -> list[dict[str, Any]]:
+def merge_reviews(source_rows: Sequence[Mapping[str, str]], sentiment_predictions: Mapping[str, Mapping[str, Any]], topic_predictions: Mapping[str, Mapping[str, Any]]) -> list[dict[str, Any]]:
     expected_ids = {row["ID"] for row in source_rows}
     if set(sentiment_predictions) != expected_ids or set(topic_predictions) != expected_ids:
         raise ValueError("Task predictions do not cover every evaluation ID.")
-
     reviews: list[dict[str, Any]] = []
     for source in source_rows:
         sid = source["ID"]
         sentiment = sentiment_predictions[sid]
         topic = topic_predictions[sid]
-        reviews.append(
-            {
-                "ID": int(sid),
-                "text": source["text"],
-                "expected_sentiment": source["expected_sentiment"],
-                "expected_topic": source["expected_topic"],
-                "predicted_sentiment": sentiment["predicted"],
-                "predicted_topic": topic["predicted"],
-                "sentiment_confidence": float(sentiment["confidence"]),
-                "topic_confidence": float(topic["confidence"]),
-                "sentiment_correct": bool(sentiment["correct"]),
-                "topic_correct": bool(topic["correct"]),
-                "linguistic_level": source["linguistic_level"],
-                "flagprofanity": int(source["flagprofanity"]),
-                "hasemoji": int(source.get("hasemoji", sentiment.get("hasemoji", 0))),
-                "hasspellingerror": int(source.get("hasspellingerror", sentiment.get("hasspellingerror", 0))),
-                "hasslang": int(source.get("hasslang", sentiment.get("hasslang", 0))),
-                "length_class": source.get("length_class", sentiment.get("length_class", "")),
-                "mixed_sentiment": int(source.get("mixed_sentiment", sentiment.get("mixed_sentiment", 0))),
-                "goldtest": int(source["goldtest"]),
-                "template_family": source.get("template_family", "legacy-unmaterialized"),
-                "input_timestamp": source["input_timestamp"],
-            }
-        )
+        reviews.append({
+            "ID": int(sid), "text": source["text"],
+            "expected_sentiment": source["expected_sentiment"], "expected_topic": source["expected_topic"],
+            "predicted_sentiment": sentiment["predicted"], "predicted_topic": topic["predicted"],
+            "sentiment_confidence": float(sentiment["confidence"]), "topic_confidence": float(topic["confidence"]),
+            "sentiment_correct": bool(sentiment["correct"]), "topic_correct": bool(topic["correct"]),
+            "linguistic_level": source["linguistic_level"], "flagprofanity": int(source["flagprofanity"]),
+            "hasemoji": int(source.get("hasemoji", sentiment.get("hasemoji", 0))),
+            "hasspellingerror": int(source.get("hasspellingerror", sentiment.get("hasspellingerror", 0))),
+            "hasslang": int(source.get("hasslang", sentiment.get("hasslang", 0))),
+            "length_class": source.get("length_class", sentiment.get("length_class", "")),
+            "mixed_sentiment": int(source.get("mixed_sentiment", sentiment.get("mixed_sentiment", 0))),
+            "goldtest": int(source["goldtest"]),
+            "template_family": source.get("template_family", "legacy-unmaterialized"),
+            "input_timestamp": source["input_timestamp"],
+        })
     return reviews
 
 
@@ -94,23 +77,25 @@ def summarize_replicates(results: Sequence[PipelineResult]) -> dict[str, Any]:
     if not results:
         return {"count": 0, "metrics": {}, "baseline_metrics": {}}
 
-    def summarize(group: str) -> dict[str, dict[str, float | dict[str, float]]]:
-        output: dict[str, dict[str, float | dict[str, float]]] = {}
+    def summarize(group: str) -> dict[str, dict[str, float | dict[str, float | str]]]:
+        output: dict[str, dict[str, float | dict[str, float | str]]] = {}
         for metric in COMPARABLE_METRICS:
             values = [float(getattr(result, group)[metric]) for result in results]
             mean = fmean(values)
             sample_std = stdev(values) if len(values) > 1 else 0.0
-            half_width = 1.959963984540054 * sample_std / (len(values) ** 0.5) if len(values) > 1 else 0.0
+            if len(values) > 1:
+                critical = float(student_t.ppf(0.975, df=len(values) - 1))
+                half_width = critical * sample_std / (len(values) ** 0.5)
+            else:
+                half_width = 0.0
             output[metric] = {
                 "mean": mean,
                 "std_population": pstdev(values) if len(values) > 1 else 0.0,
                 "std_sample": sample_std,
-                "min": min(values),
-                "max": max(values),
-                "mean_ci95_normal": {
-                    "method": "normal_approximation_across_model_seeds",
-                    "low": mean - half_width,
-                    "high": mean + half_width,
+                "min": min(values), "max": max(values),
+                "mean_ci95": {
+                    "method": "student_t_across_model_seeds",
+                    "low": mean - half_width, "high": mean + half_width,
                 },
             }
         return output
@@ -123,16 +108,10 @@ def summarize_replicates(results: Sequence[PipelineResult]) -> dict[str, Any]:
     }
 
 
-def evaluate_benchmark(
-    executions: Mapping[str, PipelineExecution],
-    benchmark_path: Path,
-    raw_rows: Sequence[Mapping[str, str]],
-    provenance: Mapping[str, Any] | None = None,
-) -> dict[str, Any]:
+def evaluate_benchmark(executions: Mapping[str, PipelineExecution], benchmark_path: Path, raw_rows: Sequence[Mapping[str, str]], provenance: Mapping[str, Any] | None = None) -> dict[str, Any]:
     records = load_incoming(benchmark_path)
     task_output: dict[str, Any] = {}
     prediction_maps: dict[str, dict[str, dict[str, Any]]] = {}
-
     for task in ("sentiment", "topic"):
         execution = executions[task]
         labels = list(execution.result.labels)
@@ -147,26 +126,21 @@ def evaluate_benchmark(
         for index, record in enumerate(records):
             predicted_index = int(predicted_indices[index])
             predictions[str(record.ID)] = {
-                "ID": record.ID,
-                "predicted": labels[predicted_index],
+                "ID": record.ID, "predicted": labels[predicted_index],
                 "confidence": float(probabilities[index][predicted_index]),
                 "correct": bool(expected[index] == predicted_index),
-                "hasemoji": record.hasemoji,
-                "hasspellingerror": record.hasspellingerror,
-                "hasslang": record.hasslang,
-                "length_class": record.length_class,
+                "hasemoji": record.hasemoji, "hasspellingerror": record.hasspellingerror,
+                "hasslang": record.hasslang, "length_class": record.length_class,
                 "mixed_sentiment": record.mixed_sentiment,
             }
         correct = sum(bool(row["correct"]) for row in predictions.values())
         task_output[task] = {
-            "labels": labels,
-            "support": len(records),
+            "labels": labels, "support": len(records),
             "metrics": classification_metrics(expected, probabilities, len(labels)),
             "confusion_matrix": build_confusion_matrix(expected, predicted_indices, len(labels)),
             "uncertainty": {"accuracy_ci95": wilson_interval(correct, len(records))},
         }
         prediction_maps[task] = predictions
-
     return {
         "immutable": True,
         "source": "non-gold rows from the first incoming batch observed after benchmark support was introduced",
@@ -187,9 +161,7 @@ def _source_label_metrics(expected: Sequence[str], predicted: Sequence[str]) -> 
         precision = tp / (tp + fp) if tp + fp else 0.0
         recall = tp / (tp + fn) if tp + fn else 0.0
         f1 = 2.0 * precision * recall / (precision + recall) if precision + recall else 0.0
-        class_metrics[label] = {
-            "precision": float(precision), "recall": float(recall), "f1": float(f1), "support": int(support)
-        }
+        class_metrics[label] = {"precision": float(precision), "recall": float(recall), "f1": float(f1), "support": int(support)}
     return {
         "labels": list(source_labels),
         "precision_macro": fmean(float(class_metrics[label]["precision"]) for label in source_labels),
@@ -199,13 +171,8 @@ def _source_label_metrics(expected: Sequence[str], predicted: Sequence[str]) -> 
     }
 
 
-def evaluate_external_sentiment(
-    execution: PipelineExecution,
-    external_path: Path,
-    manifest: Mapping[str, Any],
-) -> dict[str, Any]:
+def evaluate_external_sentiment(execution: PipelineExecution, external_path: Path, manifest: Mapping[str, Any]) -> dict[str, Any]:
     """Evaluate the trained three-class sentiment model on real UCI Amazon review sentences."""
-
     rows = load_external_sentiment(external_path)
     labels = list(execution.result.labels)
     label_to_index = {label: index for index, label in enumerate(labels)}
@@ -220,19 +187,14 @@ def evaluate_external_sentiment(
     label_space_metrics = classification_metrics(expected_indices, probabilities, len(labels))
     confusion = {
         expected_label: {
-            predicted_label: sum(
-                left == expected_label and right == predicted_label
-                for left, right in zip(expected_labels, predicted_labels, strict=True)
-            )
+            predicted_label: sum(left == expected_label and right == predicted_label for left, right in zip(expected_labels, predicted_labels, strict=True))
             for predicted_label in labels
         }
         for expected_label in ("negative", "positive")
     }
     reviews = [
         {
-            "ID": row["ID"],
-            "text": row["text"],
-            "expected_sentiment": row["expected_sentiment"],
+            "ID": row["ID"], "text": row["text"], "expected_sentiment": row["expected_sentiment"],
             "predicted_sentiment": predicted_labels[index],
             "confidence": float(probabilities[index][int(predicted_indices[index])]),
             "correct": bool(row["expected_sentiment"] == predicted_labels[index]),
@@ -240,59 +202,29 @@ def evaluate_external_sentiment(
         for index, row in enumerate(rows)
     ]
     return {
-        "immutable": True,
-        "real_world": True,
-        "task": "sentiment",
-        "topic_evaluation": "not_available_in_source_dataset",
-        "dataset": dict(manifest),
-        "labels_in_source": ["negative", "positive"],
-        "model_label_space": labels,
-        "support": len(rows),
+        "immutable": True, "real_world": True, "task": "sentiment",
+        "topic_evaluation": "not_available_in_source_dataset", "dataset": dict(manifest),
+        "labels_in_source": ["negative", "positive"], "model_label_space": labels, "support": len(rows),
         "accuracy": float(label_space_metrics["accuracy"]),
         "source_label_metrics": _source_label_metrics(expected_labels, predicted_labels),
-        "probabilistic_metrics": {
-            key: float(label_space_metrics[key])
-            for key in ("log_loss", "brier_score", "expected_calibration_error")
-        },
+        "probabilistic_metrics": {key: float(label_space_metrics[key]) for key in ("log_loss", "brier_score", "expected_calibration_error")},
         "neutral_prediction_rate": predicted_labels.count("neutral") / len(predicted_labels) if predicted_labels else 0.0,
-        "confusion_matrix": {
-            "expected_labels": ["negative", "positive"],
-            "predicted_labels": labels,
-            "matrix": confusion,
-        },
-        "uncertainty": {"accuracy_ci95": wilson_interval(correct, len(rows))},
-        "reviews": reviews,
+        "confusion_matrix": {"expected_labels": ["negative", "positive"], "predicted_labels": labels, "matrix": confusion},
+        "uncertainty": {"accuracy_ci95": wilson_interval(correct, len(rows))}, "reviews": reviews,
     }
 
 
-def build_run_document(
-    *,
-    run_metadata: dict[str, Any],
-    scope: dict[str, Any],
-    executions: Mapping[str, PipelineExecution],
-    incoming_rows: Sequence[Mapping[str, str]],
-    input_files: Sequence[Path],
-    replicate_results: Mapping[str, Sequence[PipelineResult]] | None = None,
-    benchmark: dict[str, Any] | None = None,
-    external_validation: dict[str, Any] | None = None,
-) -> dict[str, Any]:
+def build_run_document(*, run_metadata: dict[str, Any], scope: dict[str, Any], executions: Mapping[str, PipelineExecution], incoming_rows: Sequence[Mapping[str, str]], input_files: Sequence[Path], replicate_results: Mapping[str, Sequence[PipelineResult]] | None = None, benchmark: dict[str, Any] | None = None, external_validation: dict[str, Any] | None = None) -> dict[str, Any]:
     sentiment, sentiment_predictions = task_payload(executions["sentiment"])
     topic, topic_predictions = task_payload(executions["topic"])
     if replicate_results:
         sentiment["replicates"] = summarize_replicates(replicate_results.get("sentiment", []))
         topic["replicates"] = summarize_replicates(replicate_results.get("topic", []))
-
     run_metadata = dict(run_metadata)
-    run_metadata["input_files"] = {
-        path.name: {"sha256": sha256(path), "size_bytes": path.stat().st_size}
-        for path in input_files
-    }
+    run_metadata["input_files"] = {path.name: {"sha256": sha256(path), "size_bytes": path.stat().st_size} for path in input_files}
     document: dict[str, Any] = {
-        "schema_version": SCHEMA_VERSION,
-        "artifact_type": "experiment_run",
-        "run": run_metadata,
-        "scope": scope,
-        "tasks": {"sentiment": sentiment, "topic": topic},
+        "schema_version": SCHEMA_VERSION, "artifact_type": "experiment_run", "run": run_metadata,
+        "scope": scope, "tasks": {"sentiment": sentiment, "topic": topic},
         "reviews": merge_reviews(incoming_rows, sentiment_predictions, topic_predictions),
     }
     if benchmark is not None:

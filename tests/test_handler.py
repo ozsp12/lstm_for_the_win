@@ -6,7 +6,7 @@ from dataclasses import asdict
 from pathlib import Path
 from types import SimpleNamespace
 
-import lstm_for_the_win.handler as handler_module
+import lstm_for_the_win.experiment as experiment_module
 from lstm_for_the_win.agents import SyntheticDataAgent, SyntheticDataConfig
 from lstm_for_the_win.handler import PipelineHandler
 
@@ -22,7 +22,7 @@ class _DummyResult:
                 "hasemoji": int(row["hasemoji"]), "hasspellingerror": int(row["hasspellingerror"]),
                 "hasslang": int(row["hasslang"]), "length_class": row["length_class"],
                 "mixed_sentiment": int(row["mixed_sentiment"]), "goldtest": int(row["goldtest"]),
-                "input_timestamp": row["input_timestamp"],
+                "template_family": row["template_family"], "input_timestamp": row["input_timestamp"],
             }
             for row in incoming_rows
         ]
@@ -36,35 +36,63 @@ class _DummyResult:
         }
         self.baseline_metrics = dict(self.metrics)
         self.metric_delta_vs_baseline = {key: 0.0 for key in ("accuracy", "macro_f1", "weighted_f1", "log_loss", "brier_score")}
+        self.paired_comparison = {
+            "method": "mcnemar_exact_two_sided", "both_correct": len(incoming_rows),
+            "lstm_only_correct": 0, "baseline_only_correct": 0, "neither_correct": 0,
+            "discordant_pairs": 0, "p_value": 1.0,
+        }
 
     def to_dict(self) -> dict[str, object]:
         return {
             "task": self.task, "seed": self.seed,
             "train_size": 1200, "fit_size": 960, "validation_size": 240,
             "incoming_size": self.incoming_size, "labels": ["a", "b"], "label_counts": {},
-            "validation_split": {"method": "template_family_grouped", "heldout_families": ["using"]},
+            "validation_split": {
+                "method": "template_family_grouped", "family_source": "persisted_metadata",
+                "heldout_families": ["using"],
+            },
             "metrics": self.metrics, "baseline_metrics": self.baseline_metrics,
-            "metric_delta_vs_baseline": self.metric_delta_vs_baseline, "segment_metrics": {},
+            "metric_delta_vs_baseline": self.metric_delta_vs_baseline,
+            "paired_comparison": self.paired_comparison, "segment_metrics": {},
             "history": {"accuracy": [1.0], "loss": [0.1], "val_accuracy": [1.0], "val_loss": [0.1]},
             "confusion_matrix": [], "predictions": self.predictions,
         }
 
 
-def _patch_training(monkeypatch) -> None:
+def _patch_training(monkeypatch, tmp_path: Path) -> None:
     def fake_execute(pipeline_config):
         with Path(pipeline_config.incoming_path).open("r", encoding="utf-8", newline="") as file:
             incoming_rows = list(csv.DictReader(file))
         return SimpleNamespace(result=_DummyResult(pipeline_config.task, incoming_rows, pipeline_config.seed), model=object())
 
-    monkeypatch.setattr(handler_module, "execute_pipeline", fake_execute)
+    def fake_external(root):
+        directory = Path(root) / "uci_sentiment_labelled_sentences"
+        directory.mkdir(parents=True, exist_ok=True)
+        data = directory / "amazon_cells_labelled.tsv"
+        data.write_text("good phone\t1\nbad phone\t0\n", encoding="utf-8")
+        manifest = directory / "manifest.json"
+        manifest.write_text(json.dumps({"dataset_doi": "test", "license": "test"}), encoding="utf-8")
+        return data, {"dataset_doi": "test", "license": "test"}
+
+    monkeypatch.setattr(experiment_module, "execute_pipeline", fake_execute)
     monkeypatch.setattr(
-        handler_module,
+        experiment_module,
         "evaluate_benchmark",
-        lambda executions, benchmark_path, benchmark_rows: {
+        lambda executions, benchmark_path, benchmark_rows, provenance=None: {
             "immutable": True,
             "source": "unit-test",
+            "provenance": dict(provenance or {}),
             "tasks": {},
             "reviews": [],
+        },
+    )
+    monkeypatch.setattr(experiment_module, "ensure_external_sentiment_benchmark", fake_external)
+    monkeypatch.setattr(
+        experiment_module,
+        "evaluate_external_sentiment",
+        lambda execution, external_path, manifest: {
+            "immutable": True, "real_world": True, "task": "sentiment", "support": 2,
+            "dataset": dict(manifest), "metrics": {"accuracy": 1.0}, "reviews": [],
         },
     )
 
@@ -78,7 +106,7 @@ def test_handler_publishes_single_atomic_run_and_advance_is_incremental(tmp_path
         vary_counts=False,
     )
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
-    _patch_training(monkeypatch)
+    _patch_training(monkeypatch, tmp_path)
 
     handler = PipelineHandler()
     run_path = handler.train_and_publish(
@@ -96,14 +124,18 @@ def test_handler_publishes_single_atomic_run_and_advance_is_incremental(tmp_path
     assert not (run_path / "figures").exists()
     assert not (run_path / "models").exists()
     assert (input_dir / "benchmark.csv").is_file()
+    assert (input_dir / "benchmark_manifest.json").is_file()
 
     run = json.loads((run_path / "run.json").read_text(encoding="utf-8"))
     assert run["schema_version"] == "2.0.0"
     assert run["artifact_type"] == "experiment_run"
     assert run["run"]["input_generation"] == 0
-    assert run["run"]["pipeline_version"] == "0.8.0"
-    assert run["scope"]["external_validation"] is False
+    assert run["run"]["pipeline_version"] == "0.9.0"
+    assert run["scope"]["external_validation"] is True
+    assert run["scope"]["external_validation_tasks"] == ["sentiment"]
+    assert run["scope"]["topic_external_validation"] is False
     assert run["scope"]["immutable_benchmark"] is True
+    assert run["external_validation"]["real_world"] is True
     assert run["tasks"]["sentiment"]["uncertainty"]["accuracy_ci95"]["support"] == 1200
     assert run["tasks"]["sentiment"]["replicates"]["count"] == 1
     assert json.loads((output_dir / "latest.json").read_text(encoding="utf-8"))["run_id"] == "unit-run"
@@ -115,6 +147,8 @@ def test_handler_publishes_single_atomic_run_and_advance_is_incremental(tmp_path
     after_train_rows = sum(1 for _ in (input_dir / "train.csv").open(encoding="utf-8")) - 1
     assert after_train_rows == before_train_rows + 600
     assert json.loads((input_dir / "input_manifest.json").read_text(encoding="utf-8"))["generation"] == 1
+    with (input_dir / "incoming.csv").open(encoding="utf-8", newline="") as handle:
+        assert "template_family" in next(csv.reader(handle))
     assert (input_dir / "benchmark.csv").is_file()
 
 
@@ -123,7 +157,7 @@ def test_handler_links_runs_without_deleting_previous_runs(tmp_path: Path, monke
     output_dir = tmp_path / "output"
     config = SyntheticDataConfig(initial_train_rows=1200, incoming_rows=1200, incoming_rows_jitter=0, vary_counts=False)
     SyntheticDataAgent(config).initialize(input_dir, "2026-08-15T12:00:00+00:00")
-    _patch_training(monkeypatch)
+    _patch_training(monkeypatch, tmp_path)
 
     handler = PipelineHandler()
     first = handler.train_and_publish(input_dir, output_dir, run_id="run-1", epochs=1, patience=0)

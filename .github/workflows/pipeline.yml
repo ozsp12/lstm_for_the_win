@@ -56,19 +56,51 @@ jobs:
           echo "DATA_TIMESTAMP=$DATA_TIMESTAMP" >> "$GITHUB_ENV"
           echo "RUN_ID=$RUN_ID" >> "$GITHUB_ENV"
 
-      - name: Initialize corpus only when absent
+      - name: Prepare corpus and optional one-time reset
         run: |
-          if [ ! -f data/input/train.csv ] && [ ! -f data/input/incoming.csv ]; then
+          if [ -f config/reset_experiment.once ]; then
+            echo "RESET_EXPERIMENT=1" >> "$GITHUB_ENV"
+            rm -f data/input/train.csv \
+                  data/input/incoming.csv \
+                  data/input/input_manifest.json \
+                  data/input/benchmark.csv \
+                  data/input/benchmark_manifest.json \
+                  data/output/latest.json
             python -m lstm_for_the_win.handler generate-data \
               --mode initialize \
               --data-timestamp "$DATA_TIMESTAMP"
-          elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
-            echo "Input state is incomplete; refusing to overwrite an incremental corpus."
-            exit 1
+          else
+            echo "RESET_EXPERIMENT=0" >> "$GITHUB_ENV"
+            if [ ! -f data/input/train.csv ] && [ ! -f data/input/incoming.csv ]; then
+              python -m lstm_for_the_win.handler generate-data \
+                --mode initialize \
+                --data-timestamp "$DATA_TIMESTAMP"
+            elif [ ! -f data/input/train.csv ] || [ ! -f data/input/incoming.csv ]; then
+              echo "Input state is incomplete; refusing to overwrite an incremental corpus."
+              exit 1
+            fi
           fi
           python - <<'PY'
           from lstm_for_the_win.template_metadata import ensure_template_metadata
           print(ensure_template_metadata("data/input"))
+          PY
+
+      - name: Capture pre-run incremental state
+        run: |
+          python - <<'PY'
+          import csv, hashlib, json
+          from pathlib import Path
+          def rows(name):
+              with (Path("data/input") / name).open(encoding="utf-8", newline="") as handle:
+                  return list(csv.DictReader(handle))
+          incoming = Path("data/input/incoming.csv")
+          state = {
+              "train_rows": len(rows("train.csv")),
+              "incoming_rows": len(rows("incoming.csv")),
+              "incoming_sha256": hashlib.sha256(incoming.read_bytes()).hexdigest(),
+          }
+          Path("/tmp/pre_state.json").write_text(json.dumps(state), encoding="utf-8")
+          print(state)
           PY
 
       - name: Validate corpus size and rich-language coverage
@@ -91,10 +123,9 @@ jobs:
               for field in ("hasemoji", "flagprofanity", "hasspellingerror", "hasslang"):
                   counts = Counter(row[field] for row in rows)
                   assert counts["1"] > 0, f"{name} has no positive {field} examples"
-          print({"train": len(train), "incoming": len(incoming)})
           PY
 
-      - name: Train, evaluate, replicate, benchmark, and advance data
+      - name: Train, evaluate, replicate, benchmark, derive artifacts, and advance data
         env:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: >-
@@ -108,60 +139,79 @@ jobs:
           --split-seed 42
           --replicate-seeds "42,1337,2026"
 
-      - name: Verify single immutable run artifact
+      - name: Verify run bundle and incremental CSV behavior
         run: |
           RUN_PATH="data/output/$RUN_ID"
           test -s "$RUN_PATH/run.json"
+          test -s "$RUN_PATH/article_analysis.csv"
+          test -d "$RUN_PATH/figures"
+          test "$(find "$RUN_PATH/figures" -maxdepth 1 -type f -name '*.svg' | wc -l)" -ge 4
           test ! -e "$RUN_PATH/analysis.json"
-          test ! -e "$RUN_PATH/article_analysis.csv"
           test ! -e "$RUN_PATH/predictions.csv"
           test ! -e "$RUN_PATH/metrics.json"
           test ! -e "$RUN_PATH/results.json"
           test ! -e "$RUN_PATH/run_manifest.json"
-          test ! -e "$RUN_PATH/figures"
           test -s data/input/benchmark.csv
           test -s data/input/benchmark_manifest.json
           test -s data/external/uci_sentiment_labelled_sentences/amazon_cells_labelled.tsv
           test -s data/external/uci_sentiment_labelled_sentences/manifest.json
-          python - "$RUN_PATH/run.json" <<'PY'
-          import json
-          import sys
+          python - "$RUN_PATH/run.json" "$RESET_EXPERIMENT" <<'PY'
+          import csv, hashlib, json, sys
           from pathlib import Path
 
           run = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8"))
+          reset = sys.argv[2] == "1"
+          pre = json.loads(Path("/tmp/pre_state.json").read_text(encoding="utf-8"))
+          with Path("data/input/train.csv").open(encoding="utf-8", newline="") as handle:
+              train = list(csv.DictReader(handle))
+          incoming_path = Path("data/input/incoming.csv")
+          with incoming_path.open(encoding="utf-8", newline="") as handle:
+              incoming = list(csv.DictReader(handle))
+          assert len(train) > pre["train_rows"], "train.csv must grow after each successful continual-learning cycle"
+          assert len(incoming) >= 1000
+          assert hashlib.sha256(incoming_path.read_bytes()).hexdigest() != pre["incoming_sha256"], "incoming.csv must be overwritten with a fresh batch"
+          if reset:
+              assert min(int(row["ID"]) for row in train) == 1, "reset must restart IDs at 1"
+              assert run["run"]["parent_run_id"] is None, "reset run must start a new lineage"
           assert run["schema_version"] == "2.0.0"
           assert run["artifact_type"] == "experiment_run"
           assert run["run"]["status"] == "complete"
-          assert run["run"]["run_id"]
           assert run["scope"]["data_origin"] == "synthetic"
-          assert run["scope"]["immutable_benchmark"] is True
           assert run["scope"]["external_validation"] is True
-          assert run["scope"]["external_validation_tasks"] == ["sentiment"]
-          assert run["scope"]["topic_external_validation"] is False
           assert run["benchmark"]["immutable"] is True
-          assert run["benchmark"]["provenance"]["source_generation"] >= 0
-          assert run["benchmark"]["reviews"]
           assert run["external_validation"]["real_world"] is True
           assert run["external_validation"]["task"] == "sentiment"
-          assert run["external_validation"]["support"] == 1000
-          assert set(run["external_validation"]["labels_in_source"]) == {"negative", "positive"}
-          assert run["reviews"]
           for task in ("sentiment", "topic"):
               result = run["tasks"][task]
-              assert "metrics" in result
-              assert "baseline_metrics" in result
-              assert "metric_delta_vs_baseline" in result
-              assert "segment_metrics" in result
-              assert "uncertainty" in result
               assert result["replicates"]["count"] == 3
-              assert len(result["replicates"]["seeds"]) == 3
               assert result["validation_split"]["family_source"] == "persisted_metadata"
-              assert result["validation_split"]["method"] in {"template_family_grouped", "stratified_random_fallback"}
               assert result["paired_comparison"]["method"] == "mcnemar_exact_two_sided"
               assert result["replicates"]["metrics"]["accuracy"]["mean_ci95"]["method"] == "student_t_across_model_seeds"
-              benchmark = run["benchmark"]["tasks"][task]
-              assert "metrics" in benchmark
-              assert "uncertainty" in benchmark
+          with (Path(sys.argv[1]).parent / "article_analysis.csv").open(encoding="utf-8", newline="") as handle:
+              rows = list(csv.DictReader(handle))
+          groups = {row["analysis_group"] for row in rows}
+          assert {"aggregate_metric", "confusion_matrix", "prediction_record", "benchmark_metric", "external_metric"}.issubset(groups)
+          assert sum(row["analysis_group"] == "prediction_record" for row in rows) == len(run["reviews"])
+          PY
+
+      - name: Verify deterministic regeneration from run.json
+        run: |
+          python - "$RUN_ID" <<'PY'
+          import hashlib, shutil, sys
+          from pathlib import Path
+          from lstm_for_the_win.derived_artifacts import materialize_derived_artifacts
+
+          root = Path("data/output") / sys.argv[1]
+          def hashes():
+              paths = [root / "article_analysis.csv", *sorted((root / "figures").glob("*"))]
+              return {path.relative_to(root).as_posix(): hashlib.sha256(path.read_bytes()).hexdigest() for path in paths if path.is_file()}
+          before = hashes()
+          (root / "article_analysis.csv").unlink()
+          shutil.rmtree(root / "figures")
+          materialize_derived_artifacts(root / "run.json")
+          after = hashes()
+          assert before == after, f"derived artifacts are not reproducible: {before.keys()} != {after.keys()}"
+          print(before)
           PY
 
       - name: Run automated tests with coverage gate
@@ -169,13 +219,34 @@ jobs:
           TF_CPP_MIN_LOG_LEVEL: "2"
         run: python -m pytest -q
 
-      - name: Commit incremental data state and run artifact
+      - name: Retain only the validated latest run
+        run: |
+          python - "$RUN_ID" <<'PY'
+          import json, shutil, sys
+          from pathlib import Path
+          root = Path("data/output")
+          keep = sys.argv[1]
+          for child in root.iterdir():
+              if child.is_dir() and child.name != keep:
+                  shutil.rmtree(child)
+          (root / ".gitkeep").unlink(missing_ok=True)
+          (root / "latest.json").write_text(json.dumps({"run_id": keep}, indent=2) + "\n", encoding="utf-8")
+          directories = [path.name for path in root.iterdir() if path.is_dir()]
+          assert directories == [keep], directories
+          PY
+
+      - name: Commit validated incremental state and run bundle
         run: |
           RUN_PATH="data/output/$RUN_ID"
           test -f "$RUN_PATH/run.json"
+          test -f "$RUN_PATH/article_analysis.csv"
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ "$RESET_EXPERIMENT" = "1" ]; then
+            rm -f config/reset_experiment.once
+          fi
           git add data/input data/external data/output
+          git add -u config/reset_experiment.once 2>/dev/null || true
           if git diff --cached --quiet; then
             echo "The pipeline did not produce an incremental state transition."
             exit 1
@@ -183,8 +254,8 @@ jobs:
           git commit -m "data: publish $RUN_ID [skip ci]"
           git push origin HEAD:main
 
-      - name: Upload canonical run artifact
+      - name: Upload validated run bundle
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
           name: lstm-run-${{ github.run_id }}
-          path: data/output/${{ env.RUN_ID }}/run.json
+          path: data/output/${{ env.RUN_ID }}

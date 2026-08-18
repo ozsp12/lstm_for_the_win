@@ -7,27 +7,28 @@ Reproducible continual-learning experiment for Long Short-Term Memory (LSTM) cla
 ## Architecture
 
 ```text
-agents/synthetic_data.py  -> cumulative train.csv and refreshed incoming.csv
-handler.py                -> controlled state transitions
-template_metadata.py      -> persisted generator-family metadata
-classification/           -> LSTM, baseline, metrics and structural validation split
-benchmark.py              -> immutable synthetic longitudinal benchmark
-external_benchmark.py     -> immutable real-world UCI sentiment benchmark
-experiment.py             -> experiment orchestration
-run_artifact.py           -> canonical run.json
-derived_artifacts.py      -> article_analysis.csv and figures/ from run.json only
-cli.py                    -> command-line parsing
+agents/improved_synthetic_data.py -> cumulative train.csv and refreshed incoming.csv
+handler.py                         -> controlled input-state transitions
+classification/                    -> LSTM, baseline, metrics and structural validation
+benchmark.py                       -> immutable synthetic longitudinal benchmark
+external_benchmark.py              -> immutable real-world UCI sentiment benchmark
+experiment.py                      -> frozen-state experiment orchestration
+run_artifact.py                    -> canonical run.json
+derived_artifacts.py               -> wide article_analysis.csv and figures/ from run.json only
+cli.py                             -> command-line interface
 ```
 
 ## Data lifecycle
 
-`data/input/train.csv` is cumulative. After every successful evaluation, rows marked `goldtest=1` are promoted and the file is overwritten at the same path with a larger row count. `data/input/incoming.csv` is overwritten with the next unseen synthetic batch. Each generated record carries a persisted `template_family`, which is used for family-level validation splitting.
+`data/input/train.csv` is cumulative. `data/input/incoming.csv` represents the current unseen synthetic batch. New records receive `template_family` directly at render time; the value is then persisted and used for family-level validation splitting. The generator also varies stratum sizes, mixed-sentiment placement, linguistic structure and spelling noise so the synthetic corpus is not perfectly regular.
 
-`data/input/benchmark.csv` is an immutable synthetic longitudinal benchmark built from non-gold rows and never promoted into training. `data/external/` is evaluation-only and contains the Amazon subset of the UCI **Sentiment Labelled Sentences** dataset (DOI `10.24432/C57604`, CC BY 4.0). External validation is sentiment-only because the source has no compatible topic labels and no neutral class.
+Training and data advancement are separate operations. The production experiment always trains on a frozen committed input state. `.github/workflows/advance-data.yml` performs the optional next-generation transition: approved `goldtest=1` rows are promoted into `train.csv`, a fresh `incoming.csv` is generated, and that committed state then triggers a new frozen-state experiment. A reset publishes generation 0 without immediately promoting any rows.
+
+`data/input/benchmark.csv` is an immutable synthetic benchmark built from non-gold incoming rows and never promoted into training. `data/external/` contains the Amazon subset of UCI **Sentiment Labelled Sentences** (DOI `10.24432/C57604`, CC BY 4.0). External validation is sentiment-only because the source has no compatible topic labels and no neutral class.
 
 ## Output contract
 
-`run.json` is the canonical source of truth. `article_analysis.csv` and every file in `figures/` are deterministic derived artifacts generated exclusively from the same `run.json`.
+`run.json` is the canonical source of truth. `article_analysis.csv` and every file in `figures/` are deterministic derivatives generated exclusively from the same run.
 
 ```text
 data/output/
@@ -38,23 +39,21 @@ data/output/
     └── figures/
 ```
 
-Only the latest fully validated run is retained. The previous run remains present while the new run is being trained and checked. It is removed only after the new run bundle passes contract validation, deterministic regeneration, automated tests and the coverage gate. `latest.json` is then committed together with the new run.
+Only the latest fully validated run is retained. The previous run is removed only after the replacement passes contract validation, deterministic regeneration, automated tests and the coverage gate.
 
-`article_analysis.csv` is intended for human inspection and tabular analysis. It contains aggregate and segment metrics, uncertainty, confusion matrices, training history, benchmark/external results and one `prediction_record` row for every incoming observation. It never performs an independent calculation: all values come from `run.json`.
-
-The figure directory is overwritten during derivation and rebuilt from the new `run.json`. Deleting `article_analysis.csv` and `figures/` and regenerating them must reproduce identical SHA-256 hashes in the same locked environment; CI enforces this invariant.
+`article_analysis.csv` is a conventional wide table for human inspection: one row per incoming observation, with review metadata, predictions, canonical model metrics, baseline metrics, paired-test information, benchmark accuracy and external-validation summaries in columns. It performs no independent calculation.
 
 ## Experimental safeguards
 
-The validation split prefers holding out an entire persisted sentence-template family. Production uses a fixed split seed plus model seeds `42`, `1337` and `2026`. Runs report Wilson intervals for sample accuracy, Student-t intervals across model seeds, and an exact two-sided McNemar comparison between the LSTM and TF-IDF logistic-regression baseline.
+The validation split prefers holding out an entire persisted sentence-template family. Production uses model seeds `42`, `1337` and `2026`; means across those seeds are the canonical comparable metrics, with Student-t 95% intervals. Primary-seed results remain in the artifact for individual predictions, training history and confusion matrices.
 
-The synthetic benchmark is immutable and separate from continual learning. The UCI Amazon subset adds independent real-world evidence for sentiment only; topic remains synthetic-only.
+Each task records the confusion-matrix convention explicitly as rows = expected and columns = predicted. Segment accuracy includes Wilson 95% intervals and support. Expected calibration error (ECE) is accompanied by the ten reliability bins used to compute it. LSTM and TF-IDF logistic regression are compared with an exact two-sided McNemar test.
 
-## Reproducible environment
+The external Amazon evaluation reports both the native three-class model result and a source-compatible binary result obtained by restricting and renormalizing probabilities to `{negative, positive}`. Full probability vectors are preserved for external observations. This distinction prevents neutral predictions from being conflated with performance under the binary source label space.
 
-`requirements-lock.txt` is fully resolved and hash-locked. CI and production install with `--require-hashes`, use the pinned build backend without build isolation, run `pip check`, and pin GitHub Actions to immutable commit SHAs. Test coverage must remain at least 90%.
+## Reproducibility
 
-## Reproduce
+The environment is hash-locked, SciPy is a direct dependency, GitHub Actions are pinned by immutable SHA, and test coverage must remain at least 90%. TensorFlow deterministic operations are enabled and `PYTHONHASHSEED`, deterministic-operation state, model seeds and split seed are recorded or enforced by CI. Metric implementations are regression-tested against `sklearn.metrics` reference implementations.
 
 ```bash
 python -m venv .venv
@@ -68,6 +67,6 @@ python -m lstm_for_the_win.derived_artifacts data/output/local/run.json
 
 Python 3.12 · TensorFlow 2.20
 
-## Citation
+## Licensing and citation
 
-Citation metadata are provided in `CITATION.cff`. No permissive software license has been declared; reuse beyond applicable default copyright permissions requires authorization from the copyright holder.
+Repository software is licensed under the MIT License. External dataset licensing and attribution are documented separately in `DATA_LICENSES.md`; the UCI Amazon subset remains CC BY 4.0. Citation metadata are provided in `CITATION.cff`, and CI verifies that citation, package, project and pipeline versions remain synchronized.

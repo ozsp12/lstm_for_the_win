@@ -24,59 +24,59 @@
     "vary_counts": true
   },
   "effective_generation": {
-    "emoji_fraction": 0.21868252855712284,
-    "goldtest_fraction": 0.1553866756183942,
-    "incoming_rows": 1740,
-    "profanity_fraction": 0.18517868207157018,
-    "validation_fraction": 0.17092607618443317
+    "emoji_fraction": 0.16137302723675906,
+    "goldtest_fraction": 0.19079160979506435,
+    "incoming_rows": 1680,
+    "profanity_fraction": 0.31877757872362117,
+    "validation_fraction": 0.15633294011503926
   },
   "generated_by": "synthetic-review-generator",
-  "generation": 4,
+  "generation": 5,
   "incoming_emoji_counts": {
     "0": 1380,
-    "1": 360
+    "1": 300
   },
   "incoming_goldtest_count": 300,
   "incoming_length_counts": {
-    "long": 794,
-    "medium": 934,
-    "short": 12
+    "long": 877,
+    "medium": 797,
+    "short": 6
   },
   "incoming_linguistic_level_counts": {
-    "advanced": 348,
-    "informal": 348,
-    "limited": 348,
-    "standard": 348,
-    "technical": 348
+    "advanced": 336,
+    "informal": 336,
+    "limited": 336,
+    "standard": 336,
+    "technical": 336
   },
   "incoming_mixed_sentiment_counts": {
-    "0": 1560,
+    "0": 1500,
     "1": 180
   },
   "incoming_profanity_counts": {
-    "0": 1440,
-    "1": 300
+    "0": 1140,
+    "1": 540
   },
   "incoming_slang_counts": {
-    "0": 1380,
+    "0": 1320,
     "1": 360
   },
   "incoming_spelling_error_counts": {
-    "0": 1380,
+    "0": 1320,
     "1": 360
   },
-  "last_issued_id": 21960,
-  "promoted_from_previous_incoming": 360,
+  "last_issued_id": 23640,
+  "promoted_from_previous_incoming": 300,
   "record_counts": {
-    "incoming.csv": 1740,
-    "train.csv": 13680
+    "incoming.csv": 1680,
+    "train.csv": 13980
   },
   "sha256": {
-    "incoming.csv": "d94741ceb5d81ac47be1e67311ee9515e5e7b9b9e33e888aaf4046f1a472fe83",
-    "train.csv": "a7805c859b4a1d3d96200734dd34a609da2bb3e9006cecf48c34bca2a5e16c57"
+    "incoming.csv": "229a73a7461780ff8b0c8841b5261d7a13b346c6f6dffc7d32c0fbe4efdf9f65",
+    "train.csv": "b04e1dc30656fe0e301f4dbd00344672ba6e9595bf8f8317b23ebe6b8c724f19"
   },
   "train_source_counts": {
-    "goldtest": 1680,
+    "goldtest": 1980,
     "initial": 12000
   }
 }
